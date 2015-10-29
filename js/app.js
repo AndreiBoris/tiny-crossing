@@ -6,6 +6,22 @@ var Enemy = function() {
   // The image/sprite for our enemies, this uses
   // a helper we've provided to easily load images
   this.sprite = 'images/enemy-bug.png';
+  this.x = Enemy.prototype.startX();
+  this.y = Enemy.prototype.startY();
+};
+
+// Generate a start position for each enemy
+Enemy.prototype.startX = function() {
+  return Math.random() * 505;
+};
+
+// Appropriate start position are at 56 + n83, where n == 0, 1, or 2.
+// Random value from array courtesy of:
+// http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
+Enemy.prototype.startY = function() {
+  var options = [0, 1, 2];
+  var result = 56 + 83 * options[Math.floor(Math.random() * options.length)];
+  return result;
 };
 
 // Update the enemy's position, required method for game
@@ -53,9 +69,7 @@ var enemyCount = function( count ) {
   }
 };
 
-enemyCount(4);
-
-
+enemyCount( 1 );
 
 
 // This listens for key presses and sends the keys to your
