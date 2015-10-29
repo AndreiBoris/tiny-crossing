@@ -8,6 +8,7 @@ var Enemy = function() {
   this.sprite = 'images/enemy-bug.png';
   this.x = Enemy.prototype.startX();
   this.y = Enemy.prototype.startY();
+  this.speed = Enemy.prototype.speed();
 };
 
 // Generate a start position for each enemy
@@ -30,7 +31,12 @@ Enemy.prototype.update = function( dt ) {
   // You should multiply any movement by the dt parameter
   // which will ensure the game runs at the same speed for
   // all computers.
-  this.x = this.x + 50 * dt;
+  this.x = this.x + this.speed;
+};
+
+// Generate a random, appropriate speed for each bug
+Enemy.prototype.speed = function (){
+  return 1.25 + (Math.random() * 5);
 };
 
 // Draw the enemy on the screen, required method for game
