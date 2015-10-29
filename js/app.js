@@ -35,6 +35,7 @@ Enemy.prototype.update = function( dt ) {
   this.x = this.x + this.speed;
   if (this.x > 600) {
     this.x = -150;
+    this.y = Enemy.prototype.startY();
   }
 };
 
