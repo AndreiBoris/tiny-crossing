@@ -59,9 +59,25 @@ var Player = function() {
   this.y = 388;
 };
 
+// unnecessary?
 Player.prototype.update = function( dt ) {
+  var currentSpots = [];
+  var length = allEnemies.length;
+  for (var i=0;i<length;i++){
+    var x = allEnemies[i].x;
+    var y = allEnemies[i].y;
+    currentSpots.push([x, y]);
+  }
+  length = currentSpots.length;
+  for (var b=0;b<length;b++){
+    if ((this.x - 50 < currentSpots[b][0] && this.x + 50 > currentSpots[b][0]) &&
+        (this.y - 10 < currentSpots[b][1] && this.y + 10 > currentSpots[b][1])){
+          this.x = 300;
+          this.y = 388;
+        }
+    }
+  };
 
-};
 
 Player.prototype.render = function() {
   ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
