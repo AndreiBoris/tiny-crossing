@@ -11,9 +11,10 @@ var Enemy = function() {
   this.speed = Enemy.prototype.speed();
 };
 
-// Generate a start position for each enemy
+// Generate a start position for each enemy, slightly less than width of canvas
+// which is 505.
 Enemy.prototype.startX = function() {
-  return Math.random() * 505;
+  return Math.random() * 450;
 };
 
 // Appropriate start position are at 56 + n83, where n == 0, 1, or 2.
@@ -32,6 +33,9 @@ Enemy.prototype.update = function( dt ) {
   // which will ensure the game runs at the same speed for
   // all computers.
   this.x = this.x + this.speed;
+  if (this.x > 600) {
+    this.x = -150;
+  }
 };
 
 // Generate a random, appropriate speed for each bug
