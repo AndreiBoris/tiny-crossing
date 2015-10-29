@@ -30,6 +30,7 @@ Enemy.prototype.update = function( dt ) {
   // You should multiply any movement by the dt parameter
   // which will ensure the game runs at the same speed for
   // all computers.
+  this.x = this.x + 50 * dt;
 };
 
 // Draw the enemy on the screen, required method for game
@@ -69,7 +70,7 @@ var enemyCount = function( count ) {
   }
 };
 
-enemyCount( 1 );
+enemyCount( 3 );
 
 
 // This listens for key presses and sends the keys to your
