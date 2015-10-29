@@ -67,8 +67,19 @@ Player.prototype.render = function() {
   ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
 };
 
-Player.prototype.handleInput = function() {
-
+Player.prototype.handleInput = function(input) {
+  if (input === 'left'){
+    this.x = this.x - 101;
+  }
+  else if (input === 'up'){
+    this.y = this.y - 83;
+  }
+  else if (input === 'right'){
+    this.x = this.x + 101;
+  }
+  else if (input === 'down'){
+    this.y = this.y + 83;
+  }
 };
 
 // Now instantiate your objects.
