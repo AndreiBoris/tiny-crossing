@@ -32,7 +32,7 @@ Enemy.prototype.update = function( dt ) {
   // You should multiply any movement by the dt parameter
   // which will ensure the game runs at the same speed for
   // all computers.
-  this.x = this.x + this.speed;
+  this.x = this.x + this.speed * dt;
   if ( this.x > 600 ) {
     this.x = -150;
     this.y = Enemy.prototype.startY();
@@ -42,7 +42,7 @@ Enemy.prototype.update = function( dt ) {
 
 // Generate a random, appropriate speed for each bug
 Enemy.prototype.speed = function() {
-  return 1.25 + ( Math.random() * 5 );
+  return 100 + ( Math.random() * 200 );
 };
 
 // Draw the enemy on the screen, required method for game
@@ -78,7 +78,6 @@ Player.prototype.update = function( dt ) {
     }
   }
 };
-
 
 Player.prototype.render = function() {
   ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
