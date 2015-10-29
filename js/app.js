@@ -21,8 +21,8 @@ Enemy.prototype.startX = function() {
 // Random value from array courtesy of:
 // http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
 Enemy.prototype.startY = function() {
-  var options = [0, 1, 2];
-  var result = 56 + 83 * options[Math.floor(Math.random() * options.length)];
+  var options = [ 0, 1, 2 ];
+  var result = 56 + 83 * options[ Math.floor( Math.random() * options.length ) ];
   return result;
 };
 
@@ -33,7 +33,7 @@ Enemy.prototype.update = function( dt ) {
   // which will ensure the game runs at the same speed for
   // all computers.
   this.x = this.x + this.speed;
-  if (this.x > 600) {
+  if ( this.x > 600 ) {
     this.x = -150;
     this.y = Enemy.prototype.startY();
     this.speed = Enemy.prototype.speed();
@@ -41,8 +41,8 @@ Enemy.prototype.update = function( dt ) {
 };
 
 // Generate a random, appropriate speed for each bug
-Enemy.prototype.speed = function (){
-  return 1.25 + (Math.random() * 5);
+Enemy.prototype.speed = function() {
+  return 1.25 + ( Math.random() * 5 );
 };
 
 // Draw the enemy on the screen, required method for game
@@ -64,61 +64,83 @@ var Player = function() {
 Player.prototype.update = function( dt ) {
   var currentSpots = [];
   var length = allEnemies.length;
-  for (var i=0;i<length;i++){
-    var x = allEnemies[i].x;
-    var y = allEnemies[i].y;
-    currentSpots.push([x, y]);
+  for ( var i = 0; i < length; i++ ) {
+    var x = allEnemies[ i ].x;
+    var y = allEnemies[ i ].y;
+    currentSpots.push( [ x, y ] );
   }
   length = currentSpots.length;
-  for (var b=0;b<length;b++){
-    if ((this.x - 50 < currentSpots[b][0] && this.x + 50 > currentSpots[b][0]) &&
-        (this.y - 10 < currentSpots[b][1] && this.y + 10 > currentSpots[b][1])){
-          this.x = 300;
-          this.y = 388;
-        }
+  for ( var b = 0; b < length; b++ ) {
+    if ( ( this.x - 50 < currentSpots[ b ][ 0 ] && this.x + 50 > currentSpots[ b ][ 0 ] ) &&
+      ( this.y - 10 < currentSpots[ b ][ 1 ] && this.y + 10 > currentSpots[ b ][ 1 ] ) ) {
+      this.x = 300;
+      this.y = 388;
     }
-  };
+  }
+};
 
 
 Player.prototype.render = function() {
   ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
-  if (this.victory === true){
+  if ( this.victory === true ) {
     Player.prototype.victory();
   }
 };
 
 Player.prototype.victory = function() {
-  ctx.fillText('You win!', canvas.width / 2, canvas.height / 2);
-  ctx.strokeText('You win!', canvas.width / 2, canvas.height / 2);
+  Player.prototype.victoryFont();
+  ctx.fillText( 'You win!', canvas.width / 2, canvas.height / 2 );
+  ctx.strokeText( 'You win!', canvas.width / 2, canvas.height / 2 );
+  Player.prototype.enterFont();
+  ctx.fillText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
+  ctx.strokeText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
 };
 
-Player.prototype.handleInput = function(input) {
-  if (input === 'left'){
-    if (this.x <= 50){
+Player.prototype.victoryFont = function() {
+  ctx.font = '56px Impact';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillStyle = 'lime';
+  ctx.strokeStyle = 'black';
+  ctx.lineWidth = 2;
+};
+
+Player.prototype.enterFont = function() {
+  ctx.font = '40px Impact';
+  ctx.fillStyle = 'white';
+};
+
+Player.prototype.handleInput = function( input ) {
+  if ( input === 'left' ) {
+    if ( this.x <= 50 ) {
       this.x = this.x + 101 * 4;
       return;
     }
     this.x = this.x - 101;
-  }
-  else if (input === 'up'){
-    if (this.y <= 80){
+  } else if ( input === 'up' ) {
+    if ( this.y <= 80 ) {
       this.victory = true;
       return;
     }
     this.y = this.y - 83;
-  }
-  else if (input === 'right'){
-    if (this.x >= 400){
+  } else if ( input === 'right' ) {
+    if ( this.x >= 400 ) {
       this.x = this.x - 101 * 4;
       return;
     }
     this.x = this.x + 101;
-  }
-  else if (input === 'down'){
-    if (this.y >= 360){
+  } else if ( input === 'down' ) {
+    if ( this.y >= 360 ) {
       return;
     }
     this.y = this.y + 83;
+  } else if ( input === 'enter') {
+    if ( this.victory === true) {
+      this.victory = false;
+      this.x = 300;
+      this.y = 388;
+    }
+
   }
 };
 
@@ -145,7 +167,8 @@ document.addEventListener( 'keyup', function( e ) {
     37: 'left',
     38: 'up',
     39: 'right',
-    40: 'down'
+    40: 'down',
+    13: 'enter'
   };
 
   player.handleInput( allowedKeys[ e.keyCode ] );
