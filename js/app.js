@@ -57,9 +57,10 @@ var Player = function() {
   this.sprite = 'images/char-boy.png';
   this.x = 300;
   this.y = 388;
+  this.victory = false;
 };
 
-// unnecessary?
+// Detect collisions
 Player.prototype.update = function( dt ) {
   var currentSpots = [];
   var length = allEnemies.length;
@@ -81,6 +82,14 @@ Player.prototype.update = function( dt ) {
 
 Player.prototype.render = function() {
   ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
+  if (this.victory === true){
+    Player.prototype.victory();
+  }
+};
+
+Player.prototype.victory = function() {
+  ctx.fillText('You win!', canvas.width / 2, canvas.height / 2);
+  ctx.strokeText('You win!', canvas.width / 2, canvas.height / 2);
 };
 
 Player.prototype.handleInput = function(input) {
@@ -93,6 +102,7 @@ Player.prototype.handleInput = function(input) {
   }
   else if (input === 'up'){
     if (this.y <= 80){
+      this.victory = true;
       return;
     }
     this.y = this.y - 83;
