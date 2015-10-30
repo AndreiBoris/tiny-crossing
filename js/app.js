@@ -2,7 +2,7 @@ var Map = function(){
   var tileHeight = 83,
   tileWidth = tileHeight * 1.21687,
   numColumns = 9,
-  numRows = 6;
+  numRows = 7;
   this.tileWidth = tileWidth;
   this.tileHeight = tileHeight;
   this.totalWidth = tileWidth * numColumns;
@@ -29,14 +29,14 @@ var Enemy = function() {
 
 // Generate a start position for each enemy
 Enemy.prototype.startX = function() {
-  return Math.random() * map.totalWidth * 0.5;
+  return Math.random() * map.totalWidth * 1.0;
 };
 
 // Appropriate start position are at 56 + n83, where n == 0, 1, or 2.
 // Random value from array courtesy of:
 // http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
 Enemy.prototype.startY = function() {
-  var options = [ 0, 1, 2 ];
+  var options = [ 0, 1, 2, 3, 4 ];
   var result = 56 + map.tileHeight * options[ Math.floor( Math.random() * options.length ) ];
   return result;
 };
@@ -262,15 +262,15 @@ Player.prototype.handleInput = function( input ) {
         // Change back to normal sprite
         this.sprite = 'images/char-boy.png';
         this.victory = false;
-        this.x = 2 * map.tileWidth;
-        this.y = 53 + 4 * map.tileHeight;
+        this.x = Math.floor(map.numColumns/2) * map.tileWidth;
+        this.y = 53 + (map.numRows - 2) * map.tileHeight;
         this.togglePause();
       } else if ( this.isDead === true ) {
         this.isDead = false;
         // Change back to normal sprite
         this.sprite = 'images/char-boy.png';
-        this.x = 2 * map.tileWidth;
-        this.y = 53 + 4 * map.tileHeight;
+        this.x = Math.floor(map.numColumns/2) * map.tileWidth;
+        this.y = 53 + (map.numRows - 2) * map.tileHeight;
         this.togglePause();
       }
     }
@@ -292,7 +292,7 @@ var enemyCount = function( count ) {
   player.numEnemies = count;
 };
 
-enemyCount( 15 );
+enemyCount( 30 );
 
 
 // This listens for key presses and sends the keys to your
