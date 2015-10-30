@@ -1,12 +1,12 @@
-var Map = function(){
+var Map = function() {
   var tileHeight = 83,
-  tileWidth = tileHeight * 1.21687,
-  numColumns = 9,
-  numRows = 7;
+    tileWidth = tileHeight * 1.21687,
+    numColumns = 9,
+    numRows = 7;
   this.tileWidth = tileWidth;
   this.tileHeight = tileHeight;
   this.totalWidth = tileWidth * numColumns;
-  this.totalHeight = tileHeight * (numRows + 1);
+  this.totalHeight = tileHeight * ( numRows + 1 );
   this.numColumns = numColumns;
   this.numRows = numRows;
 };
@@ -62,7 +62,9 @@ Enemy.prototype.speed = function() {
 
 // Draw the enemy on the screen, required method for game
 Enemy.prototype.render = function() {
-  ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
+  if ( player.charSelected === true ) {
+    ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
+  }
 };
 
 // Gets multiplied by the speed of each bug to determine whether an enemy is
@@ -87,8 +89,8 @@ Enemy.prototype.pause = function() {
 var Player = function() {
   this.sprite = '';
   this.charSelected = false;
-  this.x = Math.floor(map.numColumns/2) * map.tileWidth;
-  this.y = 53 + (map.numRows - 2) * map.tileHeight;
+  this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
+  this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
   this.victory = false;
   this.numEnemies = 0;
   this.paused = false;
@@ -97,21 +99,25 @@ var Player = function() {
   this.movingUp = true;
 };
 
-Player.prototype.costumes = function (){
-  var options = ['images/char-boy.png',
-  'images/char-cat-girl.png',
-  'images/char-horn-girl.png',
-  'images/char-pink-girl.png',
-  'images/char-princess-girl.png'];
+Player.prototype.costumes = function() {
+  var options = [ 'images/char-boy.png',
+    'images/char-cat-girl.png',
+    'images/char-horn-girl.png',
+    'images/char-pink-girl.png',
+    'images/char-princess-girl.png'
+  ];
   var length = options.length,
-  position = map.totalWidth/(length + 2);
+    position = map.totalWidth / ( length + 2 );
+  ctx.font = '40px Impact';
   ctx.fillStyle = 'white';
   ctx.strokeStyle = 'black';
-  ctx.fillRect(position - 10, map.totalHeight/2, position * length, 200);
-  ctx.strokeRect(position - 10, map.totalHeight/2, position * length, 200);
-  for (var i=0;i<length;i++){
-    ctx.drawImage( Resources.get( options[i] ), position, map.totalHeight/2);
-    position = position + map.totalWidth/(length + 2);
+  ctx.fillText( 'Select a character', canvas.width / 2, canvas.height / 2 );
+  ctx.strokeText( 'Select a character', canvas.width / 2, canvas.height / 2 );
+  ctx.fillRect( position - 10, map.totalHeight / 2, position * length, 200 );
+  ctx.strokeRect( position - 10, map.totalHeight / 2, position * length, 200 );
+  for ( var i = 0; i < length; i++ ) {
+    ctx.drawImage( Resources.get( options[ i ] ), position, map.totalHeight / 2 );
+    position = position + map.totalWidth / ( length + 2 );
   }
 };
 
@@ -125,21 +131,22 @@ Player.prototype.update = function( dt ) {
   }
   for ( var b = 0; b < this.numEnemies; b++ ) {
     // Collision detected:
-    if ( ( this.x - map.tileWidth/2 < currentSpots[ b ][ 0 ] &&
-      this.x + map.tileWidth/2 > currentSpots[ b ][ 0 ] ) &&
-      ( this.y - map.tileHeight/8 < currentSpots[ b ][ 1 ] &&
-        this.y + map.tileHeight/8 > currentSpots[ b ][ 1 ] ) ) {
+    if ( ( this.x - map.tileWidth / 2 < currentSpots[ b ][ 0 ] &&
+        this.x + map.tileWidth / 2 > currentSpots[ b ][ 0 ] ) &&
+      ( this.y - map.tileHeight / 8 < currentSpots[ b ][ 1 ] &&
+        this.y + map.tileHeight / 8 > currentSpots[ b ][ 1 ] ) ) {
       this.dead();
     }
-  } if (this.victory === true){
-    this.victoryBounce(this.victorySpot, dt);
+  }
+  if ( this.victory === true ) {
+    this.victoryBounce( this.victorySpot, dt );
   }
 };
 
 Player.prototype.render = function() {
-  Player.prototype.costumes();
-  if (this.charSelected === true) {
-  ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
+  this.costumes();
+  if ( this.charSelected === true ) {
+    ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
   }
   if ( this.victory === true ) {
     Player.prototype.victory();
@@ -212,25 +219,25 @@ Player.prototype.dead = function() {
 };
 
 Player.prototype.deadOverlay = function() {
-  var grd = ctx.createRadialGradient( this.x + map.tileWidth/2,
-    this.y + map.tileWidth, map.tileWidth/2, this.x + map.tileWidth/2,
+  var grd = ctx.createRadialGradient( this.x + map.tileWidth / 2,
+    this.y + map.tileWidth, map.tileWidth / 2, this.x + map.tileWidth / 2,
     this.y + map.tileWidth, map.tileWidth );
 
   grd.addColorStop( 0, 'rgba(255, 0, 0, 0.4)' );
   grd.addColorStop( 1, "rgba(255, 0, 0, 0)" );
 
-  ctx.arc( this.x, this.y + map.tileWidth/2, map.tileWidth*3, 0, 2 * Math.PI );
+  ctx.arc( this.x, this.y + map.tileWidth / 2, map.tileWidth * 3, 0, 2 * Math.PI );
   ctx.fillStyle = grd;
   ctx.fill();
 };
 
-Player.prototype.victoryBounce = function(startingY, dt) {
-  var height = map.tileHeight/4;
-  if (this.y > startingY - height && this.movingUp === true){
+Player.prototype.victoryBounce = function( startingY, dt ) {
+  var height = map.tileHeight / 4;
+  if ( this.y > startingY - height && this.movingUp === true ) {
     // map.tileWidth here is used as a basis for a time measurement to so that
     // the game scales appropriately when bigger maps are used.
     this.y = this.y - map.tileWidth * dt;
-  } else if (this.y < startingY){
+  } else if ( this.y < startingY ) {
     this.movingUp = false;
     this.y = this.y + map.tileWidth * dt;
   } else {
@@ -239,11 +246,20 @@ Player.prototype.victoryBounce = function(startingY, dt) {
 };
 
 Player.prototype.handleInput = function( input ) {
-  // Controls only work when game isn't paused
-  if ( this.paused === false ) {
+  // Character selection screen controls
+  if ( this.charSelected === true ) {
+    if ( input === 'left' ){
+      // goLeftOrSkipToRight
+    } else if ( input === 'right' ){
+      // goRightOrSkipToLeft
+    } else if ( input === 'enter' ){
+      // selectCharacter
+    }
+  } // Controls only work when game isn't paused
+  else if ( this.charSelected === true && this.paused === false ) {
     if ( input === 'left' ) {
-      if ( this.x <= map.tileWidth/2 ) {
-        this.x = this.x + map.tileWidth *(map.numColumns-1);
+      if ( this.x <= map.tileWidth / 2 ) {
+        this.x = this.x + map.tileWidth * ( map.numColumns - 1 );
         return;
       }
       this.x = this.x - map.tileWidth;
@@ -258,13 +274,13 @@ Player.prototype.handleInput = function( input ) {
       }
       this.y = this.y - map.tileHeight;
     } else if ( input === 'right' ) {
-      if ( this.x >= map.tileWidth * (map.numColumns - 1)) {
-        this.x = this.x - map.tileWidth*(map.numColumns-1);
+      if ( this.x >= map.tileWidth * ( map.numColumns - 1 ) ) {
+        this.x = this.x - map.tileWidth * ( map.numColumns - 1 );
         return;
       }
       this.x = this.x + map.tileWidth;
     } else if ( input === 'down' ) {
-      if ( this.y >= map.totalHeight - map.tileHeight*3 ) {
+      if ( this.y >= map.totalHeight - map.tileHeight * 3 ) {
         return;
       }
       this.y = this.y + map.tileHeight;
@@ -284,15 +300,15 @@ Player.prototype.handleInput = function( input ) {
         // Change back to normal sprite
         this.sprite = 'images/char-boy.png';
         this.victory = false;
-        this.x = Math.floor(map.numColumns/2) * map.tileWidth;
-        this.y = 53 + (map.numRows - 2) * map.tileHeight;
+        this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
+        this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
         this.togglePause();
       } else if ( this.isDead === true ) {
         this.isDead = false;
         // Change back to normal sprite
         this.sprite = 'images/char-boy.png';
-        this.x = Math.floor(map.numColumns/2) * map.tileWidth;
-        this.y = 53 + (map.numRows - 2) * map.tileHeight;
+        this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
+        this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
         this.togglePause();
       }
     }
