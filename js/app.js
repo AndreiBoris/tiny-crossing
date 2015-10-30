@@ -162,6 +162,11 @@ Player.prototype.dead = function() {
   // affects what happens in Player.prototype.render
   this.paused = true;
   this.isDead = true;
+  this.knockback();
+};
+
+Player.prototype.knockback = function(){
+  this.sprite = 'images/char-boy-hurt.png';
 };
 
 Player.prototype.deadOverlay = function() {
@@ -224,6 +229,7 @@ Player.prototype.handleInput = function( input ) {
         this.togglePause();
       } else if ( this.isDead === true ){
         this.isDead = false;
+        this.sprite = 'images/char-boy.png';
         this.x = 300;
         this.y = 388;
         this.togglePause();
