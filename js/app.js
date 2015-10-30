@@ -76,6 +76,8 @@ var Player = function() {
   this.numEnemies = 0;
   this.paused = false;
   this.isDead = false;
+  this.victorySpot = 0;
+  this.movingUp = true;
 };
 
 // Detect collisions
@@ -92,6 +94,8 @@ Player.prototype.update = function( dt ) {
       ( this.y - 10 < currentSpots[ b ][ 1 ] && this.y + 10 > currentSpots[ b ][ 1 ] ) ) {
       this.dead();
     }
+  } if (this.victory === true){
+    this.victoryBounce(this.victorySpot, dt);
   }
 };
 
@@ -99,9 +103,9 @@ Player.prototype.render = function() {
   ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
   if ( this.victory === true ) {
     Player.prototype.victory();
-  } else if ( this.victory === false && this.paused === true && this.isDead === false){
+  } else if ( this.victory === false && this.paused === true && this.isDead === false ) {
     Player.prototype.pauseMessage();
-  } else if ( this.isDead === true ){
+  } else if ( this.isDead === true ) {
     Player.prototype.deadMessage();
     this.deadOverlay();
   }
@@ -168,14 +172,26 @@ Player.prototype.dead = function() {
 };
 
 Player.prototype.deadOverlay = function() {
-  var grd=ctx.createRadialGradient(this.x + 50, this.y + 100, 50, this.x + 50, this.y + 100, 105);
+  var grd = ctx.createRadialGradient( this.x + 50, this.y + 100, 50, this.x + 50, this.y + 100, 105 );
 
-  grd.addColorStop(0,'rgba(255, 0, 0, 0.4)');
-  grd.addColorStop(1,"rgba(255, 0, 0, 0)");
+  grd.addColorStop( 0, 'rgba(255, 0, 0, 0.4)' );
+  grd.addColorStop( 1, "rgba(255, 0, 0, 0)" );
 
-  ctx.arc(this.x, this.y + 50, 300, 0, 2*Math.PI);
+  ctx.arc( this.x, this.y + 50, 300, 0, 2 * Math.PI );
   ctx.fillStyle = grd;
   ctx.fill();
+};
+
+Player.prototype.victoryBounce = function(startingY, dt) {
+  var height = 20;
+  if (this.y > startingY - height && this.movingUp === true){
+    this.y = this.y - 115 * dt;
+  } else if (this.y < startingY){
+    this.movingUp = false;
+    this.y = this.y + 115 * dt;
+  } else {
+    this.movingUp = true;
+  }
 };
 
 Player.prototype.handleInput = function( input ) {
@@ -193,6 +209,7 @@ Player.prototype.handleInput = function( input ) {
         this.sprite = 'images/char-boy-happy.png';
         this.victory = true;
         this.togglePause();
+        this.victorySpot = this.y;
         return;
       }
       this.y = this.y - 83;
@@ -226,7 +243,7 @@ Player.prototype.handleInput = function( input ) {
         this.x = 300;
         this.y = 388;
         this.togglePause();
-      } else if ( this.isDead === true ){
+      } else if ( this.isDead === true ) {
         this.isDead = false;
         // Change back to normal sprite
         this.sprite = 'images/char-boy.png';
