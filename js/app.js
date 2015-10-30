@@ -95,6 +95,8 @@ Player.prototype.render = function() {
   ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
   if ( this.victory === true ) {
     Player.prototype.victory();
+  } else if ( this. victory === false && this.paused === true){
+    Player.prototype.pauseMessage();
   }
 };
 
@@ -104,11 +106,8 @@ Player.prototype.victory = function() {
 
 Player.prototype.victoryMessage = function() {
   ctx.font = '56px Impact';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'bottom';
   ctx.fillStyle = 'lime';
   ctx.strokeStyle = 'black';
-  ctx.lineWidth = 2;
 
   ctx.fillText( 'You win!', canvas.width / 2, canvas.height / 2 );
   ctx.strokeText( 'You win!', canvas.width / 2, canvas.height / 2 );
@@ -122,8 +121,10 @@ Player.prototype.victoryMessage = function() {
 
 Player.prototype.pauseMessage = function() {
   ctx.font = '40px Impact';
-  ctx.fillStyle = 'lime';
+  ctx.fillStyle = 'white';
   ctx.strokeStyle = 'black';
+  ctx.fillText( 'Press "p" to unpause', canvas.width / 2, canvas.height / 2 );
+  ctx.strokeText( 'Press "p" to unpause', canvas.width / 2, canvas.height / 2 );
 };
 
 Player.prototype.togglePause = function() {
