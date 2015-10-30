@@ -109,6 +109,7 @@ Player.prototype.render = function() {
 
 Player.prototype.victory = function() {
   Player.prototype.victoryMessage();
+  Player.prototype.playAgainMessage();
 };
 
 Player.prototype.victoryMessage = function() {
@@ -118,12 +119,15 @@ Player.prototype.victoryMessage = function() {
 
   ctx.fillText( 'You win!', canvas.width / 2, canvas.height / 2 );
   ctx.strokeText( 'You win!', canvas.width / 2, canvas.height / 2 );
+};
 
+Player.prototype.playAgainMessage = function() {
   ctx.font = '40px Impact';
   ctx.fillStyle = 'white';
+  ctx.strokeStyle = 'black';
 
-  ctx.fillText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
-  ctx.strokeText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
+  ctx.fillText( 'Press enter to play again', canvas.width / 2, canvas.height - 60 );
+  ctx.strokeText( 'Press enter to play again', canvas.width / 2, canvas.height - 60 );
 };
 
 Player.prototype.pauseMessage = function() {
@@ -135,11 +139,12 @@ Player.prototype.pauseMessage = function() {
 };
 
 Player.prototype.deadMessage = function() {
-  ctx.font = '40px Impact';
+  ctx.font = '56px Impact';
   ctx.fillStyle = 'black';
   ctx.strokeStyle = 'red';
-  ctx.fillText( 'You got hit!', canvas.width / 2, canvas.height / 2 );
-  ctx.strokeText( 'You got hit!', canvas.width / 2, canvas.height / 2 );
+  ctx.fillText( 'You got hit!', canvas.width / 2, canvas.height - 140 );
+  ctx.strokeText( 'You got hit!', canvas.width / 2, canvas.height - 140 );
+  Player.prototype.playAgainMessage();
 };
 
 Player.prototype.togglePause = function() {
