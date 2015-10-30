@@ -85,7 +85,8 @@ Enemy.prototype.pause = function() {
 // This class requires an update(), render() and
 // a handleInput() method.
 var Player = function() {
-  this.sprite = 'images/char-boy.png';
+  this.sprite = '';
+  this.charSelected = false;
   this.x = Math.floor(map.numColumns/2) * map.tileWidth;
   this.y = 53 + (map.numRows - 2) * map.tileHeight;
   this.victory = false;
@@ -94,6 +95,24 @@ var Player = function() {
   this.isDead = false;
   this.victorySpot = 0;
   this.movingUp = true;
+};
+
+Player.prototype.costumes = function (){
+  var options = ['images/char-boy.png',
+  'images/char-cat-girl.png',
+  'images/char-horn-girl.png',
+  'images/char-pink-girl.png',
+  'images/char-princess-girl.png'];
+  var length = options.length,
+  position = map.totalWidth/(length + 2);
+  ctx.fillStyle = 'white';
+  ctx.strokeStyle = 'black';
+  ctx.fillRect(position - 10, map.totalHeight/2, position * length, 200);
+  ctx.strokeRect(position - 10, map.totalHeight/2, position * length, 200);
+  for (var i=0;i<length;i++){
+    ctx.drawImage( Resources.get( options[i] ), position, map.totalHeight/2);
+    position = position + map.totalWidth/(length + 2);
+  }
 };
 
 // Detect collisions
@@ -118,7 +137,10 @@ Player.prototype.update = function( dt ) {
 };
 
 Player.prototype.render = function() {
+  Player.prototype.costumes();
+  if (this.charSelected === true) {
   ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
+  }
   if ( this.victory === true ) {
     Player.prototype.victory();
   } else if ( this.victory === false && this.paused === true && this.isDead === false ) {
