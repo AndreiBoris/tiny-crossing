@@ -104,7 +104,6 @@ Player.prototype.victory = function() {
   Player.prototype.enterFont();
   ctx.fillText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
   ctx.strokeText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
-
 };
 
 Player.prototype.victoryFont = function() {
@@ -121,6 +120,12 @@ Player.prototype.enterFont = function() {
   ctx.fillStyle = 'white';
 };
 
+Player.prototype.togglePause = function() {
+  for (var i = 0; i < this.numEnemies; i++){
+    allEnemies[i].togglePause();
+  }
+};
+
 Player.prototype.handleInput = function( input ) {
   if ( input === 'left' ) {
     if ( this.x <= 50 ) {
@@ -131,6 +136,7 @@ Player.prototype.handleInput = function( input ) {
   } else if ( input === 'up' ) {
     if ( this.y <= 80 ) {
       this.victory = true;
+      this.togglePause();
       return;
     }
     this.y = this.y - 83;
@@ -150,6 +156,7 @@ Player.prototype.handleInput = function( input ) {
       this.victory = false;
       this.x = 300;
       this.y = 388;
+      this.togglePause();
     }
 
   }
