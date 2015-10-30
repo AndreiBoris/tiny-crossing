@@ -89,8 +89,10 @@ Enemy.prototype.pause = function() {
 var Player = function() {
   this.sprite = '';
   this.charSelected = false;
-  this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
-  this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
+  this.selectX = 132;
+  this.selectY = 385;
+  this.x = 0;
+  this.y = 0;
   this.victory = false;
   this.numEnemies = 0;
   this.paused = false;
@@ -115,6 +117,8 @@ Player.prototype.costumes = function() {
   ctx.strokeText( 'Select a character', canvas.width / 2, canvas.height / 2 );
   ctx.fillRect( position - 10, map.totalHeight / 2, position * length, 200 );
   ctx.strokeRect( position - 10, map.totalHeight / 2, position * length, 200 );
+  ctx.strokeStyle = 'lime';
+  ctx.strokeRect(this.selectX, this.selectY, 100, 100);
   for ( var i = 0; i < length; i++ ) {
     ctx.drawImage( Resources.get( options[ i ] ), position, map.totalHeight / 2 );
     position = position + map.totalWidth / ( length + 2 );
@@ -145,6 +149,7 @@ Player.prototype.update = function( dt ) {
 
 Player.prototype.render = function() {
   this.costumes();
+  console.log(this.selectX);
   if ( this.charSelected === true ) {
     ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
   }
@@ -247,13 +252,16 @@ Player.prototype.victoryBounce = function( startingY, dt ) {
 
 Player.prototype.handleInput = function( input ) {
   // Character selection screen controls
-  if ( this.charSelected === true ) {
+  if ( this.charSelected === false ) {
     if ( input === 'left' ){
-      // goLeftOrSkipToRight
+      this.selectX = this.selectX - map.totalWidth / ( 7 );
     } else if ( input === 'right' ){
-      // goRightOrSkipToLeft
+      this.selectX = this.selectX + map.totalWidth / ( 7 );
     } else if ( input === 'enter' ){
       // selectCharacter
+      this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
+      this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
+      this.charSelected = true;
     }
   } // Controls only work when game isn't paused
   else if ( this.charSelected === true && this.paused === false ) {
