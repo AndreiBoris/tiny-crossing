@@ -54,7 +54,7 @@ Enemy.prototype.render = function() {
 };
 
 Enemy.prototype.togglePause = function() {
-  if (this.moving === 1){
+  if ( this.moving === 1 ) {
     this.moving = 0;
   } else {
     this.moving = 1;
@@ -121,42 +121,46 @@ Player.prototype.enterFont = function() {
 };
 
 Player.prototype.togglePause = function() {
-  for (var i = 0; i < this.numEnemies; i++){
-    allEnemies[i].togglePause();
+  for ( var i = 0; i < this.numEnemies; i++ ) {
+    allEnemies[ i ].togglePause();
   }
 };
 
 Player.prototype.handleInput = function( input ) {
-  if ( input === 'left' ) {
-    if ( this.x <= 50 ) {
-      this.x = this.x + 101 * 4;
-      return;
+  if ( this.victory === false ) {
+    if ( input === 'left' ) {
+      if ( this.x <= 50 ) {
+        this.x = this.x + 101 * 4;
+        return;
+      }
+      this.x = this.x - 101;
+    } else if ( input === 'up' ) {
+      if ( this.y <= 80 ) {
+        this.victory = true;
+        this.togglePause();
+        return;
+      }
+      this.y = this.y - 83;
+    } else if ( input === 'right' ) {
+      if ( this.x >= 400 ) {
+        this.x = this.x - 101 * 4;
+        return;
+      }
+      this.x = this.x + 101;
+    } else if ( input === 'down' ) {
+      if ( this.y >= 360 ) {
+        return;
+      }
+      this.y = this.y + 83;
     }
-    this.x = this.x - 101;
-  } else if ( input === 'up' ) {
-    if ( this.y <= 80 ) {
-      this.victory = true;
-      this.togglePause();
-      return;
-    }
-    this.y = this.y - 83;
-  } else if ( input === 'right' ) {
-    if ( this.x >= 400 ) {
-      this.x = this.x - 101 * 4;
-      return;
-    }
-    this.x = this.x + 101;
-  } else if ( input === 'down' ) {
-    if ( this.y >= 360 ) {
-      return;
-    }
-    this.y = this.y + 83;
-  } else if ( input === 'enter') {
-    if ( this.victory === true) {
-      this.victory = false;
-      this.x = 300;
-      this.y = 388;
-      this.togglePause();
+  } else {
+    if ( input === 'enter' ) {
+      if ( this.victory === true ) {
+        this.victory = false;
+        this.x = 300;
+        this.y = 388;
+        this.togglePause();
+      }
     }
 
   }
