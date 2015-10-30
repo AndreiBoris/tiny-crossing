@@ -9,6 +9,9 @@ var Enemy = function() {
   this.x = Enemy.prototype.startX();
   this.y = Enemy.prototype.startY();
   this.speed = Enemy.prototype.speed();
+  // If 1, the enemies are moving, if 0, they are not,
+  // see Enemy.prototype.togglePause()
+  this.moving = 1;
 };
 
 // Generate a start position for each enemy, slightly less than width of canvas
@@ -32,7 +35,7 @@ Enemy.prototype.update = function( dt ) {
   // You should multiply any movement by the dt parameter
   // which will ensure the game runs at the same speed for
   // all computers.
-  this.x = this.x + this.speed * dt;
+  this.x = this.x + this.speed * dt * this.moving;
   if ( this.x > 600 ) {
     this.x = -150;
     this.y = Enemy.prototype.startY();
@@ -50,6 +53,14 @@ Enemy.prototype.render = function() {
   ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
 };
 
+Enemy.prototype.togglePause = function() {
+  if (this.moving === 1){
+    this.moving = 0;
+  } else {
+    this.moving = 1;
+  }
+};
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -58,19 +69,19 @@ var Player = function() {
   this.x = 300;
   this.y = 388;
   this.victory = false;
+  this.numEnemies = 0;
 };
 
 // Detect collisions
 Player.prototype.update = function( dt ) {
   var currentSpots = [];
-  var length = allEnemies.length;
-  for ( var i = 0; i < length; i++ ) {
+  for ( var i = 0; i < this.numEnemies; i++ ) {
     var x = allEnemies[ i ].x;
     var y = allEnemies[ i ].y;
     currentSpots.push( [ x, y ] );
   }
-  length = currentSpots.length;
-  for ( var b = 0; b < length; b++ ) {
+  for ( var b = 0; b < this.numEnemies; b++ ) {
+    // Collision detected:
     if ( ( this.x - 50 < currentSpots[ b ][ 0 ] && this.x + 50 > currentSpots[ b ][ 0 ] ) &&
       ( this.y - 10 < currentSpots[ b ][ 1 ] && this.y + 10 > currentSpots[ b ][ 1 ] ) ) {
       this.x = 300;
@@ -93,6 +104,7 @@ Player.prototype.victory = function() {
   Player.prototype.enterFont();
   ctx.fillText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
   ctx.strokeText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
+
 };
 
 Player.prototype.victoryFont = function() {
@@ -157,6 +169,7 @@ var enemyCount = function( count ) {
 };
 
 enemyCount( 3 );
+player.numEnemies = allEnemies.length;
 
 
 // This listens for key presses and sends the keys to your
