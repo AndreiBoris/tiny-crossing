@@ -99,28 +99,31 @@ var Player = function() {
   this.isDead = false;
   this.victorySpot = 0;
   this.movingUp = true;
-};
-
-Player.prototype.costumes = function() {
-  var options = [ 'images/char-boy.png',
+  this.charOptions = [ 'images/char-boy.png',
     'images/char-cat-girl.png',
     'images/char-horn-girl.png',
     'images/char-pink-girl.png',
     'images/char-princess-girl.png'
   ];
-  var length = options.length,
+  this.selection = 0;
+};
+
+Player.prototype.costumes = function() {
+  var length = this.charOptions.length,
     position = map.totalWidth / ( length + 2 );
-  ctx.font = '40px Impact';
-  ctx.fillStyle = 'white';
-  ctx.strokeStyle = 'black';
-  ctx.fillText( 'Select a character', canvas.width / 2, canvas.height / 2 );
-  ctx.strokeText( 'Select a character', canvas.width / 2, canvas.height / 2 );
+  this.pauseMsgStyle();
+  ctx.fillText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
+  ctx.strokeText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
+  ctx.fillText( 'Press enter to choose', map.totalWidth / 2,
+  (map.totalHeight / 2) + 250 );
+  ctx.strokeText( 'Press enter to choose', map.totalWidth / 2,
+  (map.totalHeight / 2) + 250 );
   ctx.fillRect( position - 10, map.totalHeight / 2, position * length, 200 );
   ctx.strokeRect( position - 10, map.totalHeight / 2, position * length, 200 );
   ctx.strokeStyle = 'lime';
   ctx.strokeRect( this.selectX, this.selectY, 100, 100 );
   for ( var i = 0; i < length; i++ ) {
-    ctx.drawImage( Resources.get( options[ i ] ), position, map.totalHeight / 2 );
+    ctx.drawImage( Resources.get( this.charOptions[ i ] ), position, map.totalHeight / 2 );
     position = position + map.totalWidth / ( length + 2 );
   }
 };
@@ -186,10 +189,14 @@ Player.prototype.playAgainMessage = function() {
   ctx.strokeText( 'Press enter to play again', canvas.width / 2, canvas.height - 60 );
 };
 
-Player.prototype.pauseMessage = function() {
+Player.prototype.pauseMsgStyle = function() {
   ctx.font = '40px Impact';
   ctx.fillStyle = 'white';
   ctx.strokeStyle = 'black';
+};
+
+Player.prototype.pauseMessage = function() {
+  this.pauseMsgStyle();
   ctx.fillText( 'Press "p" to unpause', canvas.width / 2, canvas.height / 2 );
   ctx.strokeText( 'Press "p" to unpause', canvas.width / 2, canvas.height / 2 );
 };
