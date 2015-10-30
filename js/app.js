@@ -127,6 +127,7 @@ Player.prototype.togglePause = function() {
 };
 
 Player.prototype.handleInput = function( input ) {
+  // Controls only work when game isn't over
   if ( this.victory === false ) {
     if ( input === 'left' ) {
       if ( this.x <= 50 ) {
@@ -135,6 +136,7 @@ Player.prototype.handleInput = function( input ) {
       }
       this.x = this.x - 101;
     } else if ( input === 'up' ) {
+      // going to the top of the game field results in a victory
       if ( this.y <= 80 ) {
         this.victory = true;
         this.togglePause();
@@ -153,7 +155,9 @@ Player.prototype.handleInput = function( input ) {
       }
       this.y = this.y + 83;
     }
-  } else {
+  }
+  // When game is over, 'enter' can be used to reset it
+  else {
     if ( input === 'enter' ) {
       if ( this.victory === true ) {
         this.victory = false;
