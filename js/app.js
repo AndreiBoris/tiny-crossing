@@ -161,19 +161,15 @@ Player.prototype.dead = function() {
   }
   // affects what happens in Player.prototype.render
   this.paused = true;
+  // Allows us to reset game using enter button in the handleInput method
   this.isDead = true;
-  this.knockback();
-};
-
-Player.prototype.knockback = function(){
+  // Change to dead sprite
   this.sprite = 'images/char-boy-hurt.png';
 };
 
 Player.prototype.deadOverlay = function() {
   var grd=ctx.createRadialGradient(this.x + 50, this.y + 100, 50, this.x + 50, this.y + 100, 105);
 
-  //grd.addColorStop(1,'white');
-  //grd.addColorStop(0,"red");
   grd.addColorStop(0,'rgba(255, 0, 0, 0.4)');
   grd.addColorStop(1,"rgba(255, 0, 0, 0)");
 
@@ -194,6 +190,7 @@ Player.prototype.handleInput = function( input ) {
     } else if ( input === 'up' ) {
       // going to the top of the game field results in a victory
       if ( this.y <= 80 ) {
+        this.sprite = 'images/char-boy-happy.png';
         this.victory = true;
         this.togglePause();
         return;
@@ -223,12 +220,15 @@ Player.prototype.handleInput = function( input ) {
   else if ( this.victory === true || this.isDead === true ) {
     if ( input === 'enter' ) {
       if ( this.victory === true ) {
+        // Change back to normal sprite
+        this.sprite = 'images/char-boy.png';
         this.victory = false;
         this.x = 300;
         this.y = 388;
         this.togglePause();
       } else if ( this.isDead === true ){
         this.isDead = false;
+        // Change back to normal sprite
         this.sprite = 'images/char-boy.png';
         this.x = 300;
         this.y = 388;
