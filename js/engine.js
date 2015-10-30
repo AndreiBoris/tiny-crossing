@@ -25,8 +25,8 @@ var Engine = ( function( global ) {
     ctx = canvas.getContext( '2d' ),
     lastTime;
 
-  canvas.width = 505;
-  canvas.height = 606;
+  canvas.width = map.totalWidth;
+  canvas.height = map.totalHeight;
   doc.body.appendChild( canvas );
 
   // Consistent text options
@@ -137,7 +137,7 @@ var Engine = ( function( global ) {
          * so that we get the benefits of caching these images, since
          * we're using them over and over.
          */
-        ctx.drawImage( Resources.get( rowImages[ row ] ), col * 101, row * 83 );
+        ctx.drawImage( Resources.get( rowImages[ row ] ), col * map.tileWidth, row * map.tileHeight );
       }
     }
 

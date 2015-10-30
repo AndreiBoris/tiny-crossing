@@ -1,3 +1,10 @@
+var Map = function(){
+  this.tileWidth = 101;
+  this.tileHeight = 83;
+  this.totalWidth = 505;
+  this.totalHeight = 606;
+};
+
 // Enemies our player must avoid
 var Enemy = function() {
   // Variables applied to each of our instances go here,
@@ -14,10 +21,9 @@ var Enemy = function() {
   this.moving = 1;
 };
 
-// Generate a start position for each enemy, slightly less than width of canvas
-// which is 505.
+// Generate a start position for each enemy
 Enemy.prototype.startX = function() {
-  return Math.random() * 450;
+  return Math.random() * map.totalWidth * 0.5;
 };
 
 // Appropriate start position are at 56 + n83, where n == 0, 1, or 2.
@@ -25,7 +31,7 @@ Enemy.prototype.startX = function() {
 // http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
 Enemy.prototype.startY = function() {
   var options = [ 0, 1, 2 ];
-  var result = 56 + 83 * options[ Math.floor( Math.random() * options.length ) ];
+  var result = 56 + map.tileHeight * options[ Math.floor( Math.random() * options.length ) ];
   return result;
 };
 
@@ -36,8 +42,8 @@ Enemy.prototype.update = function( dt ) {
   // which will ensure the game runs at the same speed for
   // all computers.
   this.x = this.x + this.speed * dt * this.moving;
-  if ( this.x > 600 ) {
-    this.x = -150;
+  if ( this.x > map.totalWidth + 100 ) {
+    this.x = -100;
     this.y = Enemy.prototype.startY();
     this.speed = Enemy.prototype.speed();
   }
@@ -45,7 +51,7 @@ Enemy.prototype.update = function( dt ) {
 
 // Generate a random, appropriate speed for each bug
 Enemy.prototype.speed = function() {
-  return 100 + ( Math.random() * 200 );
+  return map.tileWidth + ( Math.random() * map.tileWidth * 2 );
 };
 
 // Draw the enemy on the screen, required method for game
@@ -53,6 +59,8 @@ Enemy.prototype.render = function() {
   ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
 };
 
+// Gets multiplied by the speed of each bug to determine whether an enemy is
+// moving or not.
 Enemy.prototype.togglePause = function() {
   if ( this.moving === 1 ) {
     this.moving = 0;
@@ -61,6 +69,8 @@ Enemy.prototype.togglePause = function() {
   }
 };
 
+// Used in certain conditions where a toggle is not appropriate (due to being
+// called within a loop)
 Enemy.prototype.pause = function() {
   this.moving = 0;
 };
@@ -70,8 +80,8 @@ Enemy.prototype.pause = function() {
 // a handleInput() method.
 var Player = function() {
   this.sprite = 'images/char-boy.png';
-  this.x = 300;
-  this.y = 388;
+  this.x = 2 * map.tileWidth;
+  this.y = 53 + 4 * map.tileHeight;
   this.victory = false;
   this.numEnemies = 0;
   this.paused = false;
@@ -90,8 +100,10 @@ Player.prototype.update = function( dt ) {
   }
   for ( var b = 0; b < this.numEnemies; b++ ) {
     // Collision detected:
-    if ( ( this.x - 50 < currentSpots[ b ][ 0 ] && this.x + 50 > currentSpots[ b ][ 0 ] ) &&
-      ( this.y - 10 < currentSpots[ b ][ 1 ] && this.y + 10 > currentSpots[ b ][ 1 ] ) ) {
+    if ( ( this.x - map.tileWidth/2 < currentSpots[ b ][ 0 ] &&
+      this.x + map.tileWidth/2 > currentSpots[ b ][ 0 ] ) &&
+      ( this.y - map.tileHeight/8 < currentSpots[ b ][ 1 ] &&
+        this.y + map.tileHeight/8 > currentSpots[ b ][ 1 ] ) ) {
       this.dead();
     }
   } if (this.victory === true){
@@ -172,23 +184,27 @@ Player.prototype.dead = function() {
 };
 
 Player.prototype.deadOverlay = function() {
-  var grd = ctx.createRadialGradient( this.x + 50, this.y + 100, 50, this.x + 50, this.y + 100, 105 );
+  var grd = ctx.createRadialGradient( this.x + map.tileWidth/2,
+    this.y + map.tileWidth, map.tileWidth/2, this.x + map.tileWidth/2,
+    this.y + map.tileWidth, map.tileWidth );
 
   grd.addColorStop( 0, 'rgba(255, 0, 0, 0.4)' );
   grd.addColorStop( 1, "rgba(255, 0, 0, 0)" );
 
-  ctx.arc( this.x, this.y + 50, 300, 0, 2 * Math.PI );
+  ctx.arc( this.x, this.y + map.tileWidth/2, map.tileWidth*3, 0, 2 * Math.PI );
   ctx.fillStyle = grd;
   ctx.fill();
 };
 
 Player.prototype.victoryBounce = function(startingY, dt) {
-  var height = 20;
+  var height = map.tileHeight/4;
   if (this.y > startingY - height && this.movingUp === true){
-    this.y = this.y - 115 * dt;
+    // map.tileWidth here is used as a basis for a time measurement to so that
+    // the game scales appropriately when bigger maps are used.
+    this.y = this.y - map.tileWidth * dt;
   } else if (this.y < startingY){
     this.movingUp = false;
-    this.y = this.y + 115 * dt;
+    this.y = this.y + map.tileWidth * dt;
   } else {
     this.movingUp = true;
   }
@@ -198,32 +214,32 @@ Player.prototype.handleInput = function( input ) {
   // Controls only work when game isn't paused
   if ( this.paused === false ) {
     if ( input === 'left' ) {
-      if ( this.x <= 50 ) {
-        this.x = this.x + 101 * 4;
+      if ( this.x <= map.tileWidth/2 ) {
+        this.x = this.x + map.tileWidth * 4;
         return;
       }
-      this.x = this.x - 101;
+      this.x = this.x - map.tileWidth;
     } else if ( input === 'up' ) {
       // going to the top of the game field results in a victory
-      if ( this.y <= 80 ) {
+      if ( this.y <= map.tileHeight ) {
         this.sprite = 'images/char-boy-happy.png';
         this.victory = true;
         this.togglePause();
         this.victorySpot = this.y;
         return;
       }
-      this.y = this.y - 83;
+      this.y = this.y - map.tileHeight;
     } else if ( input === 'right' ) {
-      if ( this.x >= 400 ) {
-        this.x = this.x - 101 * 4;
+      if ( this.x >= map.tileWidth*3.5 ) {
+        this.x = this.x - map.tileWidth*4;
         return;
       }
-      this.x = this.x + 101;
+      this.x = this.x + map.tileWidth;
     } else if ( input === 'down' ) {
-      if ( this.y >= 360 ) {
+      if ( this.y >= map.totalHeight - map.tileHeight*3 ) {
         return;
       }
-      this.y = this.y + 83;
+      this.y = this.y + map.tileHeight;
     } else if ( input === 'pause' ) {
       this.togglePause();
     }
@@ -240,19 +256,18 @@ Player.prototype.handleInput = function( input ) {
         // Change back to normal sprite
         this.sprite = 'images/char-boy.png';
         this.victory = false;
-        this.x = 300;
-        this.y = 388;
+        this.x = 2 * map.tileWidth;
+        this.y = 53 + 4 * map.tileHeight;
         this.togglePause();
       } else if ( this.isDead === true ) {
         this.isDead = false;
         // Change back to normal sprite
         this.sprite = 'images/char-boy.png';
-        this.x = 300;
-        this.y = 388;
+        this.x = 2 * map.tileWidth;
+        this.y = 53 + 4 * map.tileHeight;
         this.togglePause();
       }
     }
-
   }
 };
 
@@ -260,6 +275,7 @@ Player.prototype.handleInput = function( input ) {
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 var allEnemies = [];
+var map = new Map();
 var player = new Player();
 
 //Pick number of enemies
@@ -270,7 +286,7 @@ var enemyCount = function( count ) {
   player.numEnemies = count;
 };
 
-enemyCount( 3 );
+enemyCount( 5 );
 
 
 // This listens for key presses and sends the keys to your
