@@ -210,10 +210,15 @@ Player.prototype.handleInput = function( input ) {
       this.togglePause();
     }
   } // When game is over, 'enter' can be used to reset it
-  else if ( this.victory === true ) {
+  else if ( this.victory === true || this.isDead === true ) {
     if ( input === 'enter' ) {
       if ( this.victory === true ) {
         this.victory = false;
+        this.x = 300;
+        this.y = 388;
+        this.togglePause();
+      } else if ( this.isDead === true ){
+        this.isDead = false;
         this.x = 300;
         this.y = 388;
         this.togglePause();
