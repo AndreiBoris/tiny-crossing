@@ -99,27 +99,27 @@ Player.prototype.render = function() {
 };
 
 Player.prototype.victory = function() {
-  Player.prototype.victoryFont();
-  ctx.fillText( 'You win!', canvas.width / 2, canvas.height / 2 );
-  ctx.strokeText( 'You win!', canvas.width / 2, canvas.height / 2 );
-  Player.prototype.enterFont();
-  ctx.fillText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
-  ctx.strokeText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
+  Player.prototype.victoryMessage();
 };
 
-Player.prototype.victoryFont = function() {
+Player.prototype.victoryMessage = function() {
   ctx.font = '56px Impact';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'bottom';
   ctx.fillStyle = 'lime';
   ctx.strokeStyle = 'black';
   ctx.lineWidth = 2;
-};
 
-Player.prototype.enterFont = function() {
+  ctx.fillText( 'You win!', canvas.width / 2, canvas.height / 2 );
+  ctx.strokeText( 'You win!', canvas.width / 2, canvas.height / 2 );
+
   ctx.font = '40px Impact';
   ctx.fillStyle = 'white';
+
+  ctx.fillText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
+  ctx.strokeText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
 };
+
 
 Player.prototype.togglePause = function() {
   for ( var i = 0; i < this.numEnemies; i++ ) {
@@ -161,12 +161,11 @@ Player.prototype.handleInput = function( input ) {
     }
   }
   // When game is over, 'enter' can be used to reset it
-  else if ( this.paused === true && this.victory === false) {
-    if ( input === 'pause') {
+  else if ( this.paused === true && this.victory === false ) {
+    if ( input === 'pause' ) {
       this.togglePause();
     }
-  }
-  else if ( this.victory === true) {
+  } else if ( this.victory === true ) {
     if ( input === 'enter' ) {
       if ( this.victory === true ) {
         this.victory = false;
