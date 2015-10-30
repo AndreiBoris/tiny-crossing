@@ -135,7 +135,7 @@ Player.prototype.togglePause = function() {
 };
 
 Player.prototype.handleInput = function( input ) {
-  // Controls only work when game isn't over
+  // Controls only work when game isn't paused
   if ( this.paused === false ) {
     if ( input === 'left' ) {
       if ( this.x <= 50 ) {
@@ -166,12 +166,13 @@ Player.prototype.handleInput = function( input ) {
       this.togglePause();
     }
   }
-  // When game is over, 'enter' can be used to reset it
+  // If the game isn't over but is paused, only the unpause will work
   else if ( this.paused === true && this.victory === false ) {
     if ( input === 'pause' ) {
       this.togglePause();
     }
-  } else if ( this.victory === true ) {
+  } // When game is over, 'enter' can be used to reset it
+  else if ( this.victory === true ) {
     if ( input === 'enter' ) {
       if ( this.victory === true ) {
         this.victory = false;
