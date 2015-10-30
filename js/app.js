@@ -1,8 +1,14 @@
 var Map = function(){
-  this.tileWidth = 101;
-  this.tileHeight = 83;
-  this.totalWidth = 505;
-  this.totalHeight = 606;
+  var tileHeight = 83,
+  tileWidth = tileHeight * 1.21687,
+  numColumns = 9,
+  numRows = 6;
+  this.tileWidth = tileWidth;
+  this.tileHeight = tileHeight;
+  this.totalWidth = tileWidth * numColumns;
+  this.totalHeight = tileHeight * (numRows + 1);
+  this.numColumns = numColumns;
+  this.numRows = numRows;
 };
 
 // Enemies our player must avoid
@@ -80,8 +86,8 @@ Enemy.prototype.pause = function() {
 // a handleInput() method.
 var Player = function() {
   this.sprite = 'images/char-boy.png';
-  this.x = 2 * map.tileWidth;
-  this.y = 53 + 4 * map.tileHeight;
+  this.x = Math.floor(map.numColumns/2) * map.tileWidth;
+  this.y = 53 + (map.numRows - 2) * map.tileHeight;
   this.victory = false;
   this.numEnemies = 0;
   this.paused = false;
@@ -215,7 +221,7 @@ Player.prototype.handleInput = function( input ) {
   if ( this.paused === false ) {
     if ( input === 'left' ) {
       if ( this.x <= map.tileWidth/2 ) {
-        this.x = this.x + map.tileWidth * 4;
+        this.x = this.x + map.tileWidth *(map.numColumns-1);
         return;
       }
       this.x = this.x - map.tileWidth;
@@ -230,8 +236,8 @@ Player.prototype.handleInput = function( input ) {
       }
       this.y = this.y - map.tileHeight;
     } else if ( input === 'right' ) {
-      if ( this.x >= map.tileWidth*3.5 ) {
-        this.x = this.x - map.tileWidth*4;
+      if ( this.x >= map.tileWidth * (map.numColumns - 1)) {
+        this.x = this.x - map.tileWidth*(map.numColumns-1);
         return;
       }
       this.x = this.x + map.tileWidth;
@@ -286,7 +292,7 @@ var enemyCount = function( count ) {
   player.numEnemies = count;
 };
 
-enemyCount( 5 );
+enemyCount( 15 );
 
 
 // This listens for key presses and sends the keys to your
