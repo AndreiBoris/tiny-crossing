@@ -29,6 +29,10 @@ var Engine = ( function( global ) {
   canvas.height = 606;
   doc.body.appendChild( canvas );
 
+  // Consistent text options
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.lineWidth = 2;
 
   /* This function serves as the kickoff point for the game loop itself
    * and handles properly calling the update and render methods.

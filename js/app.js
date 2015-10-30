@@ -120,6 +120,11 @@ Player.prototype.victoryMessage = function() {
   ctx.strokeText( 'Press enter to play again', canvas.width / 2, canvas.height / 2 + 50 );
 };
 
+Player.prototype.pauseMessage = function() {
+  ctx.font = '40px Impact';
+  ctx.fillStyle = 'lime';
+  ctx.strokeStyle = 'black';
+};
 
 Player.prototype.togglePause = function() {
   for ( var i = 0; i < this.numEnemies; i++ ) {
