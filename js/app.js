@@ -160,8 +160,16 @@ Player.prototype.dead = function() {
 };
 
 Player.prototype.deadOverlay = function() {
-  ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
-  ctx.fillRect(this.x, this.y + 50, 100, 100);
+  var grd=ctx.createRadialGradient(this.x + 50, this.y + 100, 50, this.x + 50, this.y + 100, 105);
+
+  //grd.addColorStop(1,'white');
+  //grd.addColorStop(0,"red");
+  grd.addColorStop(0,'rgba(255, 0, 0, 0.4)');
+  grd.addColorStop(1,"rgba(255, 0, 0, 0)");
+
+  ctx.arc(this.x, this.y + 50, 300, 0, 2*Math.PI);
+  ctx.fillStyle = grd;
+  ctx.fill();
 };
 
 Player.prototype.handleInput = function( input ) {
