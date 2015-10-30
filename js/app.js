@@ -205,7 +205,7 @@ Player.prototype.handleInput = function( input ) {
     }
   }
   // If the game isn't over but is paused, only the unpause will work
-  else if ( this.paused === true && this.victory === false ) {
+  else if ( this.paused === true && this.victory === false && this.isDead === false ) {
     if ( input === 'pause' ) {
       this.togglePause();
     }
