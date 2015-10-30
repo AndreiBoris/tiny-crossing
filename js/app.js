@@ -103,6 +103,7 @@ Player.prototype.render = function() {
     Player.prototype.pauseMessage();
   } else if ( this.isDead === true ){
     Player.prototype.deadMessage();
+    this.deadOverlay();
   }
 };
 
@@ -156,6 +157,11 @@ Player.prototype.dead = function() {
   // affects what happens in Player.prototype.render
   this.paused = true;
   this.isDead = true;
+};
+
+Player.prototype.deadOverlay = function() {
+  ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+  ctx.fillRect(this.x, this.y + 50, 100, 100);
 };
 
 Player.prototype.handleInput = function( input ) {
