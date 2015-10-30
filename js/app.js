@@ -61,6 +61,10 @@ Enemy.prototype.togglePause = function() {
   }
 };
 
+Enemy.prototype.pause = function() {
+  this.moving = 0;
+};
+
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
@@ -85,8 +89,7 @@ Player.prototype.update = function( dt ) {
     // Collision detected:
     if ( ( this.x - 50 < currentSpots[ b ][ 0 ] && this.x + 50 > currentSpots[ b ][ 0 ] ) &&
       ( this.y - 10 < currentSpots[ b ][ 1 ] && this.y + 10 > currentSpots[ b ][ 1 ] ) ) {
-      this.x = 300;
-      this.y = 388;
+      this.dead();
     }
   }
 };
@@ -95,7 +98,7 @@ Player.prototype.render = function() {
   ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
   if ( this.victory === true ) {
     Player.prototype.victory();
-  } else if ( this. victory === false && this.paused === true){
+  } else if ( this.victory === false && this.paused === true){
     Player.prototype.pauseMessage();
   }
 };
@@ -131,7 +134,16 @@ Player.prototype.togglePause = function() {
   for ( var i = 0; i < this.numEnemies; i++ ) {
     allEnemies[ i ].togglePause();
   }
+  // affects what happens in Player.prototype.render
   this.paused = !this.paused;
+};
+
+Player.prototype.dead = function() {
+  for ( var i = 0; i < this.numEnemies; i++ ) {
+    allEnemies[ i ].pause();
+  }
+  // affects what happens in Player.prototype.render
+  this.paused = true;
 };
 
 Player.prototype.handleInput = function( input ) {
