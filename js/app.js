@@ -75,6 +75,7 @@ var Player = function() {
   this.victory = false;
   this.numEnemies = 0;
   this.paused = false;
+  this.isDead = false;
 };
 
 // Detect collisions
@@ -98,8 +99,10 @@ Player.prototype.render = function() {
   ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
   if ( this.victory === true ) {
     Player.prototype.victory();
-  } else if ( this.victory === false && this.paused === true){
+  } else if ( this.victory === false && this.paused === true && this.isDead === false){
     Player.prototype.pauseMessage();
+  } else if ( this.isDead === true ){
+    Player.prototype.deadMessage();
   }
 };
 
@@ -130,6 +133,14 @@ Player.prototype.pauseMessage = function() {
   ctx.strokeText( 'Press "p" to unpause', canvas.width / 2, canvas.height / 2 );
 };
 
+Player.prototype.deadMessage = function() {
+  ctx.font = '40px Impact';
+  ctx.fillStyle = 'black';
+  ctx.strokeStyle = 'red';
+  ctx.fillText( 'You got hit!', canvas.width / 2, canvas.height / 2 );
+  ctx.strokeText( 'You got hit!', canvas.width / 2, canvas.height / 2 );
+};
+
 Player.prototype.togglePause = function() {
   for ( var i = 0; i < this.numEnemies; i++ ) {
     allEnemies[ i ].togglePause();
@@ -144,6 +155,7 @@ Player.prototype.dead = function() {
   }
   // affects what happens in Player.prototype.render
   this.paused = true;
+  this.isDead = true;
 };
 
 Player.prototype.handleInput = function( input ) {
@@ -208,10 +220,10 @@ var enemyCount = function( count ) {
   for ( var i = 0; i < count; i++ ) {
     allEnemies.push( new Enemy() );
   }
+  player.numEnemies = count;
 };
 
 enemyCount( 3 );
-player.numEnemies = allEnemies.length;
 
 
 // This listens for key presses and sends the keys to your
