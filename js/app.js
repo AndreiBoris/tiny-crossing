@@ -70,6 +70,7 @@ var Player = function() {
   this.y = 388;
   this.victory = false;
   this.numEnemies = 0;
+  this.paused = false;
 };
 
 // Detect collisions
@@ -124,11 +125,12 @@ Player.prototype.togglePause = function() {
   for ( var i = 0; i < this.numEnemies; i++ ) {
     allEnemies[ i ].togglePause();
   }
+  this.paused = !this.paused;
 };
 
 Player.prototype.handleInput = function( input ) {
   // Controls only work when game isn't over
-  if ( this.victory === false ) {
+  if ( this.paused === false ) {
     if ( input === 'left' ) {
       if ( this.x <= 50 ) {
         this.x = this.x + 101 * 4;
@@ -154,10 +156,17 @@ Player.prototype.handleInput = function( input ) {
         return;
       }
       this.y = this.y + 83;
+    } else if ( input === 'pause' ) {
+      this.togglePause();
     }
   }
   // When game is over, 'enter' can be used to reset it
-  else {
+  else if ( this.paused === true && this.victory === false) {
+    if ( input === 'pause') {
+      this.togglePause();
+    }
+  }
+  else if ( this.victory === true) {
     if ( input === 'enter' ) {
       if ( this.victory === true ) {
         this.victory = false;
@@ -195,7 +204,8 @@ document.addEventListener( 'keyup', function( e ) {
     38: 'up',
     39: 'right',
     40: 'down',
-    13: 'enter'
+    13: 'enter',
+    80: 'pause'
   };
 
   player.handleInput( allowedKeys[ e.keyCode ] );
