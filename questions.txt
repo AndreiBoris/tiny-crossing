@@ -1,0 +1,4 @@
+Q. Why does Resource.load work in engine.js? load is defined in the anonymous
+self-invoking function. What makes it return access and make load() public?
+
+A. they are given over to window.load at the end of the self-invoking function

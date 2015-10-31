@@ -29,7 +29,7 @@ var Engine = ( function( global ) {
   canvas.height = map.totalHeight;
   doc.body.appendChild( canvas );
 
-  // Consistent text options
+  // These text options are used in all messages in the game
   ctx.textAlign = 'center';
   ctx.textBaseline = 'bottom';
   ctx.lineWidth = 2;
@@ -45,7 +45,7 @@ var Engine = ( function( global ) {
      * computer is) - hurray time!
      */
     var now = Date.now(),
-      dt = ( now - lastTime ) / 1000.0;
+    dt = ( now - lastTime ) / 1000.0;
 
     /* Call our update/render functions, pass along the time delta to
      * our update function since it may be used for smooth animation.
@@ -69,6 +69,7 @@ var Engine = ( function( global ) {
    * game loop.
    */
   function init() {
+    // reset is not currently used at all
     reset();
     lastTime = Date.now();
     main();
@@ -85,7 +86,6 @@ var Engine = ( function( global ) {
    */
   function update( dt ) {
     updateEntities( dt );
-    // checkCollisions();
   }
 
   /* This is called by the update function  and loops through all of the
