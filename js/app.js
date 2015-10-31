@@ -1,6 +1,6 @@
 var Map = function() {
   var tileHeight = 83,
-    tileWidth = tileHeight * 1.21687,
+    tileWidth = 101,
     numColumns = 9,
     numRows = 7;
   this.tileWidth = tileWidth;
@@ -9,6 +9,35 @@ var Map = function() {
   this.totalHeight = tileHeight * ( numRows + 1 );
   this.numColumns = numColumns;
   this.numRows = numRows;
+  this.xValues = {
+    'A' : 0,
+    'B' : tileWidth,
+    'C' : tileWidth*2,
+    'D' : tileWidth*3,
+    'E' : tileWidth*4,
+    'F' : tileWidth*5,
+    'G' : tileWidth*6,
+    'H' : tileWidth*7,
+    'I' : tileWidth*8
+  };
+  this.yValues = {
+    '0' : 50,
+    '1' : 50 + tileHeight,
+    '2' : 50 + tileHeight*2,
+    '3' : 50 + tileHeight*3,
+    '4' : 50 + tileHeight*4,
+    '5' : 50 + tileHeight*5,
+  };
+};
+
+Map.prototype.giveCoordinates = function(coordinate){
+  var xCoordinate = this.xValues[coordinate[0]];
+  var yCoordinate = this.yValues[coordinate[1]];
+  return [xCoordinate, yCoordinate];
+};
+
+Map.prototype.revealCoordinates = function(xValue, yYalue){
+
 };
 
 // Enemies our player must avoid
@@ -165,7 +194,6 @@ Player.prototype.render = function() {
   if ( this.charSelected === false ) {
     this.costumes();
   }
-  console.log( this.selectX );
   if ( this.charSelected === true ) {
     ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
   }
@@ -293,8 +321,11 @@ Player.prototype.handleInput = function( input ) {
       }
     } else if ( input === 'enter' ) {
       this.sprite = this.charOptions[ this.selection ];
-      this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
-      this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
+      var startCoordinates = map.giveCoordinates("E5");
+      var startX = startCoordinates[0];
+      var startY = startCoordinates[1];
+      this.x = startX;
+      this.y = startY;
       this.charSelected = true;
     }
   } // Controls only work when game isn't paused
