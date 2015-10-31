@@ -10,33 +10,33 @@ var Map = function() {
   this.numColumns = numColumns;
   this.numRows = numRows;
   this.xValues = {
-    'A' : 0,
-    'B' : tileWidth,
-    'C' : tileWidth*2,
-    'D' : tileWidth*3,
-    'E' : tileWidth*4,
-    'F' : tileWidth*5,
-    'G' : tileWidth*6,
-    'H' : tileWidth*7,
-    'I' : tileWidth*8
+    '0': 0,
+    '1': tileWidth,
+    '2': tileWidth * 2,
+    '3': tileWidth * 3,
+    '4': tileWidth * 4,
+    '5': tileWidth * 5,
+    '6': tileWidth * 6,
+    '7': tileWidth * 7,
+    '8': tileWidth * 8
   };
   this.yValues = {
-    '0' : 50,
-    '1' : 50 + tileHeight,
-    '2' : 50 + tileHeight*2,
-    '3' : 50 + tileHeight*3,
-    '4' : 50 + tileHeight*4,
-    '5' : 50 + tileHeight*5,
+    '0': 50,
+    '1': 50 + tileHeight,
+    '2': 50 + tileHeight * 2,
+    '3': 50 + tileHeight * 3,
+    '4': 50 + tileHeight * 4,
+    '5': 50 + tileHeight * 5,
   };
 };
 
-Map.prototype.giveCoordinates = function(coordinate){
-  var xCoordinate = this.xValues[coordinate[0]];
-  var yCoordinate = this.yValues[coordinate[1]];
-  return [xCoordinate, yCoordinate];
+Map.prototype.giveCoordinates = function( coordinate ) {
+  var xCoordinate = this.xValues[ coordinate[ 0 ] ];
+  var yCoordinate = this.yValues[ coordinate[ 1 ] ];
+  return [ xCoordinate, yCoordinate ];
 };
 
-Map.prototype.revealCoordinates = function(xValue, yYalue){
+Map.prototype.revealCoordinates = function( xValue, yYalue ) {
 
 };
 
@@ -123,7 +123,9 @@ var Player = function() {
   this.selectY = 385;
   this.x = 0;
   this.y = 0;
-  this.coordinate = "E5";
+  this.xCoord = 4;
+  this.yCoord = 5;
+  this.coordinate = '45';
   this.victory = false;
   this.numEnemies = 0;
   this.paused = false;
@@ -191,10 +193,23 @@ Player.prototype.update = function( dt ) {
   }
 };
 
-Player.prototype.move = function(coordinate){
-  var coordArray = map.giveCoordinates(coordinate);
-  this.x = coordArray[0];
-  this.y = coordArray[1];
+Player.prototype.updateCoordinate = function() {
+  var xCoord = this.xCoord.toString();
+  var yCoord = this.yCoord.toString();
+  this.coordinate = xCoord + yCoord;
+};
+
+Player.prototype.move = function() {
+  this.updateCoordinate();
+  var coordArray = map.giveCoordinates( this.coordinate );
+  this.x = coordArray[ 0 ];
+  this.y = coordArray[ 1 ];
+};
+
+Player.prototype.resetStart = function() {
+  this.xCoord = 4;
+  this.yCoord = 5;
+  this.move();
 };
 
 Player.prototype.render = function() {
@@ -275,7 +290,7 @@ Player.prototype.dead = function() {
   // Allows us to reset game using enter button in the handleInput method
   this.isDead = true;
   // Change to dead sprite
-  this.sprite = this.charHurt[this.selection];
+  this.sprite = this.charHurt[ this.selection ];
 };
 
 Player.prototype.deadOverlay = function() {
@@ -328,43 +343,46 @@ Player.prototype.handleInput = function( input ) {
       }
     } else if ( input === 'enter' ) {
       this.sprite = this.charOptions[ this.selection ];
-      this.move(this.coordinate);
+      this.resetStart();
       this.charSelected = true;
     }
   } // Controls only work when game isn't paused
   else if ( this.charSelected === true && this.paused === false ) {
     if ( input === 'left' ) {
-      if ( this.x <= map.tileWidth / 2 ) {
-        this.x = this.x + map.tileWidth * ( map.numColumns - 1 );
-        return;
+      if ( this.xCoord === 0 ) {
+        this.xCoord = 8;
+      } else {
+        this.xCoord--;
       }
-      this.x = this.x - map.tileWidth;
     } else if ( input === 'up' ) {
       // going to the top of the game field results in a victory
-      if ( this.y <= map.tileHeight ) {
+      if ( this.yCoord === 0 ) {
         this.sprite = this.charHappy[ this.selection ];
         this.victory = true;
         this.togglePause();
         this.victorySpot = this.y;
-        return;
+      } else {
+        this.yCoord--;
       }
-      this.y = this.y - map.tileHeight;
     } else if ( input === 'right' ) {
-      if ( this.x >= map.tileWidth * ( map.numColumns - 1 ) ) {
-        this.x = this.x - map.tileWidth * ( map.numColumns - 1 );
-        return;
+      if ( this.xCoord === 8 ) {
+        this.xCoord = 0;
+      } else {
+        this.xCoord++;
       }
-      this.x = this.x + map.tileWidth;
     } else if ( input === 'down' ) {
-      if ( this.y >= map.totalHeight - map.tileHeight * 3 ) {
+      if ( this.yCoord === 5 ) {
         return;
+      } else {
+      this.yCoord++;
       }
-      this.y = this.y + map.tileHeight;
     } else if ( input === 'pause' ) {
       this.togglePause();
     }
+    // Handles the move for all the possible changes in the if statements above
+    this.move();
   }
-  // If the game isn't over but is paused, only the unpause will work
+  // If the game isn't over but is paused, only the unpause button will work
   else if ( this.paused === true && this.victory === false && this.isDead === false ) {
     if ( input === 'pause' ) {
       this.togglePause();
@@ -376,15 +394,13 @@ Player.prototype.handleInput = function( input ) {
         // Change back to normal sprite
         this.sprite = this.charOptions[ this.selection ];
         this.victory = false;
-        this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
-        this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
+        this.resetStart();
         this.togglePause();
       } else if ( this.isDead === true ) {
         this.isDead = false;
         // Change back to normal sprite
         this.sprite = this.charOptions[ this.selection ];
-        this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
-        this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
+        this.resetStart();
         this.togglePause();
       }
     }
