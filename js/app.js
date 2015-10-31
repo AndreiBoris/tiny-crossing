@@ -48,9 +48,10 @@ var Enemy = function() {
   // The image/sprite for our enemies, this uses
   // a helper we've provided to easily load images
   this.sprite = 'images/enemy-bug.png';
-  this.x = Enemy.prototype.startX();
-  this.y = Enemy.prototype.startY();
-  this.speed = Enemy.prototype.speed();
+  this.x = this.startX();
+  this.y = this.startY();
+  this.row = 0;
+  this.speed = this.newSpeed();
   // If 1, the enemies are moving, if 0, they are not,
   // see Enemy.prototype.togglePause()
   this.moving = 1;
@@ -62,12 +63,17 @@ Enemy.prototype.startX = function() {
 };
 
 // Appropriate start position are at 56 + n83, where n == 0, 1, or 2.
+Enemy.prototype.startY = function() {
+  this.newRow();
+  var result = map.yValues[ this.row ];
+  return result;
+};
+
 // Random value from array courtesy of:
 // http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
-Enemy.prototype.startY = function() {
+Enemy.prototype.newRow = function() {
   var options = [ 0, 1, 2, 3, 4 ];
-  var result = 56 + map.tileHeight * options[ Math.floor( Math.random() * options.length ) ];
-  return result;
+  this.row = options[ Math.floor( Math.random() * options.length ) ];
 };
 
 // Update the enemy's position, required method for game
@@ -79,14 +85,14 @@ Enemy.prototype.update = function( dt ) {
   this.x = this.x + this.speed * dt * this.moving;
   if ( this.x > map.totalWidth + 100 ) {
     this.x = -100;
-    this.y = Enemy.prototype.startY();
+    this.y = this.startY();
     // Change speed of the enemy for the next loop
-    this.speed = Enemy.prototype.speed();
+    this.speed = this.newSpeed();
   }
 };
 
 // Generate a random, appropriate speed for each enemy
-Enemy.prototype.speed = function() {
+Enemy.prototype.newSpeed = function() {
   return map.tileWidth + ( Math.random() * map.tileWidth * 2 );
 };
 
@@ -374,7 +380,7 @@ Player.prototype.handleInput = function( input ) {
       if ( this.yCoord === 5 ) {
         return;
       } else {
-      this.yCoord++;
+        this.yCoord++;
       }
     } else if ( input === 'pause' ) {
       this.togglePause();
@@ -422,7 +428,7 @@ var enemyCount = function( count ) {
   player.numEnemies = count;
 };
 
-enemyCount( 10 );
+enemyCount( 1 );
 
 
 // This listens for key presses and sends the keys to your
