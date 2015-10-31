@@ -123,6 +123,7 @@ var Player = function() {
   this.selectY = 385;
   this.x = 0;
   this.y = 0;
+  this.coordinate = "E5";
   this.victory = false;
   this.numEnemies = 0;
   this.paused = false;
@@ -188,6 +189,12 @@ Player.prototype.update = function( dt ) {
   if ( this.victory === true ) {
     this.victoryBounce( this.victorySpot, dt );
   }
+};
+
+Player.prototype.move = function(coordinate){
+  var coordArray = map.giveCoordinates(coordinate);
+  this.x = coordArray[0];
+  this.y = coordArray[1];
 };
 
 Player.prototype.render = function() {
@@ -321,11 +328,7 @@ Player.prototype.handleInput = function( input ) {
       }
     } else if ( input === 'enter' ) {
       this.sprite = this.charOptions[ this.selection ];
-      var startCoordinates = map.giveCoordinates("E5");
-      var startX = startCoordinates[0];
-      var startY = startCoordinates[1];
-      this.x = startX;
-      this.y = startY;
+      this.move(this.coordinate);
       this.charSelected = true;
     }
   } // Controls only work when game isn't paused

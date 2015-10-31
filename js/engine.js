@@ -202,5 +202,4 @@ var Engine = ( function( global ) {
    */
   global.ctx = ctx;
   global.canvas = canvas;
-  console.log(map.giveCoordinates("E6"));
 } )( this );
