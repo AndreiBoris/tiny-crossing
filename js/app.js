@@ -107,10 +107,17 @@ var Player = function() {
     'images/char-princess-girl.png'
   ];
   this.charHappy = [ 'images/char-boy-happy.png',
-  'images/char-cat-girl-happy.png',
-  'images/char-horn-girl-happy.png',
-  'images/char-pink-girl-happy.png',
-  'images/char-princess-girl-happy.png'];
+    'images/char-cat-girl-happy.png',
+    'images/char-horn-girl-happy.png',
+    'images/char-pink-girl-happy.png',
+    'images/char-princess-girl-happy.png'
+  ];
+  this.charHurt = [ 'images/char-boy-hurt.png',
+    'images/char-cat-girl-hurt.png',
+    'images/char-horn-girl-hurt.png',
+    'images/char-pink-girl-hurt.png',
+    'images/char-princess-girl-hurt.png',
+  ];
   this.selection = 0;
 };
 
@@ -233,7 +240,7 @@ Player.prototype.dead = function() {
   // Allows us to reset game using enter button in the handleInput method
   this.isDead = true;
   // Change to dead sprite
-  this.sprite = 'images/char-boy-hurt.png';
+  this.sprite = this.charHurt[this.selection];
 };
 
 Player.prototype.deadOverlay = function() {
@@ -301,7 +308,7 @@ Player.prototype.handleInput = function( input ) {
     } else if ( input === 'up' ) {
       // going to the top of the game field results in a victory
       if ( this.y <= map.tileHeight ) {
-        this.sprite = this.charHappy[this.selection];
+        this.sprite = this.charHappy[ this.selection ];
         this.victory = true;
         this.togglePause();
         this.victorySpot = this.y;
@@ -333,7 +340,7 @@ Player.prototype.handleInput = function( input ) {
     if ( input === 'enter' ) {
       if ( this.victory === true ) {
         // Change back to normal sprite
-        this.sprite = this.charOptions[this.selection];
+        this.sprite = this.charOptions[ this.selection ];
         this.victory = false;
         this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
         this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
@@ -341,7 +348,7 @@ Player.prototype.handleInput = function( input ) {
       } else if ( this.isDead === true ) {
         this.isDead = false;
         // Change back to normal sprite
-        this.sprite = this.charOptions[this.selection];
+        this.sprite = this.charOptions[ this.selection ];
         this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
         this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
         this.togglePause();
