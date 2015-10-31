@@ -182,15 +182,14 @@ Player.prototype.update = function( dt ) {
   var currentSpots = [];
   for ( var i = 0; i < this.numEnemies; i++ ) {
     var x = allEnemies[ i ].x;
-    var y = allEnemies[ i ].y;
-    currentSpots.push( [ x, y ] );
+    var row = allEnemies[ i ].row;
+    currentSpots.push( [ x, row ] );
   }
   for ( var b = 0; b < this.numEnemies; b++ ) {
     // Collision detected:
     if ( ( this.x - map.tileWidth / 2 < currentSpots[ b ][ 0 ] &&
         this.x + map.tileWidth / 2 > currentSpots[ b ][ 0 ] ) &&
-      ( this.y - map.tileHeight / 8 < currentSpots[ b ][ 1 ] &&
-        this.y + map.tileHeight / 8 > currentSpots[ b ][ 1 ] ) ) {
+      ( this.yCoord === currentSpots[b][1])) {
       this.dead();
     }
   }
@@ -428,7 +427,7 @@ var enemyCount = function( count ) {
   player.numEnemies = count;
 };
 
-enemyCount( 1 );
+enemyCount( 3 );
 
 
 // This listens for key presses and sends the keys to your
