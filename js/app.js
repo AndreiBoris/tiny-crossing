@@ -106,6 +106,11 @@ var Player = function() {
     'images/char-pink-girl.png',
     'images/char-princess-girl.png'
   ];
+  this.charHappy = [ 'images/char-boy-happy.png',
+  'images/char-cat-girl-happy.png',
+  'images/char-horn-girl-happy.png',
+  'images/char-pink-girl-happy.png',
+  'images/char-princess-girl-happy.png'];
   this.selection = 0;
 };
 
@@ -296,7 +301,7 @@ Player.prototype.handleInput = function( input ) {
     } else if ( input === 'up' ) {
       // going to the top of the game field results in a victory
       if ( this.y <= map.tileHeight ) {
-        this.sprite = 'images/char-boy-happy.png';
+        this.sprite = this.charHappy[this.selection];
         this.victory = true;
         this.togglePause();
         this.victorySpot = this.y;
@@ -360,7 +365,7 @@ var enemyCount = function( count ) {
   player.numEnemies = count;
 };
 
-enemyCount( 30 );
+enemyCount( 10 );
 
 
 // This listens for key presses and sends the keys to your

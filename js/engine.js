@@ -184,7 +184,11 @@ var Engine = ( function( global ) {
     'images/char-pink-girl.png',
     'images/char-princess-girl.png',
     'images/char-boy-hurt.png',
-    'images/char-boy-happy.png'
+    'images/char-boy-happy.png',
+    'images/char-cat-girl-happy.png',
+    'images/char-horn-girl-happy.png',
+    'images/char-pink-girl-happy.png',
+    'images/char-princess-girl-happy.png'
   ] );
   Resources.onReady( init );
 
