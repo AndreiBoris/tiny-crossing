@@ -51,11 +51,12 @@ Enemy.prototype.update = function( dt ) {
   if ( this.x > map.totalWidth + 100 ) {
     this.x = -100;
     this.y = Enemy.prototype.startY();
+    // Change speed of the enemy for the next loop
     this.speed = Enemy.prototype.speed();
   }
 };
 
-// Generate a random, appropriate speed for each bug
+// Generate a random, appropriate speed for each enemy
 Enemy.prototype.speed = function() {
   return map.tileWidth + ( Math.random() * map.tileWidth * 2 );
 };
@@ -114,10 +115,8 @@ Player.prototype.costumes = function() {
   this.pauseMsgStyle();
   ctx.fillText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.strokeText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
-  ctx.fillText( 'Press enter to choose', map.totalWidth / 2,
-  (map.totalHeight / 2) + 250 );
-  ctx.strokeText( 'Press enter to choose', map.totalWidth / 2,
-  (map.totalHeight / 2) + 250 );
+  ctx.fillText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 250 );
+  ctx.strokeText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 250 );
   ctx.fillRect( position - 10, map.totalHeight / 2, position * length, 200 );
   ctx.strokeRect( position - 10, map.totalHeight / 2, position * length, 200 );
   ctx.strokeStyle = 'lime';
@@ -151,7 +150,9 @@ Player.prototype.update = function( dt ) {
 };
 
 Player.prototype.render = function() {
-  this.costumes();
+  if ( this.charSelected === false ) {
+    this.costumes();
+  }
   console.log( this.selectX );
   if ( this.charSelected === true ) {
     ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
@@ -262,18 +263,24 @@ Player.prototype.handleInput = function( input ) {
   if ( this.charSelected === false ) {
     if ( input === 'left' ) {
       if ( this.selectX <= 135 ) {
+        // Skip to rightmost character.
         this.selectX = this.selectX + 4 * map.totalWidth / ( 7 );
+        this.selection = this.charOptions.length - 1;
       } else {
         this.selectX = this.selectX - map.totalWidth / ( 7 );
+        this.selection--;
       }
     } else if ( input === 'right' ) {
       if ( this.selectX >= 640 ) {
+        // Skip to leftmost character.
         this.selectX = this.selectX - 4 * map.totalWidth / ( 7 );
-      } else{
-      this.selectX = this.selectX + map.totalWidth / ( 7 );
-    }
+        this.selection = 0;
+      } else {
+        this.selectX = this.selectX + map.totalWidth / ( 7 );
+        this.selection++;
+      }
     } else if ( input === 'enter' ) {
-      // selectCharacter
+      this.sprite = this.charOptions[ this.selection ];
       this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
       this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
       this.charSelected = true;
@@ -321,7 +328,7 @@ Player.prototype.handleInput = function( input ) {
     if ( input === 'enter' ) {
       if ( this.victory === true ) {
         // Change back to normal sprite
-        this.sprite = 'images/char-boy.png';
+        this.sprite = this.charOptions[this.selection];
         this.victory = false;
         this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
         this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
@@ -329,7 +336,7 @@ Player.prototype.handleInput = function( input ) {
       } else if ( this.isDead === true ) {
         this.isDead = false;
         // Change back to normal sprite
-        this.sprite = 'images/char-boy.png';
+        this.sprite = this.charOptions[this.selection];
         this.x = Math.floor( map.numColumns / 2 ) * map.tileWidth;
         this.y = 53 + ( map.numRows - 2 ) * map.tileHeight;
         this.togglePause();
