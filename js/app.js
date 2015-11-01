@@ -1,7 +1,7 @@
 var Map = function() {
   // Determine map size
   // 'large', 'medium', 'small', 'tiny'
-  this.size = 'small';
+  this.size = 'large';
   // These values are used to determine many other distances in the script, but
   // they should not be changed unless the Map.rowImages .pngs are changed too
   this.tileWidth = 101;
@@ -16,6 +16,8 @@ var Map = function() {
   // Determines size of canvas in engine.js
   this.totalWidth = this.tileWidth * this.numColumns;
   this.totalHeight = this.tileHeight * ( this.numRows + 1 );
+  // Offset value due to white space at the top of water tiles
+  this.buffer = 50;
   // xValues and yValues get generated at the bottom of app.js using
   // Map.makeCoordinates. This allows for different numbers of rows and columns
   // to work.
@@ -70,7 +72,7 @@ Map.prototype.makeCoordinates = function() {
     this.xValues[ i ] = this.tileWidth * i;
   }
   for ( i = 0; i < this.numRows; i++ ) {
-    this.yValues[ i ] = 50 + this.tileHeight * i;
+    this.yValues[ i ] = this.buffer + this.tileHeight * i;
   }
 };
 
@@ -104,6 +106,7 @@ Map.prototype.findImages = function() {
     }
   } else if ( this.size === 'medium' ) {
     this.tileWidth = 85;
+    this.buffer = 42.08;
     this.enemySprite += '-85.png';
     for ( var j = 0; j < lengthChars; j++ ) {
       this.playerChars[ j ] += '-85.png';
@@ -115,6 +118,7 @@ Map.prototype.findImages = function() {
     }
   } else if ( this.size === 'small' ) {
     this.tileWidth = 65;
+    this.buffer = 32.18;
     this.enemySprite += '-65.png';
     for ( k = 0; k < lengthChars; k++ ) {
       this.playerChars[ k ] += '-65.png';
@@ -126,6 +130,7 @@ Map.prototype.findImages = function() {
     }
   } else if ( this.size === 'tiny' ) {
     this.tileWidth = 50;
+    this.buffer = 24.75;
     this.enemySprite += '-50.png';
     for ( m = 0; m < lengthChars; m++ ) {
       this.playerChars[ m ] += '-50.png';
