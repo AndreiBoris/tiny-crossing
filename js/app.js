@@ -43,15 +43,16 @@ Map.prototype.makeCoordinates = function() {
 };
 
 Map.prototype.makeRows = function( numRows ) {
+  this.rowImages.push( 'images/white-block.png' );
   this.rowImages.push( 'images/water-block.png' );
-  for ( var i = 0; i < numRows - 2; i++ ) {
+  for ( var i = 1; i < numRows - 2; i++ ) {
     this.rowImages.push( 'images/stone-block.png' );
   }
   this.rowImages.push( 'images/grass-block.png' );
 };
 
 Map.prototype.findEnemyRows = function() {
-  for ( var i = 0; i < this.numRows - 2; i++ ) {
+  for ( var i = 1; i < this.numRows - 2; i++ ) {
     this.enemyRows.push( i );
   }
 };
@@ -180,7 +181,7 @@ var Player = function() {
 Player.prototype.character = function() {
   var length = this.charOptions.length,
     position = map.totalWidth / 2 - 280;
-  // Chance stroke and fillStyles
+  // Change stroke and fillStyles
   this.pauseMsgStyle();
   ctx.fillText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.strokeText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
@@ -414,7 +415,7 @@ Player.prototype.handleInput = function( input ) {
       }
     } else if ( input === 'up' ) {
       // Going to the top of the game field results in a victory:
-      if ( this.yCoord === 0 ) {
+      if ( this.yCoord === 1 ) {
         this.victory = true;
         this.victorySpot = this.y;
         this.sprite = this.charHappy[ this.selection ];
@@ -504,8 +505,8 @@ document.addEventListener( 'keyup', function( e ) {
   player.handleInput( allowedKeys[ e.keyCode ] );
 } );
 
-// TODO:refactor dead() from within a loop
 // TODO: signifiers for pause button
+// TODO: menu
 // TODO: Score
 // TODO: lives
 // TODO: timelimit
