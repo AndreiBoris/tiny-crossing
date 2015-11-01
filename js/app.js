@@ -34,25 +34,25 @@ Map.prototype.giveCoordinates = function( xCoord, yCoord ) {
 // Dynamically generate Map.xValues and yValues objects to allow for different
 // map sizes.
 Map.prototype.makeCoordinates = function() {
-  for ( var i = 0; i < this.numColumns; i++ ){
-    this.xValues[i] = this.tileWidth * i;
+  for ( var i = 0; i < this.numColumns; i++ ) {
+    this.xValues[ i ] = this.tileWidth * i;
   }
-  for (i = 0; i < this.numRows; i++ ){
-    this.yValues[i] = 50 + this.tileHeight * i;
+  for ( i = 0; i < this.numRows; i++ ) {
+    this.yValues[ i ] = 50 + this.tileHeight * i;
   }
 };
 
-Map.prototype.makeRows = function(numRows) {
-  this.rowImages.push('images/water-block.png');
-  for (var i=0;i<numRows - 2;i++){
-    this.rowImages.push('images/stone-block.png');
+Map.prototype.makeRows = function( numRows ) {
+  this.rowImages.push( 'images/water-block.png' );
+  for ( var i = 0; i < numRows - 2; i++ ) {
+    this.rowImages.push( 'images/stone-block.png' );
   }
-  this.rowImages.push('images/grass-block.png');
+  this.rowImages.push( 'images/grass-block.png' );
 };
 
 Map.prototype.findEnemyRows = function() {
-  for (var i=0;i<this.numRows - 2;i++){
-    this.enemyRows.push(i);
+  for ( var i = 0; i < this.numRows - 2; i++ ) {
+    this.enemyRows.push( i );
   }
 };
 
@@ -137,8 +137,8 @@ var Player = function() {
   // this.x and this.y couldn't be used to due to possible collisions with
   // enemies whose position values are already generated when the selection
   // screen comes up.
-  this.selectX = map.totalWidth/2 - 280;
-  this.selectY = (map.totalHeight / 2) + 50;
+  this.selectX = map.totalWidth / 2 - 280;
+  this.selectY = ( map.totalHeight / 2 ) + 50;
   // this.x, this.y, this.xCoord and this.yCoord are all generated for the first
   // time in Player.prototype.handleInput() when a player picks a character
   this.x = 0;
@@ -185,16 +185,16 @@ var Player = function() {
 // Until the player has selected a character, this gets rendered over the game
 Player.prototype.character = function() {
   var length = this.charOptions.length,
-  position = map.totalWidth/2 - 280;
+    position = map.totalWidth / 2 - 280;
   // Chance stroke and fillStyles
   this.pauseMsgStyle();
   ctx.fillText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.strokeText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.fillText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 250 );
   ctx.strokeText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 250 );
-  // Box to contain the text and characters
-  ctx.fillRect( map.totalWidth/2 - 300, map.totalHeight / 2, 600, 200 );
-  ctx.strokeRect( map.totalWidth/2 - 300, map.totalHeight / 2, 600, 200 );
+  // Box to contain the characters
+  ctx.fillRect( map.totalWidth / 2 - 300, map.totalHeight / 2, 600, 200 );
+  ctx.strokeRect( map.totalWidth / 2 - 300, map.totalHeight / 2, 600, 200 );
   // Box to indicate which character is being selected
   ctx.strokeStyle = 'lime';
   ctx.strokeRect( this.selectX, this.selectY, 100, 100 );
@@ -206,49 +206,64 @@ Player.prototype.character = function() {
   }
 };
 
-// Detect collisions
+// This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
+  // Holds current positions of all enemies
   var currentSpots = [];
   for ( var i = 0; i < this.numEnemies; i++ ) {
     var x = allEnemies[ i ].x;
     var y = allEnemies[ i ].y;
     currentSpots.push( [ x, y ] );
   }
+  // Check to see if the player is close enough to any of the enemies to
+  // trigger a colission
   for ( var b = 0; b < this.numEnemies; b++ ) {
-    // Collision detected:
     if ( ( this.x - map.tileWidth / 2 < currentSpots[ b ][ 0 ] &&
         this.x + map.tileWidth / 2 > currentSpots[ b ][ 0 ] ) &&
-      ( this.y - map.tileHeight / 8 < currentSpots[ b ][ 1 ]  &&
-      this.y + map.tileHeight / 8 > currentSpots[ b ][ 1 ]) ) {
+      ( this.y - map.tileHeight / 8 < currentSpots[ b ][ 1 ] &&
+        this.y + map.tileHeight / 8 > currentSpots[ b ][ 1 ] ) ) {
+      // Collision detected:
       this.dead();
     }
   }
+  // If player reached the end objective, character does a little bounce,
+  // this.victorySpot is determined when the player reaches the objective and
+  // doesn't get changed by the loop
   if ( this.victory === true ) {
     this.victoryBounce( this.victorySpot, dt );
   }
 };
 
+// Moves player.sprite to the current grid coordinates which get updated by
+// Player.prototype.handleInput()
 Player.prototype.move = function() {
   var coordArray = map.giveCoordinates( this.xCoord, this.yCoord );
   this.x = coordArray[ 0 ];
   this.y = coordArray[ 1 ];
 };
 
+// Resets the player.sprite to the starting position near the bottom centre
+// part of the screen
 Player.prototype.resetStart = function() {
-  this.xCoord = Math.floor(map.numColumns/2);
+  this.xCoord = Math.floor( map.numColumns / 2 );
   this.yCoord = map.numRows - 2;
   this.move();
 };
 
+// Draws each frame.
 Player.prototype.render = function() {
+  // Show character selection at start of game
   if ( this.charSelected === false ) {
     this.character();
   }
+  // Draw current position of appropriate player.sprite
   if ( this.charSelected === true ) {
     ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
   }
+  // Show appropriate messages for victory
   if ( this.victory === true ) {
     Player.prototype.victory();
+    // If the game is paused due to pressing pause button, show pause message
   } else if ( this.victory === false && this.paused === true && this.isDead === false ) {
     Player.prototype.pauseMessage();
   } else if ( this.isDead === true ) {
@@ -302,162 +317,187 @@ Player.prototype.deadMessage = function() {
 };
 
 Player.prototype.togglePause = function() {
+  // Pause all enemies:
   for ( var i = 0; i < this.numEnemies; i++ ) {
     allEnemies[ i ].togglePause();
   }
-  // affects what happens in Player.prototype.render
+  // Causes this.render to show pause message:
   this.paused = !this.paused;
 };
 
 Player.prototype.dead = function() {
+  // Pause all enemies, this gets called from within the looping this.update, so
+  // it doesn't use a toggle like this.togglePause does:
   for ( var i = 0; i < this.numEnemies; i++ ) {
     allEnemies[ i ].pause();
   }
-  // affects what happens in Player.prototype.render
+  // affects what happens in this.render and stops this.handleInput from
+  // allowing the user to control the player
   this.paused = true;
-  // Allows us to reset game using enter button in the handleInput method
+  // Allows user to reset game using enter button through this.handleInput
   this.isDead = true;
   // Change to dead sprite
   this.sprite = this.charHurt[ this.selection ];
 };
 
+// Display red see-through overlay over player when player is hit:
 Player.prototype.deadOverlay = function() {
+  // Center gradient around current position of player:
   var grd = ctx.createRadialGradient( this.x + map.tileWidth / 2,
     this.y + map.tileWidth, map.tileWidth / 2, this.x + map.tileWidth / 2,
     this.y + map.tileWidth, map.tileWidth );
 
+  // Fade gradient to completely see through away from the player:
   grd.addColorStop( 0, 'rgba(255, 0, 0, 0.4)' );
   grd.addColorStop( 1, "rgba(255, 0, 0, 0)" );
 
+  // Overlay is a circle:
   ctx.arc( this.x, this.y + map.tileWidth / 2, map.tileWidth * 3, 0, 2 * Math.PI );
   ctx.fillStyle = grd;
   ctx.fill();
 };
 
+// player.sprite jumps up and down upon crossing the map:
 Player.prototype.victoryBounce = function( startingY, dt ) {
+  // Height of jumps is determined by the height of the tiles for easy scaling:
   var height = map.tileHeight / 4;
+  // Will be moving up if below the highest point and is currently in ascend
   if ( this.y > startingY - height && this.movingUp === true ) {
-    // map.tileWidth here is used as a basis for a time measurement to so that
+    // map.tileWidth here is used as a basis for a time measurement so that
     // the game scales appropriately when bigger maps are used.
     this.y = this.y - map.tileWidth * dt;
+    // Move down
   } else if ( this.y < startingY ) {
     this.movingUp = false;
     this.y = this.y + map.tileWidth * dt;
+    // player.sprite is assumed to have reached starting position:
   } else {
     this.movingUp = true;
   }
 };
 
 Player.prototype.handleInput = function( input ) {
-  // Character selection screen controls
+  // Character-selection screen controls
   if ( this.charSelected === false ) {
     if ( input === 'left' ) {
+      // Leftmost selection:
       if ( this.selection === 0 ) {
         // Skip to rightmost character.
-        this.selectX = this.selectX + (this.charOptions.length - 1) * 112;
+        this.selectX = this.selectX + ( this.charOptions.length - 1 ) * 112;
         this.selection = this.charOptions.length - 1;
+        // Move selection left:
       } else {
         this.selectX = this.selectX - 112;
         this.selection--;
       }
     } else if ( input === 'right' ) {
-      if ( this.selection === this.charOptions.length - 1 )  {
+      // Rightmost selection:
+      if ( this.selection === this.charOptions.length - 1 ) {
         // Skip to leftmost character.
-        this.selectX = this.selectX - (this.charOptions.length - 1) * 112;
+        this.selectX = this.selectX - ( this.charOptions.length - 1 ) * 112;
         this.selection = 0;
+        // Move selection right:
       } else {
         this.selectX = this.selectX + 112;
         this.selection++;
       }
+      // Choose character
     } else if ( input === 'enter' ) {
+      this.charSelected = true;
       this.sprite = this.charOptions[ this.selection ];
       this.resetStart();
-      this.charSelected = true;
     }
-  } // Controls only work when game isn't paused
+  }
+  // Controls only work when game isn't paused
   else if ( this.charSelected === true && this.paused === false ) {
     if ( input === 'left' ) {
+      // Leftmost position:
       if ( this.xCoord === 0 ) {
+        // Move to rightmost tile:
         this.xCoord = map.numColumns - 1;
       } else {
+        // Move left:
         this.xCoord--;
       }
     } else if ( input === 'up' ) {
-      // going to the top of the game field results in a victory
+      // Going to the top of the game field results in a victory:
       if ( this.yCoord === 0 ) {
-        this.sprite = this.charHappy[ this.selection ];
         this.victory = true;
-        this.togglePause();
         this.victorySpot = this.y;
+        this.sprite = this.charHappy[ this.selection ];
+        this.togglePause();
+      // Move up:
       } else {
         this.yCoord--;
       }
     } else if ( input === 'right' ) {
+      // Rightmost position:
       if ( this.xCoord === map.numColumns - 1 ) {
+        // Move to leftmost tile:
         this.xCoord = 0;
+      // Move right:
       } else {
         this.xCoord++;
       }
     } else if ( input === 'down' ) {
+      // Bottom-most position:
       if ( this.yCoord === map.numRows - 2 ) {
         return;
+      // Move down:
       } else {
         this.yCoord++;
       }
     } else if ( input === 'pause' ) {
       this.togglePause();
     }
-    // Handles the move for all the possible changes in the if statements above
+    // Handles the move for all the possible changes in the if statements above:
     this.move();
   }
-  // If the game isn't over but is paused, only the unpause button will work
+  // If the game isn't over but is paused, only the unpause button will work:
   else if ( this.paused === true && this.victory === false && this.isDead === false ) {
     if ( input === 'pause' ) {
       this.togglePause();
     }
-  } // When game is over, 'enter' can be used to reset it
+  } // When game is over, 'enter' can be used to reset it:
   else if ( this.victory === true || this.isDead === true ) {
     if ( input === 'enter' ) {
-      if ( this.victory === true ) {
-        // Change back to normal sprite
-        this.sprite = this.charOptions[ this.selection ];
-        this.victory = false;
-        this.resetStart();
-        this.togglePause();
-      } else if ( this.isDead === true ) {
-        this.isDead = false;
-        // Change back to normal sprite
-        this.sprite = this.charOptions[ this.selection ];
-        this.resetStart();
-        this.togglePause();
-      }
+      this.victory = false;
+      this.isDead = false;
+      this.togglePause();
+      // Back to starting position of game:
+      this.sprite = this.charOptions[ this.selection ];
+      this.resetStart();
     }
   }
 };
 
-// Now instantiate your objects.
-// Place all enemy objects in an array called allEnemies
-// Place the player object in a variable called player
-var allEnemies = [];
+// Instantiation of all objects:
+
 var map = new Map();
-map.makeRows(map.numRows);
+// Load correct tile images for each row:
+map.makeRows( map.numRows );
+// Determine which rows enemies can use:
 map.findEnemyRows();
+// Generate coordinate system for Player.prototyle.handleInput() to use:
 map.makeCoordinates();
+
 var player = new Player();
 
+var allEnemies = [];
 //Pick number of enemies
 var enemyCount = function( count ) {
   for ( var i = 0; i < count; i++ ) {
     allEnemies.push( new Enemy() );
   }
+  // Used in evaluating whether colissions occur:
   player.numEnemies = count;
 };
 
 enemyCount( 10 );
 
 
-// This listens for key presses and sends the keys to your
-// Player.handleInput() method. You don't need to modify this.
+// This listens for key presses and sends the keys to the Player.handleInput()
+// method:
 document.addEventListener( 'keyup', function( e ) {
   var allowedKeys = {
     37: 'left',
@@ -476,5 +516,3 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Score
 // TODO: lives
 // TODO: timelimit
-// TODO; FIX SPACING on white box for character selection
-// TODO: Continue comments
