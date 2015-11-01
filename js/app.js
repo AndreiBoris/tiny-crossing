@@ -26,6 +26,7 @@ var Map = function() {
   // Dynamically generated at the bottom of app.js to determine which rows
   // enemies can use. This is used by Enemy.startY()
   this.enemyRows = [];
+  this.variousImages = ['images/Selector'];
   this.enemySprite = 'images/enemy-bug';
   this.playerChars = [
     'images/char-boy',
@@ -93,7 +94,8 @@ Map.prototype.findEnemyRows = function() {
 
 Map.prototype.findImages = function() {
   var lengthChars = this.playerChars.length,
-    lengthTiles = this.mapTiles.length;
+    lengthTiles = this.mapTiles.length,
+    lengthOthers = this.variousImages.length;
   if ( this.size === 'large' ) {
     this.enemySprite += '.png';
     for ( var i = 0; i < lengthChars; i++ ) {
@@ -103,6 +105,9 @@ Map.prototype.findImages = function() {
     }
     for ( i = 0; i < lengthTiles; i++ ) {
       this.mapTiles[ i ] += '.png';
+    }
+    for ( i = 0; i < lengthOthers; i++){
+      this.variousImages[i] += '.png';
     }
   } else if ( this.size === 'medium' ) {
     this.tileWidth = 85;
@@ -116,6 +121,9 @@ Map.prototype.findImages = function() {
     for ( j = 0; j < lengthTiles; j++ ) {
       this.mapTiles[ j ] += '-85.png';
     }
+    for ( j = 0; j < lengthOthers; j++){
+      this.variousImages[j] += '-85.png';
+    }
   } else if ( this.size === 'small' ) {
     this.tileWidth = 65;
     this.buffer = 32.18;
@@ -128,6 +136,9 @@ Map.prototype.findImages = function() {
     for ( k = 0; k < lengthTiles; k++ ) {
       this.mapTiles[ k ] += '-65.png';
     }
+    for ( k = 0; k < lengthOthers; k++){
+      this.variousImages[k] += '-65.png';
+    }
   } else if ( this.size === 'tiny' ) {
     this.tileWidth = 50;
     this.buffer = 24.75;
@@ -139,6 +150,9 @@ Map.prototype.findImages = function() {
     }
     for ( m = 0; m < lengthTiles; m++ ) {
       this.mapTiles[ m ] += '-50.png';
+    }
+    for ( m = 0; m < lengthOthers; m++){
+      this.variousImages[m] += '-50.png';
     }
   } this.tileHeight = this.tileWidth * 0.821782178;
   this.numColumns = 11;
