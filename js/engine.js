@@ -45,7 +45,7 @@ var Engine = ( function( global ) {
      * computer is) - hurray time!
      */
     var now = Date.now(),
-    dt = ( now - lastTime ) / 1000.0;
+      dt = ( now - lastTime ) / 1000.0;
 
     /* Call our update/render functions, pass along the time delta to
      * our update function since it may be used for smooth animation.
@@ -99,7 +99,7 @@ var Engine = ( function( global ) {
     allEnemies.forEach( function( enemy ) {
       enemy.update( dt );
     } );
-    player.update(dt);
+    player.update( dt );
   }
 
   /* This function initially draws the "game level", it will then call
@@ -166,46 +166,59 @@ var Engine = ( function( global ) {
    * all of these images are properly loaded our game will start.
    */
 
-   var loadMe = [];
+  var loadMe = [
+    'images/white-block',
+    'images/stone-block',
+    'images/water-block',
+    'images/grass-block',
+    'images/enemy-bug',
+    'images/char-boy',
+    'images/char-cat-girl',
+    'images/char-horn-girl',
+    'images/char-pink-girl',
+    'images/char-princess-girl',
+    'images/char-boy-hurt',
+    'images/char-cat-girl-hurt',
+    'images/char-horn-girl-hurt',
+    'images/char-pink-girl-hurt',
+    'images/char-princess-girl-hurt',
+    'images/char-boy-happy',
+    'images/char-cat-girl-happy',
+    'images/char-horn-girl-happy',
+    'images/char-pink-girl-happy',
+    'images/char-princess-girl-happy'
+  ];
 
-   var vanillaLoad = [
-     'images/white-block.png',
-     'images/stone-block.png',
-     'images/water-block.png',
-     'images/grass-block.png',
-     'images/enemy-bug.png',
-     'images/char-boy.png',
-     'images/char-cat-girl.png',
-     'images/char-horn-girl.png',
-     'images/char-pink-girl.png',
-     'images/char-princess-girl.png',
-     'images/char-boy-hurt.png',
-     'images/char-cat-girl-hurt.png',
-     'images/char-horn-girl-hurt.png',
-     'images/char-pink-girl-hurt.png',
-     'images/char-princess-girl-hurt.png',
-     'images/char-boy-happy.png',
-     'images/char-cat-girl-happy.png',
-     'images/char-horn-girl-happy.png',
-     'images/char-pink-girl-happy.png',
-     'images/char-princess-girl-happy.png'
-   ];
+  var sizer = function( size ) {
+    var length = loadMe.length;
+    if ( size === 'large' ) {
+      for ( i = 0; i < length; i++ ) {
+        loadMe[ i ] = loadMe[ i ] + '.png';
+      }
+    } else if ( size === 'medium' ) {
+      for ( i = 0; i < length; i++ ) {
+        loadMe[ i ] = loadMe[ i ] + '-85.png';
+      }
+    } else if ( size === 'small' ) {
+      for ( i = 0; i < length; i++ ) {
+        loadMe[ i ] = loadMe[ i ] + '-65.png';
+      }
+    } else if ( size === 'tiny' ) {
+      for ( i = 0; i < length; i++ ) {
+        loadMe[ i ] = loadMe[ i ] + '-50.png';
+      }
+    }
+  };
 
-   var sizer = function(size){
-     if (size === 'large'){
-       loadMe = vanillaLoad;
-     }
-   };
+sizer( map.size );
 
-   sizer(map.size);
+Resources.load( loadMe );
+Resources.onReady( init );
 
-  Resources.load( loadMe );
-  Resources.onReady( init );
-
-  /* Assign the canvas' context object to the global variable (the window
-   * object when run in a browser) so that developer's can use it more easily
-   * from within their app.js files.
-   */
-  global.ctx = ctx;
-  global.canvas = canvas;
+/* Assign the canvas' context object to the global variable (the window
+ * object when run in a browser) so that developer's can use it more easily
+ * from within their app.js files.
+ */
+global.ctx = ctx;
+global.canvas = canvas;
 } )( this );

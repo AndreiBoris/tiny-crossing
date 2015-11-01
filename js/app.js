@@ -1,7 +1,7 @@
 var Map = function() {
   // Determine map size
   // 'large', 'medium', 'small', 'tiny'
-  this.size = 'large';
+  this.size = 'small';
   // These values are used to determine many other distances in the script, but
   // they should not be changed unless the Map.rowImages .pngs are changed too
   this.tileWidth = 101;
@@ -24,7 +24,36 @@ var Map = function() {
   // Dynamically generated at the bottom of app.js to determine which rows
   // enemies can use. This is used by Enemy.startY()
   this.enemyRows = [];
+  this.enemySprite = 'images/enemy-bug';
+  this.playerChars = [
+    'images/char-boy',
+    'images/char-cat-girl',
+    'images/char-horn-girl',
+    'images/char-pink-girl',
+    'images/char-princess-girl'
+  ];
+  this.playerCharsHurt = [
+    'images/char-boy-hurt',
+    'images/char-cat-girl-hurt',
+    'images/char-horn-girl-hurt',
+    'images/char-pink-girl-hurt',
+    'images/char-princess-girl-hurt'
+  ];
+  this.playerCharsHappy = [
+    'images/char-boy-happy',
+    'images/char-cat-girl-happy',
+    'images/char-horn-girl-happy',
+    'images/char-pink-girl-happy',
+    'images/char-princess-girl-happy'
+  ];
+  this.mapTiles = [
+    'images/white-block',
+    'images/water-block',
+    'images/stone-block',
+    'images/grass-block'
+  ];
 };
+
 
 // Allows Player.prototype.move to work to move the player around using
 // coordinates
@@ -46,12 +75,12 @@ Map.prototype.makeCoordinates = function() {
 };
 
 Map.prototype.makeRows = function( numRows ) {
-  this.rowImages.push( 'images/white-block.png' );
-  this.rowImages.push( 'images/water-block.png' );
+  this.rowImages.push( map.mapTiles[0] );
+  this.rowImages.push( map.mapTiles[1] );
   for ( var i = 1; i < numRows - 2; i++ ) {
-    this.rowImages.push( 'images/stone-block.png' );
+    this.rowImages.push( map.mapTiles[2] );
   }
-  this.rowImages.push( 'images/grass-block.png' );
+  this.rowImages.push( map.mapTiles[3] );
 };
 
 Map.prototype.findEnemyRows = function() {
@@ -60,12 +89,68 @@ Map.prototype.findEnemyRows = function() {
   }
 };
 
+Map.prototype.findImages = function() {
+  var lengthChars = this.playerChars.length,
+    lengthTiles = this.mapTiles.length;
+  if ( this.size === 'large' ) {
+    this.enemySprite += '.png';
+    for ( var i = 0; i < lengthChars; i++ ) {
+      this.playerChars[ i ] += '.png';
+      this.playerCharsHurt[ i ] += '.png';
+      this.playerCharsHappy[ i ] += '.png';
+    }
+    for ( i = 0; i < lengthTiles; i++ ) {
+      this.mapTiles[ i ] += '.png';
+    }
+  } else if ( this.size === 'medium' ) {
+    this.tileWidth = 85;
+    this.enemySprite += '-85.png';
+    for ( var j = 0; j < lengthChars; j++ ) {
+      this.playerChars[ j ] += '-85.png';
+      this.playerCharsHurt[ j ] += '-85.png';
+      this.playerCharsHappy[ j ] += '-85.png';
+    }
+    for ( j = 0; j < lengthTiles; j++ ) {
+      this.mapTiles[ j ] += '-85.png';
+    }
+  } else if ( this.size === 'small' ) {
+    this.tileWidth = 65;
+    this.enemySprite += '-65.png';
+    for ( k = 0; k < lengthChars; k++ ) {
+      this.playerChars[ k ] += '-65.png';
+      this.playerCharsHurt[ k ] += '-65.png';
+      this.playerCharsHappy[ k ] += '-65.png';
+    }
+    for ( k = 0; k < lengthTiles; k++ ) {
+      this.mapTiles[ k ] += '-65.png';
+    }
+  } else if ( this.size === 'tiny' ) {
+    this.tileWidth = 50;
+    this.enemySprite += '-50.png';
+    for ( m = 0; m < lengthChars; m++ ) {
+      this.playerChars[ m ] += '-50.png';
+      this.playerCharsHurt[ m ] += '-50.png';
+      this.playerCharsHappy[ m ] += '-50.png';
+    }
+    for ( m = 0; m < lengthTiles; m++ ) {
+      this.mapTiles[ m ] += '-50.png';
+    }
+  } this.tileHeight = this.tileWidth * 0.821782178;
+  this.numColumns = 11;
+  this.numRows = 10;
+  this.rowImages = [];
+  this.totalWidth = this.tileWidth * this.numColumns;
+  this.totalHeight = this.tileHeight * ( this.numRows + 1 );
+};
+
+
+
 // Enemies our player must avoid
 var Enemy = function() {
 
   // The image/sprite for our enemies, this uses
   // a helper we've provided to easily load images
-  this.sprite = 'images/enemy-bug.png';
+  this.sprite = map.enemySprite;
   // Random value for the start of any given enemy
   this.x = this.startX();
   // Random column
@@ -158,24 +243,9 @@ var Player = function() {
   this.movingUp = true;
   // The following three arrays all get used through
   // Player.prototype.handleInput
-  this.charOptions = [ 'images/char-boy.png',
-    'images/char-cat-girl.png',
-    'images/char-horn-girl.png',
-    'images/char-pink-girl.png',
-    'images/char-princess-girl.png'
-  ];
-  this.charHappy = [ 'images/char-boy-happy.png',
-    'images/char-cat-girl-happy.png',
-    'images/char-horn-girl-happy.png',
-    'images/char-pink-girl-happy.png',
-    'images/char-princess-girl-happy.png'
-  ];
-  this.charHurt = [ 'images/char-boy-hurt.png',
-    'images/char-cat-girl-hurt.png',
-    'images/char-horn-girl-hurt.png',
-    'images/char-pink-girl-hurt.png',
-    'images/char-princess-girl-hurt.png',
-  ];
+  this.charOptions = map.playerChars;
+  this.charHappy = map.playerCharsHappy;
+  this.charHurt = map.playerCharsHurt;
   // This selects which value from the above three arrays is used by handleInput
   this.selection = 0;
 };
@@ -471,6 +541,8 @@ Player.prototype.handleInput = function( input ) {
 // Instantiation of all objects:
 
 var map = new Map();
+// Determine which sprites and tile sizes to use:
+map.findImages();
 // Load correct tile images for each row:
 map.makeRows( map.numRows );
 // Determine which rows enemies can use:
