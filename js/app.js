@@ -4,7 +4,7 @@ var Map = function() {
   this.tileWidth = 101;
   this.tileHeight = 83;
   // The number of columns can be changed
-  this.numColumns = 10;
+  this.numColumns = 11;
   // The number of columns can be changed, more enemy rows will be generated
   this.numRows = 10;
   // This is dynamically generated based this.numRows, see
@@ -121,12 +121,6 @@ Enemy.prototype.togglePause = function() {
   } else {
     this.moving = 1;
   }
-};
-
-// Used in certain conditions where a toggle is not appropriate (due to being
-// called within a loop)
-Enemy.prototype.pause = function() {
-  this.moving = 0;
 };
 
 var Player = function() {
@@ -326,18 +320,17 @@ Player.prototype.togglePause = function() {
 };
 
 Player.prototype.dead = function() {
-  // Pause all enemies, this gets called from within the looping this.update, so
-  // it doesn't use a toggle like this.togglePause does:
-  for ( var i = 0; i < this.numEnemies; i++ ) {
-    allEnemies[ i ].pause();
+  if ( this.paused === false ) {
+    // Pause all enemies:
+    for ( var i = 0; i < this.numEnemies; i++ ) {
+      allEnemies[ i ].togglePause();
+    }
+    this.paused = true;
+    // Allows user to reset game using enter button through this.handleInput
+    this.isDead = true;
+    // Change to dead sprite
+    this.sprite = this.charHurt[ this.selection ];
   }
-  // affects what happens in this.render and stops this.handleInput from
-  // allowing the user to control the player
-  this.paused = true;
-  // Allows user to reset game using enter button through this.handleInput
-  this.isDead = true;
-  // Change to dead sprite
-  this.sprite = this.charHurt[ this.selection ];
 };
 
 // Display red see-through overlay over player when player is hit:
