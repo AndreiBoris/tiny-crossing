@@ -171,7 +171,7 @@ Map.prototype.findImages = function() {
 
 
 
-// Enemies our player must avoid
+// Enemies the player must avoid
 var Enemy = function() {
 
   // The image/sprite for our enemies, this uses
@@ -261,7 +261,7 @@ var Player = function() {
   // evaluation of colissions to cheapen the cost of the operation slightly.
   this.numEnemies = 0;
   this.paused = false;
-  this.isDead = false;
+  this.isHit = false;
   // This value is used in anchoring the victory jumps the player does
   this.victorySpot = 0;
   // This is used to help guide the victory jumps as they loop in
@@ -274,6 +274,7 @@ var Player = function() {
   this.charHurt = map.playerCharsHurt;
   // This selects which value from the above three arrays is used by handleInput
   this.selection = 0;
+  this.livesLeft = 5;
 };
 
 // Until the player has selected a character, this gets rendered over the game
@@ -317,7 +318,7 @@ Player.prototype.update = function( dt ) {
       ( this.y - map.tileHeight / 8 < currentSpots[ b ][ 1 ] &&
         this.y + map.tileHeight / 8 > currentSpots[ b ][ 1 ] ) ) {
       // Collision detected:
-      this.dead();
+      this.hit();
     }
   }
   // If player reached the end objective, character does a little bounce,
@@ -358,9 +359,9 @@ Player.prototype.render = function() {
   if ( this.victory === true ) {
     Player.prototype.victory();
     // If the game is paused due to pressing pause button, show pause message
-  } else if ( this.victory === false && this.paused === true && this.isDead === false ) {
+  } else if ( this.victory === false && this.paused === true && this.isHit === false ) {
     Player.prototype.pauseMessage();
-  } else if ( this.isDead === true ) {
+  } else if ( this.isHit === true ) {
     Player.prototype.deadMessage();
     this.deadOverlay();
   }
@@ -419,7 +420,7 @@ Player.prototype.togglePause = function() {
   this.paused = !this.paused;
 };
 
-Player.prototype.dead = function() {
+Player.prototype.hit = function() {
   if ( this.paused === false ) {
     // Pause all enemies:
     for ( var i = 0; i < this.numEnemies; i++ ) {
@@ -427,7 +428,7 @@ Player.prototype.dead = function() {
     }
     this.paused = true;
     // Allows user to reset game using enter button through this.handleInput
-    this.isDead = true;
+    this.isHit = true;
     // Change to dead sprite
     this.sprite = this.charHurt[ this.selection ];
   }
@@ -547,15 +548,15 @@ Player.prototype.handleInput = function( input ) {
     this.move();
   }
   // If the game isn't over but is paused, only the unpause button will work:
-  else if ( this.paused === true && this.victory === false && this.isDead === false ) {
+  else if ( this.paused === true && this.victory === false && this.isHit === false ) {
     if ( input === 'pause' ) {
       this.togglePause();
     }
   } // When game is over, 'enter' can be used to reset it:
-  else if ( this.victory === true || this.isDead === true ) {
+  else if ( this.victory === true || this.isHit === true ) {
     if ( input === 'enter' ) {
       this.victory = false;
-      this.isDead = false;
+      this.isHit = false;
       this.togglePause();
       // Back to starting position of game:
       this.sprite = this.charOptions[ this.selection ];
