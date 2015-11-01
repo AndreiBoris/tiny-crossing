@@ -354,6 +354,7 @@ Player.prototype.render = function() {
   // Draw current position of appropriate player.sprite
   if ( this.charSelected === true ) {
     ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
+    this.displayHearts();
   }
   // Show appropriate messages for victory
   if ( this.victory === true ) {
@@ -386,8 +387,8 @@ Player.prototype.playAgainMessage = function() {
   ctx.fillStyle = 'white';
   ctx.strokeStyle = 'black';
 
-  ctx.fillText( 'Press enter to play again', canvas.width / 2, canvas.height - 60 );
-  ctx.strokeText( 'Press enter to play again', canvas.width / 2, canvas.height - 60 );
+  ctx.fillText( 'Press enter to continue', canvas.width / 2, canvas.height - 60 );
+  ctx.strokeText( 'Press enter to continue', canvas.width / 2, canvas.height - 60 );
 };
 
 Player.prototype.pauseMsgStyle = function() {
@@ -433,6 +434,14 @@ Player.prototype.hit = function() {
     this.sprite = this.charHurt[ this.selection ];
     // Reduce lives:
     this.livesLeft--;
+  }
+};
+
+Player.prototype.displayHearts = function() {
+  var position = 10;
+  for (var i = 0; i < this.livesLeft; i++){
+    ctx.drawImage(Resources.get(map.variousImages[4]), position, 10);
+    position += map.tileWidth;
   }
 };
 
