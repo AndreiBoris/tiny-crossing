@@ -127,7 +127,7 @@ var Player = function() {
   // this.x and this.y couldn't be used to due to possible collisions with
   // enemies whose position values are already generated when the selection
   // screen comes up.
-  this.selectX = map.totalWidth / 7;
+  this.selectX = map.totalWidth/2 - 280;
   this.selectY = (map.totalHeight / 2) + 50;
   // this.x, this.y, this.xCoord and this.yCoord are all generated for the first
   // time in Player.prototype.handleInput() when a player picks a character
@@ -145,7 +145,11 @@ var Player = function() {
   this.isDead = false;
   // This value is used in anchoring the victory jumps the player does
   this.victorySpot = 0;
+  // This is used to help guide the victory jumps as they loop in
+  // Player.prototype.update()
   this.movingUp = true;
+  // The following three arrays all get used through
+  // Player.prototype.handleInput
   this.charOptions = [ 'images/char-boy.png',
     'images/char-cat-girl.png',
     'images/char-horn-girl.png',
@@ -164,24 +168,31 @@ var Player = function() {
     'images/char-pink-girl-hurt.png',
     'images/char-princess-girl-hurt.png',
   ];
+  // This selects which value from the above three arrays is used by handleInput
   this.selection = 0;
 };
 
+// Until the player has selected a costume, this gets rendered over the game
 Player.prototype.costumes = function() {
   var length = this.charOptions.length,
-    position = map.totalWidth / ( length + 2 );
+  position = map.totalWidth/2 - 280;
+  // Chance stroke and fillStyles
   this.pauseMsgStyle();
   ctx.fillText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.strokeText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.fillText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 250 );
   ctx.strokeText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 250 );
-  ctx.fillRect( position - 10, map.totalHeight / 2, (position * (length - 1)) + 125, 200 );
-  ctx.strokeRect( position - 10, map.totalHeight / 2, (position * (length - 1)) + 125, 200 );
+  // Box to contain the text and characters
+  ctx.fillRect( map.totalWidth/2 - 300, map.totalHeight / 2, 600, 200 );
+  ctx.strokeRect( map.totalWidth/2 - 300, map.totalHeight / 2, 600, 200 );
+  // Box to indicate which character is being selected
   ctx.strokeStyle = 'lime';
   ctx.strokeRect( this.selectX, this.selectY, 100, 100 );
+  // Draw all of the characters so user can see which one is being selected
   for ( var i = 0; i < length; i++ ) {
     ctx.drawImage( Resources.get( this.charOptions[ i ] ), position, map.totalHeight / 2 );
-    position = position + map.totalWidth / ( length + 2 );
+    // spread the characters out evenly
+    position = position + 112;
   }
 };
 
@@ -331,21 +342,21 @@ Player.prototype.handleInput = function( input ) {
   // Character selection screen controls
   if ( this.charSelected === false ) {
     if ( input === 'left' ) {
-      if ( this.selectX <= map.totalWidth / ( 7 ) ) {
+      if ( this.selection === 0 ) {
         // Skip to rightmost character.
-        this.selectX = this.selectX + 4 * map.totalWidth / ( 7 );
+        this.selectX = this.selectX + (this.charOptions.length - 1) * 112;
         this.selection = this.charOptions.length - 1;
       } else {
-        this.selectX = this.selectX - map.totalWidth / ( 7 );
+        this.selectX = this.selectX - 112;
         this.selection--;
       }
     } else if ( input === 'right' ) {
-      if ( this.selectX >= 5 * map.totalWidth / ( 7 ) )  {
+      if ( this.selection === this.charOptions.length - 1 )  {
         // Skip to leftmost character.
-        this.selectX = this.selectX - 4 * map.totalWidth / ( 7 );
+        this.selectX = this.selectX - (this.charOptions.length - 1) * 112;
         this.selection = 0;
       } else {
-        this.selectX = this.selectX + map.totalWidth / ( 7 );
+        this.selectX = this.selectX + 112;
         this.selection++;
       }
     } else if ( input === 'enter' ) {
@@ -448,4 +459,10 @@ document.addEventListener( 'keyup', function( e ) {
   player.handleInput( allowedKeys[ e.keyCode ] );
 } );
 
-// refactor dead() from within a loop
+// TODO:refactor dead() from within a loop
+// TODO: signifiers for pause button
+// TODO: Score
+// TODO: lives
+// TODO: timelimit
+// TODO; FIX SPACING on white box for character selection
+// TODO: Continue comments
