@@ -18,6 +18,8 @@ var Map = function() {
   // to work.
   this.xValues = {};
   this.yValues = {};
+  // Dynamically generated at the bottom of app.js to determine which rows
+  // enemies can use. This is used by Enemy.startY()
   this.enemyRows = [];
 };
 
@@ -180,8 +182,8 @@ var Player = function() {
   this.selection = 0;
 };
 
-// Until the player has selected a costume, this gets rendered over the game
-Player.prototype.costumes = function() {
+// Until the player has selected a character, this gets rendered over the game
+Player.prototype.character = function() {
   var length = this.charOptions.length,
   position = map.totalWidth/2 - 280;
   // Chance stroke and fillStyles
@@ -240,7 +242,7 @@ Player.prototype.resetStart = function() {
 
 Player.prototype.render = function() {
   if ( this.charSelected === false ) {
-    this.costumes();
+    this.character();
   }
   if ( this.charSelected === true ) {
     ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
