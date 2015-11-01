@@ -591,3 +591,4 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: lives
 // TODO: timelimit
 // TODO: replace selection box with selector image
+// TODO: fix selection box on smaller maps
