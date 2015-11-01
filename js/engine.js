@@ -165,28 +165,41 @@ var Engine = ( function( global ) {
    * draw our game level. Then set init as the callback method, so that when
    * all of these images are properly loaded our game will start.
    */
-  Resources.load( [
-    'images/white-block.png',
-    'images/stone-block.png',
-    'images/water-block.png',
-    'images/grass-block.png',
-    'images/enemy-bug.png',
-    'images/char-boy.png',
-    'images/char-cat-girl.png',
-    'images/char-horn-girl.png',
-    'images/char-pink-girl.png',
-    'images/char-princess-girl.png',
-    'images/char-boy-hurt.png',
-    'images/char-cat-girl-hurt.png',
-    'images/char-horn-girl-hurt.png',
-    'images/char-pink-girl-hurt.png',
-    'images/char-princess-girl-hurt.png',
-    'images/char-boy-happy.png',
-    'images/char-cat-girl-happy.png',
-    'images/char-horn-girl-happy.png',
-    'images/char-pink-girl-happy.png',
-    'images/char-princess-girl-happy.png'
-  ] );
+
+   var loadMe = [];
+
+   var vanillaLoad = [
+     'images/white-block.png',
+     'images/stone-block.png',
+     'images/water-block.png',
+     'images/grass-block.png',
+     'images/enemy-bug.png',
+     'images/char-boy.png',
+     'images/char-cat-girl.png',
+     'images/char-horn-girl.png',
+     'images/char-pink-girl.png',
+     'images/char-princess-girl.png',
+     'images/char-boy-hurt.png',
+     'images/char-cat-girl-hurt.png',
+     'images/char-horn-girl-hurt.png',
+     'images/char-pink-girl-hurt.png',
+     'images/char-princess-girl-hurt.png',
+     'images/char-boy-happy.png',
+     'images/char-cat-girl-happy.png',
+     'images/char-horn-girl-happy.png',
+     'images/char-pink-girl-happy.png',
+     'images/char-princess-girl-happy.png'
+   ];
+
+   var sizer = function(size){
+     if (size === 'large'){
+       loadMe = vanillaLoad;
+     }
+   };
+
+   sizer(map.size);
+
+  Resources.load( loadMe );
   Resources.onReady( init );
 
   /* Assign the canvas' context object to the global variable (the window

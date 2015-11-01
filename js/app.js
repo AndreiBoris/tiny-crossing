@@ -1,4 +1,7 @@
 var Map = function() {
+  // Determine map size
+  // 'large', 'medium', 'small', 'tiny'
+  this.size = 'large';
   // These values are used to determine many other distances in the script, but
   // they should not be changed unless the Map.rowImages .pngs are changed too
   this.tileWidth = 101;
@@ -510,3 +513,4 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Score
 // TODO: lives
 // TODO: timelimit
+// TODO: replace selection box with selector image
