@@ -3,7 +3,7 @@ var Map = function() {
   // they should not be changed unless the Map.rowImages .pngs are changed too
   this.tileWidth = 101;
   this.tileHeight = 83;
-  this.numColumns = 9;
+  this.numColumns = 11;
   this.numRows = 7;
   this.rowImages = [
     'images/water-block.png', // Top row is water
@@ -20,9 +20,9 @@ var Map = function() {
   this.yValues = {};
 };
 
-Map.prototype.giveCoordinates = function( coordinate ) {
-  var xCoordinate = this.xValues[ coordinate[ 0 ] ];
-  var yCoordinate = this.yValues[ coordinate[ 1 ] ];
+Map.prototype.giveCoordinates = function( xCoord, yCoord ) {
+  var xCoordinate = this.xValues[ xCoord ];
+  var yCoordinate = this.yValues[ yCoord ];
   return [ xCoordinate, yCoordinate ];
 };
 
@@ -126,7 +126,6 @@ var Player = function() {
   this.y = 0;
   this.xCoord = 4;
   this.yCoord = 5;
-  this.coordinate = '45';
   this.victory = false;
   this.numEnemies = 0;
   this.paused = false;
@@ -193,15 +192,8 @@ Player.prototype.update = function( dt ) {
   }
 };
 
-Player.prototype.updateCoordinate = function() {
-  var xCoord = this.xCoord.toString();
-  var yCoord = this.yCoord.toString();
-  this.coordinate = xCoord + yCoord;
-};
-
 Player.prototype.move = function() {
-  this.updateCoordinate();
-  var coordArray = map.giveCoordinates( this.coordinate );
+  var coordArray = map.giveCoordinates( this.xCoord, this.yCoord );
   this.x = coordArray[ 0 ];
   this.y = coordArray[ 1 ];
 };
