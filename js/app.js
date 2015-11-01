@@ -16,18 +16,26 @@ var Map = function() {
     'images/stone-block.png', // Row 5 of 5 of stone
     'images/grass-block.png' // Row 2 of 2 of grass
   ];
+  // Determines size of canvase in engine.js
   this.totalWidth = this.tileWidth * this.numColumns;
   this.totalHeight = this.tileHeight * ( this.numRows + 1 );
+  // xValues and yValues get generated at the bottom of app.js using
+  // Map.makeCoordinates. This allows for different numbers of rows and columns
+  // to work.
   this.xValues = {};
   this.yValues = {};
 };
 
+// Allows Player.prototype.move to work to move the player around using
+// coordinates
 Map.prototype.giveCoordinates = function( xCoord, yCoord ) {
   var xCoordinate = this.xValues[ xCoord ];
   var yCoordinate = this.yValues[ yCoord ];
   return [ xCoordinate, yCoordinate ];
 };
 
+// Dynamically generate Map.xValues and yValues objects to allow for different
+// map sizes.
 Map.prototype.makeCoordinates = function() {
   for ( var i = 0; i < this.numColumns; i++ ){
     this.xValues[i] = this.tileWidth * i;
@@ -39,17 +47,17 @@ Map.prototype.makeCoordinates = function() {
 
 // Enemies our player must avoid
 var Enemy = function() {
-  // Variables applied to each of our instances go here,
-  // we've provided one for you to get started
 
   // The image/sprite for our enemies, this uses
   // a helper we've provided to easily load images
   this.sprite = 'images/enemy-bug.png';
+  // Random value for the start of any given enemy
   this.x = this.startX();
+  // Random column
   this.y = this.startY();
   this.speed = this.newSpeed();
   // If 1, the enemies are moving, if 0, they are not,
-  // see Enemy.prototype.togglePause()
+  // see Enemy.prototype.togglePause() This function allows the pause to work.
   this.moving = 1;
 };
 
@@ -58,19 +66,13 @@ Enemy.prototype.startX = function() {
   return Math.random() * map.totalWidth * 1.0;
 };
 
-// Appropriate start position are at 56 + n83, where n == 0, 1, or 2.
 // Random value from array courtesy of:
 // http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
 Enemy.prototype.startY = function() {
   var options = [ 0, 1, 2, 3, 4 ];
+  // Picks one of the first 5 rows which enemies can use.
   var result = map.yValues[ options[ Math.floor( Math.random() * options.length ) ] ];
   return result;
-};
-
-
-Enemy.prototype.newRow = function() {
-  var options = [ 0, 1, 2, 3, 4 ];
-  this.row = options[ Math.floor( Math.random() * options.length ) ];
 };
 
 // Update the enemy's position, required method for game
@@ -78,8 +80,9 @@ Enemy.prototype.newRow = function() {
 Enemy.prototype.update = function( dt ) {
   // You should multiply any movement by the dt parameter
   // which will ensure the game runs at the same speed for
-  // all computers.
+  // all computers. this.moving is changed to 0 when the game is paused.
   this.x = this.x + this.speed * dt * this.moving;
+  // Reset enemies to the left side of the screen when they are offscreen right.
   if ( this.x > map.totalWidth + 100 ) {
     this.x = -100;
     this.y = this.startY();
@@ -90,7 +93,7 @@ Enemy.prototype.update = function( dt ) {
 
 // Generate a random, appropriate speed for each enemy
 Enemy.prototype.newSpeed = function() {
-  return map.tileWidth + ( Math.random() * map.tileWidth * 2 );
+  return map.tileWidth / 2 + ( Math.random() * map.tileWidth * 3 );
 };
 
 // Draw the enemy on the screen, required method for game
@@ -100,10 +103,10 @@ Enemy.prototype.render = function() {
   }
 };
 
-// Gets multiplied by the speed of each bug to determine whether an enemy is
-// moving or not.
 Enemy.prototype.togglePause = function() {
   if ( this.moving === 1 ) {
+    // this.moving gets multiplied by the speed of each bug to determine whether
+    // an enemy is moving or not.
     this.moving = 0;
   } else {
     this.moving = 1;
@@ -116,22 +119,31 @@ Enemy.prototype.pause = function() {
   this.moving = 0;
 };
 
-// Now write your own player class
-// This class requires an update(), render() and
-// a handleInput() method.
 var Player = function() {
   this.sprite = '';
+  // game begins when this is true
   this.charSelected = false;
+  // selectX and selectY control the position of the character selection box,
+  // this.x and this.y couldn't be used to due to possible collisions with
+  // enemies whose position values are already generated when the selection
+  // screen comes up.
   this.selectX = map.totalWidth / 7;
   this.selectY = (map.totalHeight / 2) + 50;
+  // this.x, this.y, this.xCoord and this.yCoord are all generated for the first
+  // time in Player.prototype.handleInput() when a player picks a character
   this.x = 0;
   this.y = 0;
-  this.xCoord = 4;
-  this.yCoord = 5;
+  // xCoord and yCoord are to do with the dynamically generated grid system
+  // which Player uses to move around the game map.
+  this.xCoord = 0;
+  this.yCoord = 0;
   this.victory = false;
+  // numEnemies is generated at the bottom of app.js and is used in the
+  // evaluation of colissions to cheapen the cost of the operation slightly.
   this.numEnemies = 0;
   this.paused = false;
   this.isDead = false;
+  // This value is used in anchoring the victory jumps the player does
   this.victorySpot = 0;
   this.movingUp = true;
   this.charOptions = [ 'images/char-boy.png',
@@ -435,3 +447,5 @@ document.addEventListener( 'keyup', function( e ) {
 
   player.handleInput( allowedKeys[ e.keyCode ] );
 } );
+
+// refactor dead() from within a loop
