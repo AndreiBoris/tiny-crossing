@@ -599,7 +599,7 @@ var enemyCount = function( count ) {
   player.numEnemies = count;
 };
 
-enemyCount( 25 );
+enemyCount( 40 );
 
 
 // This listens for key presses and sends the keys to the Player.handleInput()
