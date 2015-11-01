@@ -2,7 +2,7 @@ var Map = function() {
   // These values are used to determine many other distances in the script, but
   // they should not be changed unless the Map.rowImages .pngs are changed too
   this.tileWidth = 101;
-  this.tileHeight = 83;
+  this.tileHeight = this.tileWidth * 0.821782178;
   // The number of columns can be changed
   this.numColumns = 11;
   // The number of columns can be changed, more enemy rows will be generated

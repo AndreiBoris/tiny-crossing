@@ -1,6 +1,32 @@
 module.exports = function( grunt ) {
   grunt.initConfig( {
     pkg: grunt.file.readJSON( 'package.json' ),
+    responsive_images: {
+      dev: {
+        options: {
+          engine: 'im',
+          sizes: [ {
+            width: 85,
+            suffix: "_85",
+            quality: 40
+          }, {
+            width: 65,
+            suffix: "_65",
+            quality: 40
+          }, {
+            width: 50,
+            suffix: "_50",
+            quality: 40
+          } ]
+        },
+        files: [ {
+          expand: true,
+          src: [ '*.{gif,jpg,png}' ],
+          cwd: 'images_src/',
+          dest: 'images/'
+        } ]
+      }
+    },
     jshint: {
       all: [ 'gruntfile.js', 'js/*.js' ],
     },
@@ -15,6 +41,8 @@ module.exports = function( grunt ) {
 
   grunt.loadNpmTasks( 'grunt-contrib-watch' );
   grunt.loadNpmTasks( 'grunt-contrib-jshint' );
+  grunt.loadNpmTasks( 'grunt-responsive-images' );
 
   grunt.registerTask( 'default', [ 'jshint', 'watch' ] );
+  grunt.registerTask( 'newpics', [ 'responsive_images' ] );
 };
