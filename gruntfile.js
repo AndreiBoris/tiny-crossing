@@ -7,16 +7,13 @@ module.exports = function( grunt ) {
           engine: 'im',
           sizes: [ {
             width: 85,
-            suffix: "_85",
-            quality: 40
+            quality: 100
           }, {
             width: 65,
-            suffix: "_65",
-            quality: 40
+            quality: 100
           }, {
             width: 50,
-            suffix: "_50",
-            quality: 40
+            quality: 100
           } ]
         },
         files: [ {
