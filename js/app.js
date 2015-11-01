@@ -605,5 +605,4 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Score
 // TODO: lives
 // TODO: timelimit
-// TODO: replace selection box with selector image
-// TODO: fix selection box on smaller maps
+// TODO: Make selection box adjust to other map sizes (only works on small)
