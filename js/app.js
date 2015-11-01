@@ -1,33 +1,23 @@
 var Map = function() {
-  var tileHeight = 83,
-    tileWidth = 101,
-    numColumns = 9,
-    numRows = 7;
-  this.tileWidth = tileWidth;
-  this.tileHeight = tileHeight;
-  this.totalWidth = tileWidth * numColumns;
-  this.totalHeight = tileHeight * ( numRows + 1 );
-  this.numColumns = numColumns;
-  this.numRows = numRows;
-  this.xValues = {
-    '0': 0,
-    '1': tileWidth,
-    '2': tileWidth * 2,
-    '3': tileWidth * 3,
-    '4': tileWidth * 4,
-    '5': tileWidth * 5,
-    '6': tileWidth * 6,
-    '7': tileWidth * 7,
-    '8': tileWidth * 8
-  };
-  this.yValues = {
-    '0': 50,
-    '1': 50 + tileHeight,
-    '2': 50 + tileHeight * 2,
-    '3': 50 + tileHeight * 3,
-    '4': 50 + tileHeight * 4,
-    '5': 50 + tileHeight * 5,
-  };
+  // These values are used to determine many other distances in the script, but
+  // they should not be changed unless the Map.rowImages .pngs are changed too
+  this.tileWidth = 101;
+  this.tileHeight = 83;
+  this.numColumns = 9;
+  this.numRows = 7;
+  this.rowImages = [
+    'images/water-block.png', // Top row is water
+    'images/stone-block.png', // Row 1 of 5 of stone
+    'images/stone-block.png', // Row 2 of 5 of stone
+    'images/stone-block.png', // Row 3 of 5 of stone
+    'images/stone-block.png', // Row 4 of 5 of stone
+    'images/stone-block.png', // Row 5 of 5 of stone
+    'images/grass-block.png' // Row 2 of 2 of grass
+  ];
+  this.totalWidth = this.tileWidth * this.numColumns;
+  this.totalHeight = this.tileHeight * ( this.numRows + 1 );
+  this.xValues = {};
+  this.yValues = {};
 };
 
 Map.prototype.giveCoordinates = function( coordinate ) {
@@ -36,8 +26,13 @@ Map.prototype.giveCoordinates = function( coordinate ) {
   return [ xCoordinate, yCoordinate ];
 };
 
-Map.prototype.revealCoordinates = function( xValue, yYalue ) {
-
+Map.prototype.makeCoordinates = function() {
+  for ( var i = 0; i < this.numColumns; i++ ){
+    this.xValues[i] = this.tileWidth * i;
+  }
+  for (i = 0; i < this.numRows; i++ ){
+    this.yValues[i] = 50 + this.tileHeight * i;
+  }
 };
 
 // Enemies our player must avoid
@@ -189,7 +184,7 @@ Player.prototype.update = function( dt ) {
     // Collision detected:
     if ( ( this.x - map.tileWidth / 2 < currentSpots[ b ][ 0 ] &&
         this.x + map.tileWidth / 2 > currentSpots[ b ][ 0 ] ) &&
-      ( this.yCoord === currentSpots[b][1])) {
+      ( this.yCoord === currentSpots[ b ][ 1 ] ) ) {
       this.dead();
     }
   }
@@ -355,7 +350,7 @@ Player.prototype.handleInput = function( input ) {
   else if ( this.charSelected === true && this.paused === false ) {
     if ( input === 'left' ) {
       if ( this.xCoord === 0 ) {
-        this.xCoord = 8;
+        this.xCoord = map.numColumns - 1;
       } else {
         this.xCoord--;
       }
@@ -370,13 +365,13 @@ Player.prototype.handleInput = function( input ) {
         this.yCoord--;
       }
     } else if ( input === 'right' ) {
-      if ( this.xCoord === 8 ) {
+      if ( this.xCoord === map.numColumns - 1 ) {
         this.xCoord = 0;
       } else {
         this.xCoord++;
       }
     } else if ( input === 'down' ) {
-      if ( this.yCoord === 5 ) {
+      if ( this.yCoord === map.numRows - 2 ) {
         return;
       } else {
         this.yCoord++;
@@ -417,6 +412,7 @@ Player.prototype.handleInput = function( input ) {
 // Place the player object in a variable called player
 var allEnemies = [];
 var map = new Map();
+map.makeCoordinates();
 var player = new Player();
 
 //Pick number of enemies
