@@ -431,6 +431,8 @@ Player.prototype.hit = function() {
     this.isHit = true;
     // Change to dead sprite
     this.sprite = this.charHurt[ this.selection ];
+    // Reduce lives:
+    this.livesLeft--;
   }
 };
 
