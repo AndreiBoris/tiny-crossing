@@ -1,7 +1,7 @@
 var Map = function() {
   // Determine map size
   // 'large', 'medium', 'small', 'tiny'
-  this.size = 'small';
+  this.size = 'tiny';
   // These values are used to determine many other distances in the script, but
   // they should not be changed unless the Map.rowImages .pngs are changed too
   this.tileWidth = 101;
@@ -85,15 +85,16 @@ Map.prototype.makeCoordinates = function() {
 
 Map.prototype.makeRows = function( numRows ) {
   this.rowImages.push( map.mapTiles[ 0 ] );
+  this.rowImages.push( map.mapTiles[ 0 ] );
   this.rowImages.push( map.mapTiles[ 1 ] );
-  for ( var i = 1; i < numRows - 2; i++ ) {
+  for ( var i = 1; i < numRows - 3; i++ ) {
     this.rowImages.push( map.mapTiles[ 2 ] );
   }
   this.rowImages.push( map.mapTiles[ 3 ] );
 };
 
 Map.prototype.findEnemyRows = function() {
-  for ( var i = 1; i < this.numRows - 2; i++ ) {
+  for ( var i = 2; i < this.numRows - 2; i++ ) {
     this.enemyRows.push( i );
   }
 };
@@ -285,12 +286,12 @@ Player.prototype.character = function() {
   this.pauseMsgStyle();
   ctx.fillText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.strokeText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
-  ctx.fillText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 250 );
-  ctx.strokeText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 250 );
+  ctx.fillText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 190 );
+  ctx.strokeText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 190 );
   // Box to contain the characters
   ctx.fillStyle = 'silver';
-  ctx.fillRect( map.totalWidth / 2 - 300, map.totalHeight / 2, 600, 200 );
-  ctx.strokeRect( map.totalWidth / 2 - 300, map.totalHeight / 2, 600, 200 );
+  ctx.fillRect( 0, map.totalHeight / 2, map.totalWidth, 140 );
+  ctx.strokeRect( 0, map.totalHeight / 2, map.totalWidth, 140 );
   // Box to indicate which character is being selected
   ctx.drawImage( Resources.get( map.variousImages[ 0 ] ), this.selectX, this.selectY );
   // Draw all of the characters so user can see which one is being selected
@@ -526,7 +527,7 @@ Player.prototype.handleInput = function( input ) {
       }
     } else if ( input === 'up' ) {
       // Going to the top of the game field results in a victory:
-      if ( this.yCoord === 1 ) {
+      if ( this.yCoord === 2 ) {
         this.victory = true;
         this.victorySpot = this.y;
         this.sprite = this.charHappy[ this.selection ];
