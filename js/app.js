@@ -5,6 +5,7 @@ var Map = function() {
   this.tileHeight = 83;
   // The number of columns can be changed to widen or compress the playing field
   this.numColumns = 15;
+  // Changing numRows requires items to be added to the rowImages array below
   this.numRows = 7;
   this.rowImages = [
     'images/water-block.png', // Top row is water
@@ -46,7 +47,6 @@ var Enemy = function() {
   this.sprite = 'images/enemy-bug.png';
   this.x = this.startX();
   this.y = this.startY();
-  this.row = 0;
   this.speed = this.newSpeed();
   // If 1, the enemies are moving, if 0, they are not,
   // see Enemy.prototype.togglePause()
@@ -59,14 +59,15 @@ Enemy.prototype.startX = function() {
 };
 
 // Appropriate start position are at 56 + n83, where n == 0, 1, or 2.
+// Random value from array courtesy of:
+// http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
 Enemy.prototype.startY = function() {
-  this.newRow();
-  var result = map.yValues[ this.row ];
+  var options = [ 0, 1, 2, 3, 4 ];
+  var result = map.yValues[ options[ Math.floor( Math.random() * options.length ) ] ];
   return result;
 };
 
-// Random value from array courtesy of:
-// http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
+
 Enemy.prototype.newRow = function() {
   var options = [ 0, 1, 2, 3, 4 ];
   this.row = options[ Math.floor( Math.random() * options.length ) ];
@@ -177,14 +178,15 @@ Player.prototype.update = function( dt ) {
   var currentSpots = [];
   for ( var i = 0; i < this.numEnemies; i++ ) {
     var x = allEnemies[ i ].x;
-    var row = allEnemies[ i ].row;
-    currentSpots.push( [ x, row ] );
+    var y = allEnemies[ i ].y;
+    currentSpots.push( [ x, y ] );
   }
   for ( var b = 0; b < this.numEnemies; b++ ) {
     // Collision detected:
     if ( ( this.x - map.tileWidth / 2 < currentSpots[ b ][ 0 ] &&
         this.x + map.tileWidth / 2 > currentSpots[ b ][ 0 ] ) &&
-      ( this.yCoord === currentSpots[ b ][ 1 ] ) ) {
+      ( this.y - map.tileHeight / 8 < currentSpots[ b ][ 1 ]  &&
+      this.y + map.tileHeight / 8 > currentSpots[ b ][ 1 ]) ) {
       this.dead();
     }
   }
@@ -200,8 +202,8 @@ Player.prototype.move = function() {
 };
 
 Player.prototype.resetStart = function() {
-  this.xCoord = 4;
-  this.yCoord = 5;
+  this.xCoord = Math.floor(map.numColumns/2);
+  this.yCoord = map.numRows - 2;
   this.move();
 };
 
@@ -416,7 +418,7 @@ var enemyCount = function( count ) {
   player.numEnemies = count;
 };
 
-enemyCount( 3 );
+enemyCount( 10 );
 
 
 // This listens for key presses and sends the keys to your
