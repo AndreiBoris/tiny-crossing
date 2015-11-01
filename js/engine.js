@@ -187,7 +187,11 @@ var Engine = ( function( global ) {
     'images/char-horn-girl-happy',
     'images/char-pink-girl-happy',
     'images/char-princess-girl-happy',
-    'images/Selector'
+    'images/Selector',
+    'images/Star',
+    'images/Rock',
+    'images/Key',
+    'images/Heart'
   ];
 
   var sizer = function( size ) {

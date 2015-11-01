@@ -26,7 +26,13 @@ var Map = function() {
   // Dynamically generated at the bottom of app.js to determine which rows
   // enemies can use. This is used by Enemy.startY()
   this.enemyRows = [];
-  this.variousImages = [ 'images/Selector' ];
+  this.variousImages = [
+    'images/Selector',
+    'images/Star',
+    'images/Rock',
+    'images/Key',
+    'images/Heart'
+  ];
   this.enemySprite = 'images/enemy-bug';
   this.playerChars = [
     'images/char-boy',
@@ -286,12 +292,12 @@ Player.prototype.character = function() {
   ctx.strokeRect( map.totalWidth / 2 - 300, map.totalHeight / 2, 600, 200 );
   // Box to indicate which character is being selected
   ctx.drawImage( Resources.get( map.variousImages[ 0 ] ), this.selectX, this.selectY );
-// Draw all of the characters so user can see which one is being selected
-for ( var i = 0; i < length; i++ ) {
-  ctx.drawImage( Resources.get( this.charOptions[ i ] ), position, map.totalHeight / 2 );
-  // spread the characters out evenly
-  position = position + 112;
-}
+  // Draw all of the characters so user can see which one is being selected
+  for ( var i = 0; i < length; i++ ) {
+    ctx.drawImage( Resources.get( this.charOptions[ i ] ), position, map.totalHeight / 2 );
+    // spread the characters out evenly
+    position = position + 112;
+  }
 };
 
 // This gets run for every frame of the game
