@@ -366,12 +366,12 @@ Player.prototype.victoryBounce = function( startingY, dt ) {
     // map.tileWidth here is used as a basis for a time measurement so that
     // the game scales appropriately when bigger maps are used.
     this.y = this.y - map.tileWidth * dt;
-    // Move down
   } else if ( this.y < startingY ) {
+    // Move down
     this.movingUp = false;
     this.y = this.y + map.tileWidth * dt;
-    // player.sprite is assumed to have reached starting position:
   } else {
+    // player.sprite is assumed to have reached starting position:
     this.movingUp = true;
   }
 };
@@ -385,8 +385,8 @@ Player.prototype.handleInput = function( input ) {
         // Skip to rightmost character.
         this.selectX = this.selectX + ( this.charOptions.length - 1 ) * 112;
         this.selection = this.charOptions.length - 1;
-        // Move selection left:
       } else {
+        // Move selection left:
         this.selectX = this.selectX - 112;
         this.selection--;
       }
@@ -396,13 +396,13 @@ Player.prototype.handleInput = function( input ) {
         // Skip to leftmost character.
         this.selectX = this.selectX - ( this.charOptions.length - 1 ) * 112;
         this.selection = 0;
-        // Move selection right:
       } else {
+        // Move selection right:
         this.selectX = this.selectX + 112;
         this.selection++;
       }
-      // Choose character
     } else if ( input === 'enter' ) {
+      // Choose character
       this.charSelected = true;
       this.sprite = this.charOptions[ this.selection ];
       this.resetStart();
@@ -426,8 +426,8 @@ Player.prototype.handleInput = function( input ) {
         this.victorySpot = this.y;
         this.sprite = this.charHappy[ this.selection ];
         this.togglePause();
-      // Move up:
       } else {
+        // Move up:
         this.yCoord--;
       }
     } else if ( input === 'right' ) {
@@ -435,16 +435,16 @@ Player.prototype.handleInput = function( input ) {
       if ( this.xCoord === map.numColumns - 1 ) {
         // Move to leftmost tile:
         this.xCoord = 0;
-      // Move right:
       } else {
+        // Move right:
         this.xCoord++;
       }
     } else if ( input === 'down' ) {
       // Bottom-most position:
       if ( this.yCoord === map.numRows - 2 ) {
         return;
-      // Move down:
       } else {
+        // Move down:
         this.yCoord++;
       }
     } else if ( input === 'pause' ) {
