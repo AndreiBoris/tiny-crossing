@@ -26,7 +26,7 @@ var Map = function() {
   // Dynamically generated at the bottom of app.js to determine which rows
   // enemies can use. This is used by Enemy.startY()
   this.enemyRows = [];
-  this.variousImages = ['images/Selector'];
+  this.variousImages = [ 'images/Selector' ];
   this.enemySprite = 'images/enemy-bug';
   this.playerChars = [
     'images/char-boy',
@@ -78,12 +78,12 @@ Map.prototype.makeCoordinates = function() {
 };
 
 Map.prototype.makeRows = function( numRows ) {
-  this.rowImages.push( map.mapTiles[0] );
-  this.rowImages.push( map.mapTiles[1] );
+  this.rowImages.push( map.mapTiles[ 0 ] );
+  this.rowImages.push( map.mapTiles[ 1 ] );
   for ( var i = 1; i < numRows - 2; i++ ) {
-    this.rowImages.push( map.mapTiles[2] );
+    this.rowImages.push( map.mapTiles[ 2 ] );
   }
-  this.rowImages.push( map.mapTiles[3] );
+  this.rowImages.push( map.mapTiles[ 3 ] );
 };
 
 Map.prototype.findEnemyRows = function() {
@@ -106,8 +106,8 @@ Map.prototype.findImages = function() {
     for ( i = 0; i < lengthTiles; i++ ) {
       this.mapTiles[ i ] += '.png';
     }
-    for ( i = 0; i < lengthOthers; i++){
-      this.variousImages[i] += '.png';
+    for ( i = 0; i < lengthOthers; i++ ) {
+      this.variousImages[ i ] += '.png';
     }
   } else if ( this.size === 'medium' ) {
     this.tileWidth = 85;
@@ -121,8 +121,8 @@ Map.prototype.findImages = function() {
     for ( j = 0; j < lengthTiles; j++ ) {
       this.mapTiles[ j ] += '-85.png';
     }
-    for ( j = 0; j < lengthOthers; j++){
-      this.variousImages[j] += '-85.png';
+    for ( j = 0; j < lengthOthers; j++ ) {
+      this.variousImages[ j ] += '-85.png';
     }
   } else if ( this.size === 'small' ) {
     this.tileWidth = 65;
@@ -136,8 +136,8 @@ Map.prototype.findImages = function() {
     for ( k = 0; k < lengthTiles; k++ ) {
       this.mapTiles[ k ] += '-65.png';
     }
-    for ( k = 0; k < lengthOthers; k++){
-      this.variousImages[k] += '-65.png';
+    for ( k = 0; k < lengthOthers; k++ ) {
+      this.variousImages[ k ] += '-65.png';
     }
   } else if ( this.size === 'tiny' ) {
     this.tileWidth = 50;
@@ -151,10 +151,11 @@ Map.prototype.findImages = function() {
     for ( m = 0; m < lengthTiles; m++ ) {
       this.mapTiles[ m ] += '-50.png';
     }
-    for ( m = 0; m < lengthOthers; m++){
-      this.variousImages[m] += '-50.png';
+    for ( m = 0; m < lengthOthers; m++ ) {
+      this.variousImages[ m ] += '-50.png';
     }
-  } this.tileHeight = this.tileWidth * 0.821782178;
+  }
+  this.tileHeight = this.tileWidth * 0.821782178;
   this.numColumns = 11;
   this.numRows = 10;
   this.rowImages = [];
@@ -283,14 +284,13 @@ Player.prototype.character = function() {
   ctx.fillRect( map.totalWidth / 2 - 300, map.totalHeight / 2, 600, 200 );
   ctx.strokeRect( map.totalWidth / 2 - 300, map.totalHeight / 2, 600, 200 );
   // Box to indicate which character is being selected
-  ctx.strokeStyle = 'lime';
-  ctx.strokeRect( this.selectX, this.selectY, 100, 100 );
-  // Draw all of the characters so user can see which one is being selected
-  for ( var i = 0; i < length; i++ ) {
-    ctx.drawImage( Resources.get( this.charOptions[ i ] ), position, map.totalHeight / 2 );
-    // spread the characters out evenly
-    position = position + 112;
-  }
+  ctx.drawImage( Resources.get( map.variousImages[ 0 ] ), this.selectX, this.selectY );
+// Draw all of the characters so user can see which one is being selected
+for ( var i = 0; i < length; i++ ) {
+  ctx.drawImage( Resources.get( this.charOptions[ i ] ), position, map.totalHeight / 2 );
+  // spread the characters out evenly
+  position = position + 112;
+}
 };
 
 // This gets run for every frame of the game
