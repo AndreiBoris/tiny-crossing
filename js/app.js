@@ -3,7 +3,7 @@ var Map = function() {
   // they should not be changed unless the Map.rowImages .pngs are changed too
   this.tileWidth = 101;
   this.tileHeight = 83;
-  this.numColumns = 11;
+  this.numColumns = 14;
   this.numRows = 7;
   this.rowImages = [
     'images/water-block.png', // Top row is water
@@ -120,8 +120,8 @@ Enemy.prototype.pause = function() {
 var Player = function() {
   this.sprite = '';
   this.charSelected = false;
-  this.selectX = 132;
-  this.selectY = 385;
+  this.selectX = map.totalWidth / 7;
+  this.selectY = (map.totalHeight / 2) + 50;
   this.x = 0;
   this.y = 0;
   this.xCoord = 4;
@@ -316,7 +316,7 @@ Player.prototype.handleInput = function( input ) {
   // Character selection screen controls
   if ( this.charSelected === false ) {
     if ( input === 'left' ) {
-      if ( this.selectX <= 135 ) {
+      if ( this.selectX <= map.totalWidth / ( 7 ) ) {
         // Skip to rightmost character.
         this.selectX = this.selectX + 4 * map.totalWidth / ( 7 );
         this.selection = this.charOptions.length - 1;
@@ -325,7 +325,7 @@ Player.prototype.handleInput = function( input ) {
         this.selection--;
       }
     } else if ( input === 'right' ) {
-      if ( this.selectX >= 640 ) {
+      if ( this.selectX >= 5 * map.totalWidth / ( 7 ) )  {
         // Skip to leftmost character.
         this.selectX = this.selectX - 4 * map.totalWidth / ( 7 );
         this.selection = 0;
