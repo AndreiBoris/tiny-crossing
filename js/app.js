@@ -3,20 +3,14 @@ var Map = function() {
   // they should not be changed unless the Map.rowImages .pngs are changed too
   this.tileWidth = 101;
   this.tileHeight = 83;
-  // The number of columns can be changed to widen or compress the playing field
-  this.numColumns = 15;
-  // Changing numRows requires items to be added to the rowImages array below
-  this.numRows = 7;
-  this.rowImages = [
-    'images/water-block.png', // Top row is water
-    'images/stone-block.png', // Row 1 of 5 of stone
-    'images/stone-block.png', // Row 2 of 5 of stone
-    'images/stone-block.png', // Row 3 of 5 of stone
-    'images/stone-block.png', // Row 4 of 5 of stone
-    'images/stone-block.png', // Row 5 of 5 of stone
-    'images/grass-block.png' // Row 2 of 2 of grass
-  ];
-  // Determines size of canvase in engine.js
+  // The number of columns can be changed
+  this.numColumns = 10;
+  // The number of columns can be changed, more enemy rows will be generated
+  this.numRows = 10;
+  // This is dynamically generated based this.numRows, see
+  // Map.prototype.makeRows();
+  this.rowImages = [];
+  // Determines size of canvas in engine.js
   this.totalWidth = this.tileWidth * this.numColumns;
   this.totalHeight = this.tileHeight * ( this.numRows + 1 );
   // xValues and yValues get generated at the bottom of app.js using
@@ -24,6 +18,7 @@ var Map = function() {
   // to work.
   this.xValues = {};
   this.yValues = {};
+  this.enemyRows = [];
 };
 
 // Allows Player.prototype.move to work to move the player around using
@@ -42,6 +37,20 @@ Map.prototype.makeCoordinates = function() {
   }
   for (i = 0; i < this.numRows; i++ ){
     this.yValues[i] = 50 + this.tileHeight * i;
+  }
+};
+
+Map.prototype.makeRows = function(numRows) {
+  this.rowImages.push('images/water-block.png');
+  for (var i=0;i<numRows - 2;i++){
+    this.rowImages.push('images/stone-block.png');
+  }
+  this.rowImages.push('images/grass-block.png');
+};
+
+Map.prototype.findEnemyRows = function() {
+  for (var i=0;i<this.numRows - 2;i++){
+    this.enemyRows.push(i);
   }
 };
 
@@ -69,9 +78,8 @@ Enemy.prototype.startX = function() {
 // Random value from array courtesy of:
 // http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
 Enemy.prototype.startY = function() {
-  var options = [ 0, 1, 2, 3, 4 ];
   // Picks one of the first 5 rows which enemies can use.
-  var result = map.yValues[ options[ Math.floor( Math.random() * options.length ) ] ];
+  var result = map.yValues[ map.enemyRows[ Math.floor( Math.random() * map.enemyRows.length ) ] ];
   return result;
 };
 
@@ -430,6 +438,8 @@ Player.prototype.handleInput = function( input ) {
 // Place the player object in a variable called player
 var allEnemies = [];
 var map = new Map();
+map.makeRows(map.numRows);
+map.findEnemyRows();
 map.makeCoordinates();
 var player = new Player();
 
