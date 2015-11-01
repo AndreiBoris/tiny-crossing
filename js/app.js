@@ -3,7 +3,8 @@ var Map = function() {
   // they should not be changed unless the Map.rowImages .pngs are changed too
   this.tileWidth = 101;
   this.tileHeight = 83;
-  this.numColumns = 14;
+  // The number of columns can be changed to widen or compress the playing field
+  this.numColumns = 15;
   this.numRows = 7;
   this.rowImages = [
     'images/water-block.png', // Top row is water
@@ -161,8 +162,8 @@ Player.prototype.costumes = function() {
   ctx.strokeText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.fillText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 250 );
   ctx.strokeText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 250 );
-  ctx.fillRect( position - 10, map.totalHeight / 2, position * length, 200 );
-  ctx.strokeRect( position - 10, map.totalHeight / 2, position * length, 200 );
+  ctx.fillRect( position - 10, map.totalHeight / 2, (position * (length - 1)) + 125, 200 );
+  ctx.strokeRect( position - 10, map.totalHeight / 2, (position * (length - 1)) + 125, 200 );
   ctx.strokeStyle = 'lime';
   ctx.strokeRect( this.selectX, this.selectY, 100, 100 );
   for ( var i = 0; i < length; i++ ) {
