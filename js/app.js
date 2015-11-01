@@ -623,4 +623,6 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Score
 // TODO: lives
 // TODO: timelimit
-// TODO: Make selection box adjust to other map sizes (only works on small)
+// TODO: Make selection box adjust to other map sizes (only works on tiny)
+// TODO: fix selection box character spacing (tiny display)
+// TODO: Add nextsteps.txt features
