@@ -1,7 +1,7 @@
 var Map = function() {
   // Determine map size
   // 'large', 'medium', 'small', 'tiny'
-  this.size = 'large';
+  this.size = 'medium';
   // These values are used to determine many other distances in the script, but
   // they should not be changed unless the Map.rowImages .pngs are changed too
   this.tileWidth = 101;
