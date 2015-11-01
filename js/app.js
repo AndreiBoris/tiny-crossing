@@ -547,12 +547,12 @@ Player.prototype.handleInput = function( input ) {
     // Handles the move for all the possible changes in the if statements above:
     this.move();
   }
-  // If the game isn't over but is paused, only the unpause button will work:
+  // If the game is paused, only the unpause button will work:
   else if ( this.paused === true && this.victory === false && this.isHit === false ) {
     if ( input === 'pause' ) {
       this.togglePause();
     }
-  } // When game is over, 'enter' can be used to reset it:
+  } // When player is hit, 'enter' can be used to reset:
   else if ( this.victory === true || this.isHit === true ) {
     if ( input === 'enter' ) {
       this.victory = false;
@@ -601,7 +601,8 @@ document.addEventListener( 'keyup', function( e ) {
     39: 'right',
     40: 'down',
     13: 'enter',
-    80: 'pause'
+    80: 'pause',
+    19: 'pause'
   };
 
   player.handleInput( allowedKeys[ e.keyCode ] );
