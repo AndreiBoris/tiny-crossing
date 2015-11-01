@@ -1,7 +1,7 @@
 var Map = function() {
   // Determine map size
   // 'large', 'medium', 'small', 'tiny'
-  this.size = 'medium';
+  this.size = 'small';
   // These values are used to determine many other distances in the script, but
   // they should not be changed unless the Map.rowImages .pngs are changed too
   this.tileWidth = 101;
@@ -567,7 +567,7 @@ var enemyCount = function( count ) {
   player.numEnemies = count;
 };
 
-enemyCount( 10 );
+enemyCount( 25 );
 
 
 // This listens for key presses and sends the keys to the Player.handleInput()
