@@ -9,7 +9,7 @@ var Map = function() {
   // The number of columns can be changed
   this.numColumns = 11;
   // The number of columns can be changed, more enemy rows will be generated
-  this.numRows = 10;
+  this.numRows = 14;
   // This is dynamically generated based this.numRows, see
   // Map.prototype.makeRows();
   this.rowImages = [];
@@ -163,8 +163,6 @@ Map.prototype.findImages = function() {
     }
   }
   this.tileHeight = this.tileWidth * 0.821782178;
-  this.numColumns = 11;
-  this.numRows = 10;
   this.rowImages = [];
   this.totalWidth = this.tileWidth * this.numColumns;
   this.totalHeight = this.tileHeight * ( this.numRows + 1 );
