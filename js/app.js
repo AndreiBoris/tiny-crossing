@@ -240,7 +240,7 @@ var Player = function() {
   // this.x and this.y couldn't be used to due to possible collisions with
   // enemies whose position values are already generated when the selection
   // screen comes up.
-  this.selectX = map.totalWidth / 2 - 280;
+  this.selectX = map.totalWidth / 2 - 260;
   this.selectY = ( map.totalHeight / 2 ) + 50;
   // this.x, this.y, this.xCoord and this.yCoord are all generated for the first
   // time in Player.prototype.handleInput() when a player picks a character
@@ -273,7 +273,7 @@ var Player = function() {
 // Until the player has selected a character, this gets rendered over the game
 Player.prototype.character = function() {
   var length = this.charOptions.length,
-    position = map.totalWidth / 2 - 280;
+    position = map.totalWidth / 2 - 260;
   // Change stroke and fillStyles
   this.pauseMsgStyle();
   ctx.fillText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
@@ -281,6 +281,7 @@ Player.prototype.character = function() {
   ctx.fillText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 250 );
   ctx.strokeText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 250 );
   // Box to contain the characters
+  ctx.fillStyle = 'silver';
   ctx.fillRect( map.totalWidth / 2 - 300, map.totalHeight / 2, 600, 200 );
   ctx.strokeRect( map.totalWidth / 2 - 300, map.totalHeight / 2, 600, 200 );
   // Box to indicate which character is being selected
