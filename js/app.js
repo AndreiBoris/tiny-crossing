@@ -25,7 +25,7 @@ var Map = function() {
   this.yValues = {};
   // Dynamically generated at the bottom of app.js to determine which rows
   // enemies can use. This is used by Enemy.startY()
-  this.enemyRows = [ 2, 3, 4, 5, 6, 7, 9, 10, 11 ];
+  this.enemyRows = [ 2, 3, 4, 9, 10, 11 ];
   this.variousImages = [
     'images/Selector',
     'images/Star',
@@ -36,7 +36,7 @@ var Map = function() {
   this.enemySprites = [
     'images/enemy-bug',
     'images/enemy-bug-left'
-];
+  ];
   this.playerChars = [
     'images/char-boy',
     'images/char-cat-girl',
@@ -62,7 +62,8 @@ var Map = function() {
     'images/white-block',
     'images/water-block',
     'images/stone-block',
-    'images/grass-block'
+    'images/grass-block',
+    'images/water-block2',
   ];
 };
 
@@ -91,19 +92,15 @@ Map.prototype.makeRows = function( numRows ) {
   this.rowImages.push( map.mapTiles[ 0 ] );
   this.rowImages.push( map.mapTiles[ 1 ] );
   for ( var i = 1; i < numRows - 3; i++ ) {
-    if ( i !== 7 ) {
-      this.rowImages.push( map.mapTiles[ 2 ] );
-    } else if ( i === 7 ) {
+    if ( i === 7 ) {
       this.rowImages.push( map.mapTiles[ 3 ] );
+    } else if ( i === 4 || i === 5 || i === 6 ) {
+      this.rowImages.push( map.mapTiles[ 4 ] );
+    } else {
+      this.rowImages.push( map.mapTiles[ 2 ] );
     }
   }
   this.rowImages.push( map.mapTiles[ 3 ] );
-};
-
-Map.prototype.findEnemyRows = function() {
-  for ( var i = 2; i < this.numRows - 2; i++ ) {
-    this.enemyRows.push( i );
-  }
 };
 
 Map.prototype.findImages = function() {
@@ -117,8 +114,8 @@ Map.prototype.findImages = function() {
       this.playerCharsHurt[ i ] += '.png';
       this.playerCharsHappy[ i ] += '.png';
     }
-    for (i = 0; i < lengthEnemies; i++ ) {
-      this.enemySprites[i] += '.png';
+    for ( i = 0; i < lengthEnemies; i++ ) {
+      this.enemySprites[ i ] += '.png';
     }
     for ( i = 0; i < lengthTiles; i++ ) {
       this.mapTiles[ i ] += '.png';
@@ -134,8 +131,8 @@ Map.prototype.findImages = function() {
       this.playerCharsHurt[ j ] += '-85.png';
       this.playerCharsHappy[ j ] += '-85.png';
     }
-    for (j = 0; j < lengthEnemies; j++ ) {
-      this.enemySprites[j] += '-85.png';
+    for ( j = 0; j < lengthEnemies; j++ ) {
+      this.enemySprites[ j ] += '-85.png';
     }
     for ( j = 0; j < lengthTiles; j++ ) {
       this.mapTiles[ j ] += '-85.png';
@@ -151,8 +148,8 @@ Map.prototype.findImages = function() {
       this.playerCharsHurt[ k ] += '-65.png';
       this.playerCharsHappy[ k ] += '-65.png';
     }
-    for (k = 0; k < lengthEnemies; k++ ) {
-      this.enemySprites[k] += '-65.png';
+    for ( k = 0; k < lengthEnemies; k++ ) {
+      this.enemySprites[ k ] += '-65.png';
     }
     for ( k = 0; k < lengthTiles; k++ ) {
       this.mapTiles[ k ] += '-65.png';
@@ -168,8 +165,8 @@ Map.prototype.findImages = function() {
       this.playerCharsHurt[ m ] += '-50.png';
       this.playerCharsHappy[ m ] += '-50.png';
     }
-    for (m = 0; m < lengthEnemies; m++ ) {
-      this.enemySprites[m] += '-50.png';
+    for ( m = 0; m < lengthEnemies; m++ ) {
+      this.enemySprites[ m ] += '-50.png';
     }
     for ( m = 0; m < lengthTiles; m++ ) {
       this.mapTiles[ m ] += '-50.png';
@@ -228,30 +225,30 @@ Enemy.prototype.update = function( dt ) {
   // all computers. this.moving is changed to 0 when the game is paused.
   this.x = this.x + this.speed * dt * this.moving;
   // Reset enemies to the left side of the screen when they are offscreen right.
-  if ( this.speed === 0){
+  if ( this.speed === 0 ) {
     if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 4 ] ||
-      this.y === map.yValues[ 2 ]  ) {
+      this.y === map.yValues[ 2 ] ) {
       this.speed = this.newSpeed( 'left' );
-      this.sprite = map.enemySprites[1];
+      this.sprite = map.enemySprites[ 1 ];
     } else {
       this.speed = this.newSpeed( 'right' );
-      this.sprite = map.enemySprites[0];
+      this.sprite = map.enemySprites[ 0 ];
     }
   }
-  if ( this.x > map.totalWidth + 100 || this.x < -100) {
+  if ( this.x > map.totalWidth + 100 || this.x < -100 ) {
     this.y = this.startY();
     if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 4 ] ||
-      this.y === map.yValues[ 2 ]  ) {
+      this.y === map.yValues[ 2 ] ) {
       this.x = map.totalWidth + 80;
-        // Change speed of the enemy for the next loop
+      // Change speed of the enemy for the next loop
       this.speed = this.newSpeed( 'left' );
-      this.sprite = map.enemySprites[1];
+      this.sprite = map.enemySprites[ 1 ];
     } else {
-    this.x = -80;
-    // Change speed of the enemy for the next loop
-    this.speed = this.newSpeed( 'right' );
-    this.sprite = map.enemySprites[0];
-  }
+      this.x = -80;
+      // Change speed of the enemy for the next loop
+      this.speed = this.newSpeed( 'right' );
+      this.sprite = map.enemySprites[ 0 ];
+    }
   }
 };
 
@@ -259,8 +256,8 @@ Enemy.prototype.update = function( dt ) {
 Enemy.prototype.newSpeed = function( direction ) {
   if ( direction === 'right' ) {
     return map.tileWidth / 2 + ( Math.random() * map.tileWidth * 3 );
-  } else if (direction === 'left' ) {
-    return (map.tileWidth / -2 + ( Math.random() * map.tileWidth * -3 ));
+  } else if ( direction === 'left' ) {
+    return ( map.tileWidth / -2 + ( Math.random() * map.tileWidth * -3 ) );
   }
 };
 
@@ -747,8 +744,6 @@ var map = new Map();
 map.findImages();
 // Load correct tile images for each row:
 map.makeRows( map.numRows );
-// Determine which rows enemies can use:
-//map.findEnemyRows();
 // Generate coordinate system for Player.prototyle.handleInput() to use:
 map.makeCoordinates();
 
@@ -791,6 +786,5 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: signifiers for pause button
 // TODO: menu
 // TODO: Add nextsteps.txt features
-// TODO: Factor out findEnemyRows
 // TODO: Refactor everything
 // TODO: Add opposite direction enemies

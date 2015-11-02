@@ -173,6 +173,7 @@ var Engine = ( function( global ) {
     'images/white-block',
     'images/stone-block',
     'images/water-block',
+    'images/water-block2',
     'images/grass-block',
     'images/enemy-bug',
     'images/enemy-bug-left',
