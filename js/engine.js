@@ -131,6 +131,9 @@ var Engine = ( function( global ) {
          * we're using them over and over.
          */
         ctx.drawImage( Resources.get( rowImages[ row ] ), col * map.tileWidth, row * map.tileHeight );
+        if ( row === 9 && col !== 1 && col !== 5 && col !== 9){
+          ctx.drawImage( Resources.get( map.variousImages[2] ), col * map.tileWidth, (row * map.tileHeight) - 15 );
+        }
       }
     }
 
