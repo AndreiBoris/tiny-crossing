@@ -247,6 +247,10 @@ Float.prototype.togglePause = function( row ) {
   }
 };
 
+Float.prototype.blurPause = function() {
+  this.moving = 0;
+};
+
 // Enemies the player must avoid
 var Enemy = function() {
 
@@ -354,6 +358,10 @@ var Player = function() {
   // numEnemies is generated at the bottom of app.js and is used in the
   // evaluation of colissions to cheapen the cost of the operation slightly.
   this.numEnemies = 0;
+  // like numEnemies and used to determine if player can walk onto the floats
+  // from the current position
+  this.numFloats = 0;
+
   this.paused = false;
   this.victory = false;
   this.isHit = false;
@@ -568,21 +576,24 @@ Player.prototype.deadMessage = function() {
   Player.prototype.continueMessage();
 };
 
-Player.prototype.togglePause = function( mod ) {
+Player.prototype.togglePause = function() {
   // Pause all enemies:
   for ( var i = 0; i < this.numEnemies; i++ ) {
     allEnemies[ i ].togglePause();
   }
-  // Causes this.render to show pause message:
-  if ( mod !== 'enemies only' ) {
-    this.paused = !this.paused;
+  for ( i = 0; i < this.numFloats; i++ ) {
+    allFloats[ i ].togglePause();
   }
+  this.paused = !this.paused;
 };
 
 Player.prototype.blurPause = function() {
   // Pause all enemies:
   for ( var i = 0; i < this.numEnemies; i++ ) {
     allEnemies[ i ].blurPause();
+  }
+  for ( i = 0; i < this.numFloats; i++ ) {
+    allFloats[ i ].blurPause();
   }
   this.paused = true;
 };
@@ -592,6 +603,9 @@ Player.prototype.hit = function() {
     // Pause all enemies:
     for ( var i = 0; i < this.numEnemies; i++ ) {
       allEnemies[ i ].togglePause();
+    }
+    for ( i = 0; i < this.numFloats; i++ ) {
+      allFloats[ i ].togglePause();
     }
     this.paused = true;
     // Allows user to reset game using enter button through this.handleInput
@@ -784,7 +798,7 @@ Player.prototype.handleInput = function( input ) {
         setEnemies( 20 );
         // Pause the enemies only so that the new ones generated don't begin
         // the next game paused:
-        this.togglePause( 'enemies only' );
+        this.blurPause();
       }
       this.victory = false;
       this.isHit = false;
@@ -822,14 +836,15 @@ function addEnemies( count ) {
 function addFloats() {
   // Add first row of floats:
   for ( var i = 0; i < 3; i++ ) {
-    allFloats.push( new Float( 5, map.tileWidth * 3.5 * i, 100) );
+    allFloats.push( new Float( 5, map.tileWidth * 3.5 * i, 100 ) );
   } // Add second row of floats:
   for ( i = 0; i < 4; i++ ) {
-    allFloats.push( new Float( 6, map.tileWidth * 4 * i, 125 ));
+    allFloats.push( new Float( 6, map.tileWidth * 4 * i, 125 ) );
   } // Add third row of floats:
   for ( i = 0; i < 3; i++ ) {
-    allFloats.push( new Float( 7, 300 + map.tileWidth * 2.5 * i, 180 ));
+    allFloats.push( new Float( 7, 300 + map.tileWidth * 2.5 * i, 180 ) );
   }
+  player.numFloats = allFloats.length;
 }
 
 function setEnemies( count ) {
