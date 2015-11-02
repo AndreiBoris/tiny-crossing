@@ -45,7 +45,7 @@ var Engine = ( function( global ) {
      * computer is) - hurray time!
      */
     var now = Date.now(),
-    dt = ( now - lastTime ) / 1000.0;
+      dt = ( now - lastTime ) / 1000.0;
 
     /* Call our update/render functions, pass along the time delta to
      * our update function since it may be used for smooth animation.
@@ -99,6 +99,9 @@ var Engine = ( function( global ) {
     allEnemies.forEach( function( enemy ) {
       enemy.update( dt );
     } );
+    allFloats.forEach( function( float ) {
+      float.update( dt );
+    } );
     player.update( dt );
   }
 
@@ -131,8 +134,8 @@ var Engine = ( function( global ) {
          * we're using them over and over.
          */
         ctx.drawImage( Resources.get( rowImages[ row ] ), col * map.tileWidth, row * map.tileHeight );
-        if ( row === 9 && col !== 1 && col !== 5 && col !== 9){
-          ctx.drawImage( Resources.get( map.variousImages[2] ), col * map.tileWidth, (row * map.tileHeight) - 15 );
+        if ( row === 9 && col !== 1 && col !== 5 && col !== 9 ) {
+          ctx.drawImage( Resources.get( map.variousImages[ 2 ] ), col * map.tileWidth, ( row * map.tileHeight ) - 15 );
         }
       }
     }
@@ -151,6 +154,10 @@ var Engine = ( function( global ) {
      */
     allEnemies.forEach( function( enemy ) {
       enemy.render();
+    } );
+
+    allFloats.forEach( function( float ) {
+      float.render();
     } );
 
     player.render();
@@ -221,15 +228,15 @@ var Engine = ( function( global ) {
     }
   };
 
-sizer( map.size );
+  sizer( map.size );
 
-Resources.load( loadMe );
-Resources.onReady( init );
+  Resources.load( loadMe );
+  Resources.onReady( init );
 
-/* Assign the canvas' context object to the global variable (the window
- * object when run in a browser) so that developer's can use it more easily
- * from within their app.js files.
- */
-global.ctx = ctx;
-global.canvas = canvas;
+  /* Assign the canvas' context object to the global variable (the window
+   * object when run in a browser) so that developer's can use it more easily
+   * from within their app.js files.
+   */
+  global.ctx = ctx;
+  global.canvas = canvas;
 } )( this );

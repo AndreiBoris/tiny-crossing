@@ -183,23 +183,68 @@ Map.prototype.findImages = function() {
 };
 
 Map.prototype.canGo = function( newX, newY ) {
-  if ( (newY === 8 && newX !== 1 && newX !== 5 && newX !== 9) ||
-    newY === 5 || newY === 6 || newY === 7) {
+  if ( ( newY === 8 && newX !== 1 && newX !== 5 && newX !== 9 ) ||
+    newY === 5 || newY === 6 || newY === 7 ) {
     return false;
   }
   return true;
 };
 
-var Floats = function() {
-  this.sprite = '';
-  // Random value for the start of any given enemy
-  this.x = this.startX();
+var Float = function( row, pos, speed ) {
+  this.sprite = map.variousImages[ 5 ];
+  this.x = pos;
   // Random column
-  this.y = this.startY();
-  this.speed = 150;
-  // If 1, the enemies are moving, if 0, they are not,
-  // see Enemy.prototype.togglePause() This function allows the pause to work.
+  this.y = this.floatRow( row );
+  this.stockSpeed = speed;
+  this.speed = 0;
+  // If 1, the floats are moving, if 0, they are not,
+  // see Float.prototype.togglePause() This function allows the pause to work.
   this.moving = 1;
+};
+
+Float.prototype.update = function( dt ) {
+  // You should multiply any movement by the dt parameter
+  // which will ensure the game runs at the same speed for
+  // all computers. this.moving is changed to 0 when the game is paused.
+  this.x = this.x + this.speed * dt * this.moving;
+  // Set floats going in the correct directions:
+  if ( this.speed === 0 ) {
+    if ( this.y === map.yValues[ 5 ] || this.y === map.yValues[ 7 ] ) {
+      this.speed = this.stockSpeed;
+    } else {
+      this.speed = this.stockSpeed * -1;
+    }
+  }
+  // Reset floats when they go offscreen:
+  if ( this.x > map.totalWidth + ( 2.5 * map.tileWidth ) ||
+    this.x < -( 2.5 * map.tileWidth ) ) {
+    if ( this.y === map.yValues[ 5 ] || this.y === map.yValues[ 7 ] ) {
+      this.x = -1 * ( 2.25 * map.tileWidth );
+    } else {
+      this.x = map.totalWidth + ( 2.25 * map.tileWidth );
+    }
+  }
+};
+
+Float.prototype.render = function() {
+  if ( player.charSelected === true ) {
+    ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
+  }
+};
+
+Float.prototype.floatRow = function( row ) {
+  // Picks one of the rows for the float:
+  return map.yValues[ row ];
+};
+
+Float.prototype.togglePause = function( row ) {
+  if ( this.moving === 1 ) {
+    // this.moving gets multiplied by the speed of each float to determine
+    // whether the float is moving or not:
+    this.moving = 0;
+  } else {
+    this.moving = 1;
+  }
 };
 
 // Enemies the player must avoid
@@ -764,7 +809,8 @@ map.makeCoordinates();
 var player = new Player();
 
 var allEnemies = [];
-//Pick number of enemies
+var allFloats = [];
+
 function addEnemies( count ) {
   for ( var i = 0; i < count; i++ ) {
     allEnemies.push( new Enemy() );
@@ -773,12 +819,28 @@ function addEnemies( count ) {
   player.numEnemies = allEnemies.length;
 }
 
+function addFloats() {
+  // Add first row of floats:
+  for ( var i = 0; i < 3; i++ ) {
+    allFloats.push( new Float( 5, map.tileWidth * 3.5 * i, 100) );
+  } // Add second row of floats:
+  for ( i = 0; i < 4; i++ ) {
+    allFloats.push( new Float( 6, map.tileWidth * 4 * i, 125 ));
+  } // Add third row of floats:
+  for ( i = 0; i < 3; i++ ) {
+    allFloats.push( new Float( 7, 300 + map.tileWidth * 2.5 * i, 180 ));
+  }
+}
+
 function setEnemies( count ) {
   allEnemies.length = 0;
   addEnemies( count );
 }
-
+// Pick a number of enemies:
 addEnemies( 20 );
+
+// Generate floats:
+addFloats();
 
 
 // This listens for key presses and sends the keys to the Player.handleInput()
@@ -801,4 +863,4 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: menu
 // TODO: Add nextsteps.txt features
 // TODO: Refactor everything
-// TODO: Add opposite direction enemies
+// TODO: Add allFloats array
