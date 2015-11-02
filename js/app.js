@@ -25,7 +25,7 @@ var Map = function() {
   this.yValues = {};
   // Dynamically generated at the bottom of app.js to determine which rows
   // enemies can use. This is used by Enemy.startY()
-  this.enemyRows = [2,3,4,5,6,7,9,10,11];
+  this.enemyRows = [ 2, 3, 4, 5, 6, 7, 9, 10, 11 ];
   this.variousImages = [
     'images/Selector',
     'images/Star',
@@ -88,11 +88,11 @@ Map.prototype.makeRows = function( numRows ) {
   this.rowImages.push( map.mapTiles[ 0 ] );
   this.rowImages.push( map.mapTiles[ 1 ] );
   for ( var i = 1; i < numRows - 3; i++ ) {
-    if (i !== 7){
-    this.rowImages.push( map.mapTiles[ 2 ] );
-  } else if ( i === 7 ){
-    this.rowImages.push( map.mapTiles[ 3 ] );
-  }
+    if ( i !== 7 ) {
+      this.rowImages.push( map.mapTiles[ 2 ] );
+    } else if ( i === 7 ) {
+      this.rowImages.push( map.mapTiles[ 3 ] );
+    }
   }
   this.rowImages.push( map.mapTiles[ 3 ] );
 };
@@ -172,7 +172,12 @@ Map.prototype.findImages = function() {
   this.totalHeight = this.tileHeight * ( this.numRows + 1 );
 };
 
-
+Map.prototype.canGo = function( newX, newY ) {
+  if ( newY === 8 && newX !== 1 && newX !== 5 && newX !== 9 ) {
+    return false;
+  }
+  return true;
+};
 
 // Enemies the player must avoid
 var Enemy = function() {
@@ -242,7 +247,7 @@ Enemy.prototype.togglePause = function() {
 };
 
 Enemy.prototype.blurPause = function() {
-    this.moving = 0;
+  this.moving = 0;
 };
 
 var Player = function() {
@@ -319,8 +324,8 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
-  window.addEventListener( 'blur', function( ) {
-    console.log("pausing");
+  window.addEventListener( 'blur', function() {
+    console.log( "pausing" );
     player.blurPause();
   } );
   if ( this.counting === true ) {
@@ -617,8 +622,11 @@ Player.prototype.handleInput = function( input ) {
         // Move to rightmost tile:
         this.xCoord = map.numColumns - 1;
       } else {
-        // Move left:
-        this.xCoord--;
+        // Check if the tile is available:
+        if ( map.canGo( ( this.xCoord - 1 ), this.yCoord ) ) {
+          // Move left:
+          this.xCoord--;
+        }
       }
     } else if ( input === 'up' ) {
       // Going to the top of the game field results in a victory:
@@ -634,8 +642,11 @@ Player.prototype.handleInput = function( input ) {
         }
         this.togglePause();
       } else {
-        // Move up:
-        this.yCoord--;
+        // Check if the tile is available:
+        if ( map.canGo( this.xCoord, this.yCoord - 1 ) ) {
+          // Move up:
+          this.yCoord--;
+        }
       }
     } else if ( input === 'right' ) {
       // Rightmost position:
@@ -643,16 +654,22 @@ Player.prototype.handleInput = function( input ) {
         // Move to leftmost tile:
         this.xCoord = 0;
       } else {
-        // Move right:
-        this.xCoord++;
+        // Check if the tile is available:
+        if ( map.canGo( this.xCoord + 1, this.yCoord ) ) {
+          // Move right:
+          this.xCoord++;
+        }
       }
     } else if ( input === 'down' ) {
       // Bottom-most position:
       if ( this.yCoord === map.numRows - 2 ) {
         return;
       } else {
-        // Move down:
-        this.yCoord++;
+        // Check if the tile is available:
+        if ( map.canGo( this.xCoord, this.yCoord + 1) ) {
+          // Move down:
+          this.yCoord++;
+        }
       }
     } else if ( input === 'pause' ) {
       this.togglePause();
