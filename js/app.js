@@ -25,7 +25,7 @@ var Map = function() {
   this.yValues = {};
   // Dynamically generated at the bottom of app.js to determine which rows
   // enemies can use. This is used by Enemy.startY()
-  this.enemyRows = [];
+  this.enemyRows = [2,3,4,5,6,7,9,10,11];
   this.variousImages = [
     'images/Selector',
     'images/Star',
@@ -88,7 +88,11 @@ Map.prototype.makeRows = function( numRows ) {
   this.rowImages.push( map.mapTiles[ 0 ] );
   this.rowImages.push( map.mapTiles[ 1 ] );
   for ( var i = 1; i < numRows - 3; i++ ) {
+    if (i !== 7){
     this.rowImages.push( map.mapTiles[ 2 ] );
+  } else if ( i === 7 ){
+    this.rowImages.push( map.mapTiles[ 3 ] );
+  }
   }
   this.rowImages.push( map.mapTiles[ 3 ] );
 };
@@ -692,7 +696,7 @@ map.findImages();
 // Load correct tile images for each row:
 map.makeRows( map.numRows );
 // Determine which rows enemies can use:
-map.findEnemyRows();
+//map.findEnemyRows();
 // Generate coordinate system for Player.prototyle.handleInput() to use:
 map.makeCoordinates();
 
@@ -735,3 +739,4 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: signifiers for pause button
 // TODO: menu
 // TODO: Add nextsteps.txt features
+// TODO: Factor out findEnemyRows
