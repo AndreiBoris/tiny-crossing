@@ -237,6 +237,10 @@ Enemy.prototype.togglePause = function() {
   }
 };
 
+Enemy.prototype.blurPause = function() {
+    this.moving = 0;
+};
+
 var Player = function() {
   this.sprite = '';
   // this.x, this.y, this.xCoord and this.yCoord are all generated for the first
@@ -311,6 +315,10 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
+  window.addEventListener( 'blur', function( ) {
+    console.log("pausing");
+    player.blurPause();
+  } );
   if ( this.counting === true ) {
     this.timeKeeper -= dt;
     this.timeLeft = Math.round( this.timeKeeper );
@@ -469,6 +477,14 @@ Player.prototype.togglePause = function( mod ) {
   if ( mod !== 'enemies only' ) {
     this.paused = !this.paused;
   }
+};
+
+Player.prototype.blurPause = function() {
+  // Pause all enemies:
+  for ( var i = 0; i < this.numEnemies; i++ ) {
+    allEnemies[ i ].blurPause();
+  }
+  this.paused = true;
 };
 
 Player.prototype.hit = function() {
