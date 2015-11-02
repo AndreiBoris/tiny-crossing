@@ -357,6 +357,8 @@ Player.prototype.resetStart = function() {
   this.xCoord = Math.floor( map.numColumns / 2 );
   this.yCoord = map.numRows - 2;
   this.move();
+  this.timeLeft = 60;
+  this.timeKeeper = 60;
 };
 
 // Draws each frame.
@@ -621,7 +623,6 @@ Player.prototype.handleInput = function( input ) {
   } // 'enter' can be used to reset the game:
   else if ( this.victory === true || this.isHit === true || this.isDead === true ) {
     if ( input === 'enter' ) {
-      console.log('pressed enter');
       if ( this.isDead === true ) {
         this.isDead = false;
         this.livesLeft = 5;
