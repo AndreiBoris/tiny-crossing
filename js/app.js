@@ -281,6 +281,8 @@ var Player = function() {
   this.timeLeft = 60;
   this.timeKeeper = 60;
   this.counting = false;
+
+  this.points = 0;
 };
 
 // Until the player has selected a character, this gets rendered over the game
@@ -351,12 +353,13 @@ Player.prototype.move = function() {
   this.y = coordArray[ 1 ];
 };
 
-// Resets the player.sprite to the starting position near the bottom centre
-// part of the screen
 Player.prototype.resetStart = function() {
+  // Resets the player.sprite to the starting position near the bottom centre
+  // part of the screen:
   this.xCoord = Math.floor( map.numColumns / 2 );
   this.yCoord = map.numRows - 2;
   this.move();
+
   this.timeLeft = 60;
   this.timeKeeper = 60;
 };
@@ -371,6 +374,7 @@ Player.prototype.render = function() {
   if ( this.charSelected === true ) {
     ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
     this.displayTimer();
+    this.displayPoints();
     this.displayHearts();
   }
   if ( this.victory === true ) {
@@ -496,6 +500,15 @@ Player.prototype.displayTimer = function() {
   ctx.textAlign = 'center';
 };
 
+Player.prototype.displayPoints = function() {
+  this.bwMsgStyle();
+  ctx.textAlign = 'right';
+  ctx.drawImage(Resources.get(map.variousImages[1]), map.totalWidth - map.tileWidth, 52 );
+  ctx.fillText(this.points, map.totalWidth - (5 + map.tileWidth), 100);
+  ctx.strokeText(this.points, map.totalWidth - (5 + map.tileWidth), 100);
+  ctx.textAlign = 'center';
+};
+
 // Display red see-through overlay over player when player is hit:
 Player.prototype.hitOverlay = function() {
   // Center gradient around current position of player:
@@ -586,6 +599,7 @@ Player.prototype.handleInput = function( input ) {
         this.victory = true;
         this.victorySpot = this.y;
         this.sprite = this.charHappy[ this.selection ];
+        this.points = this.points + 100 + (this.timeLeft * 10);
         this.togglePause();
       } else {
         // Move up:
@@ -625,6 +639,7 @@ Player.prototype.handleInput = function( input ) {
     if ( input === 'enter' ) {
       if ( this.isDead === true ) {
         this.isDead = false;
+        this.points = 0;
         this.livesLeft = 5;
       }
       this.victory = false;
@@ -682,8 +697,4 @@ document.addEventListener( 'keyup', function( e ) {
 
 // TODO: signifiers for pause button
 // TODO: menu
-// TODO: Score
-// TODO: timelimit
-// TODO: Make selection box adjust to other map sizes (only works on tiny)
-// TODO: fix selection box character spacing (tiny display)
 // TODO: Add nextsteps.txt features
