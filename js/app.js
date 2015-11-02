@@ -66,6 +66,10 @@ var Map = function() {
     'images/grass-block',
     'images/water-block2',
   ];
+
+  this.slowFloaters = 100;
+  this.medFloaters = 125;
+  this.fastFloaters = 180;
 };
 
 
@@ -93,7 +97,7 @@ Map.prototype.makeRows = function( numRows ) {
   this.rowImages.push( map.mapTiles[ 0 ] );
   this.rowImages.push( map.mapTiles[ 1 ] );
   for ( var i = 1; i < numRows - 3; i++ ) {
-    if ( i === 4 || i === 8) {
+    if ( i === 4 || i === 8 ) {
       this.rowImages.push( map.mapTiles[ 3 ] );
     } else if ( i === 1 || i === 2 || i === 3 ) {
       this.rowImages.push( map.mapTiles[ 4 ] );
@@ -183,9 +187,9 @@ Map.prototype.findImages = function() {
 };
 
 Map.prototype.canGo = function( newX, newY ) {
-  // Player can't walk into rocks or water
+  // Player can't walk into rocks or water:
   if ( ( newY === 9 && newX !== 1 && newX !== 5 && newX !== 9 ) ||
-    newY === 5 && newX !== 3 && newX !== 7  ||
+    newY === 5 && newX !== 3 && newX !== 7 ||
     newY === 2 || newY === 3 || newY === 4 ) {
     return false;
   }
@@ -301,7 +305,7 @@ Enemy.prototype.update = function( dt ) {
   }
   if ( this.x > map.totalWidth + 100 || this.x < -100 ) {
     this.y = this.startY();
-    if  ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 7 ] ) {
+    if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 7 ] ) {
       this.x = map.totalWidth + 80;
       // Change speed of the enemy for the next loop
       this.speed = this.newSpeed( 'left' );
@@ -372,6 +376,8 @@ var Player = function() {
   // This is used to help guide the victory jumps as they loop in
   // Player.prototype.update()
   this.movingUp = true;
+  // Is the player on a floater?
+  this.floating = false;
 
   // game begins when this is true
   this.charSelected = false;
@@ -427,6 +433,10 @@ Player.prototype.update = function( dt ) {
   window.addEventListener( 'blur', function() {
     player.blurPause();
   } );
+  if ( this.floating === true ) {
+    // Dynamically update the this.xCoord and this.x values;
+
+  }
   if ( this.counting === true ) {
     this.timeKeeper -= dt;
     this.timeLeft = Math.round( this.timeKeeper );
@@ -440,20 +450,41 @@ Player.prototype.update = function( dt ) {
   if ( this.timeLeft <= 0 ) {
     this.timeLeft = "No bonus!";
   }
-  // Holds current positions of all enemies
-  var currentSpots = [];
-  for ( var i = 0; i < this.numEnemies; i++ ) {
+  // Holds current positions of all floats:
+  var floatSpots = [];
+  for ( var i = 0; i < this.numFloats; i++ ) {
+    var x = allFloats[ i ].x;
+    var y = allFloats[ i ].y;
+    floatSpots.push( [ x, y ] );
+  }
+  // Check to see if the player has stepped on a float:
+  if ( this.yCoord === 3 || this.yCoord === 4 || this.yCoord === 5 ) {
+    for ( var b = 0; b < this.numFloats; b++ ) {
+      if ( ( this.x < floatSpots[ b ][ 0 ] + 2 * map.tileWidth &&
+          this.x > floatSpots[ b ][ 0 ] ) &&
+        ( this.y - map.tileHeight / 8 < floatSpots[ b ][ 1 ] &&
+          this.y + map.tileHeight / 8 > floatSpots[ b ][ 1 ] ) ) {
+        // Floater there:
+        this.floating = true;
+      } else {
+        //this.drown();
+      }
+    }
+  }
+  // Holds current positions of all enemies:
+  var enemySpots = [];
+  for ( i = 0; i < this.numEnemies; i++ ) {
     var x = allEnemies[ i ].x;
     var y = allEnemies[ i ].y;
-    currentSpots.push( [ x, y ] );
+    enemySpots.push( [ x, y ] );
   }
   // Check to see if the player is close enough to any of the enemies to
   // trigger a colission
-  for ( var b = 0; b < this.numEnemies; b++ ) {
-    if ( ( this.x - map.tileWidth / 2 < currentSpots[ b ][ 0 ] &&
-        this.x + map.tileWidth / 2 > currentSpots[ b ][ 0 ] ) &&
-      ( this.y - map.tileHeight / 8 < currentSpots[ b ][ 1 ] &&
-        this.y + map.tileHeight / 8 > currentSpots[ b ][ 1 ] ) ) {
+  for ( b = 0; b < this.numEnemies; b++ ) {
+    if ( ( this.x - map.tileWidth / 2 < enemySpots[ b ][ 0 ] &&
+        this.x + map.tileWidth / 2 > enemySpots[ b ][ 0 ] ) &&
+      ( this.y - map.tileHeight / 8 < enemySpots[ b ][ 1 ] &&
+        this.y + map.tileHeight / 8 > enemySpots[ b ][ 1 ] ) ) {
       // Collision detected:
       this.hit();
     }
@@ -836,13 +867,13 @@ function addEnemies( count ) {
 function addFloats() {
   // Add first row of floats:
   for ( var i = 0; i < 3; i++ ) {
-    allFloats.push( new Float( 2, map.tileWidth * 3.5 * i, 100 ) );
+    allFloats.push( new Float( 2, map.tileWidth * 3.5 * i, map.slowFloaters ) );
   } // Add second row of floats:
   for ( i = 0; i < 4; i++ ) {
-    allFloats.push( new Float( 3, map.tileWidth * 4 * i, 125 ) );
+    allFloats.push( new Float( 3, map.tileWidth * 4 * i, map.medFloaters ) );
   } // Add third row of floats:
   for ( i = 0; i < 3; i++ ) {
-    allFloats.push( new Float( 4, 300 + map.tileWidth * 2.5 * i, 180 ) );
+    allFloats.push( new Float( 4, 300 + map.tileWidth * 2.5 * i, map.fastFloaters ) );
   }
   player.numFloats = allFloats.length;
 }
@@ -874,8 +905,7 @@ document.addEventListener( 'keyup', function( e ) {
   player.handleInput( allowedKeys[ e.keyCode ] );
 } );
 
-// TODO: signifiers for pause button
+// TODO: signifier for pause button
 // TODO: menu
 // TODO: Add nextsteps.txt features
 // TODO: Refactor everything
-// TODO: Add allFloats array
