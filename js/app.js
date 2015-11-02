@@ -239,14 +239,6 @@ Enemy.prototype.togglePause = function() {
 
 var Player = function() {
   this.sprite = '';
-  // game begins when this is true
-  this.charSelected = false;
-  // selectX and selectY control the position of the character selection box,
-  // this.x and this.y couldn't be used to due to possible collisions with
-  // enemies whose position values are already generated when the selection
-  // screen comes up.
-  this.selectX = map.totalWidth / 2 - 260;
-  this.selectY = ( map.totalHeight / 2 ) + 50;
   // this.x, this.y, this.xCoord and this.yCoord are all generated for the first
   // time in Player.prototype.handleInput() when a player picks a character
   this.x = 0;
@@ -268,13 +260,27 @@ var Player = function() {
   // This is used to help guide the victory jumps as they loop in
   // Player.prototype.update()
   this.movingUp = true;
+
+  // game begins when this is true
+  this.charSelected = false;
+  // selectX and selectY control the position of the character selection box,
+  // this.x and this.y couldn't be used to due to possible collisions with
+  // enemies whose position values are already generated when the selection
+  // screen comes up.
+  this.selectX = map.totalWidth / 2 - 260;
+  this.selectY = ( map.totalHeight / 2 ) + 50;
+  // This selects which value from the above three arrays is used by handleInput
+  this.selection = 0;
   // The following three arrays all get used through
-  // Player.prototype.handleInput
+  // Player.prototype.handleInput to choose the correct player.sprite
   this.charOptions = map.playerChars;
   this.charHappy = map.playerCharsHappy;
   this.charHurt = map.playerCharsHurt;
-  // This selects which value from the above three arrays is used by handleInput
-  this.selection = 0;
+
+  // Countdown timer for each round
+  this.timeLeft = 60;
+  this.timeKeeper = 60;
+  this.counting = false;
 };
 
 // Until the player has selected a character, this gets rendered over the game
@@ -282,7 +288,7 @@ Player.prototype.character = function() {
   var length = this.charOptions.length,
     position = map.totalWidth / 2 - 260;
   // Change stroke and fillStyles
-  this.pauseMsgStyle();
+  this.bwMsgStyle();
   ctx.fillText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.strokeText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.fillText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 190 );
@@ -303,6 +309,14 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
+  if (this.counting === true){
+    this.timeKeeper -= dt;
+    this.timeLeft = Math.round(this.timeKeeper);
+  } if (this.paused === false && this.charSelected === true){
+    this.counting = true;
+  } if (this.paused === true){
+    this.counting = false;
+  }
   // Holds current positions of all enemies
   var currentSpots = [];
   for ( var i = 0; i < this.numEnemies; i++ ) {
@@ -354,6 +368,7 @@ Player.prototype.render = function() {
   // Draw current position of appropriate player.sprite
   if ( this.charSelected === true ) {
     ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
+    this.displayTimer();
     this.displayHearts();
   }
   if ( this.victory === true ) {
@@ -404,14 +419,14 @@ Player.prototype.playAgainMessage = function() {
   ctx.strokeText( 'Press enter to play again!', canvas.width / 2, canvas.height - 60 );
 };
 
-Player.prototype.pauseMsgStyle = function() {
+Player.prototype.bwMsgStyle = function() {
   ctx.font = '40px Impact';
   ctx.fillStyle = 'white';
   ctx.strokeStyle = 'black';
 };
 
 Player.prototype.pauseMessage = function() {
-  this.pauseMsgStyle();
+  this.bwMsgStyle();
   ctx.fillText( 'Press "p" to unpause', canvas.width / 2, canvas.height / 2 );
   ctx.strokeText( 'Press "p" to unpause', canvas.width / 2, canvas.height / 2 );
 };
@@ -469,6 +484,14 @@ Player.prototype.displayHearts = function() {
     ctx.drawImage( Resources.get( map.variousImages[ 4 ] ), position, 10 );
     position += map.tileWidth;
   }
+};
+
+Player.prototype.displayTimer = function() {
+  this.bwMsgStyle();
+  ctx.textAlign = 'right';
+  ctx.fillText(this.timeLeft, map.totalWidth - 5, 50);
+  ctx.strokeText(this.timeLeft, map.totalWidth - 5, 50);
+  ctx.textAlign = 'center';
 };
 
 // Display red see-through overlay over player when player is hit:
@@ -659,7 +682,6 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: signifiers for pause button
 // TODO: menu
 // TODO: Score
-// TODO: lives
 // TODO: timelimit
 // TODO: Make selection box adjust to other map sizes (only works on tiny)
 // TODO: fix selection box character spacing (tiny display)
