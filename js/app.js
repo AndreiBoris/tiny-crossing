@@ -278,8 +278,8 @@ var Player = function() {
   this.charHurt = map.playerCharsHurt;
 
   // Countdown timer for each round
-  this.timeLeft = 60;
-  this.timeKeeper = 60;
+  this.timeLeft = 30;
+  this.timeKeeper = 30;
   this.counting = false;
 
   this.points = 0;
@@ -365,8 +365,8 @@ Player.prototype.resetStart = function() {
   this.yCoord = map.numRows - 2;
   this.move();
 
-  this.timeLeft = 10;
-  this.timeKeeper = 10;
+  this.timeLeft = 30;
+  this.timeKeeper = 30;
 };
 
 // Draws each frame.
@@ -460,13 +460,15 @@ Player.prototype.deadMessage = function() {
   Player.prototype.continueMessage();
 };
 
-Player.prototype.togglePause = function() {
+Player.prototype.togglePause = function(mod) {
   // Pause all enemies:
   for ( var i = 0; i < this.numEnemies; i++ ) {
     allEnemies[ i ].togglePause();
   }
   // Causes this.render to show pause message:
+  if (mod !== 'enemies only'){
   this.paused = !this.paused;
+  }
 };
 
 Player.prototype.hit = function() {
@@ -604,7 +606,8 @@ Player.prototype.handleInput = function( input ) {
         this.victory = true;
         this.victorySpot = this.y;
         this.sprite = this.charHappy[ this.selection ];
-        if ( parseInt(Number(this.timeLeft)) === this.timeLeft) {
+        addEnemies( 10 );
+        if ( parseInt( Number( this.timeLeft ) ) === this.timeLeft ) {
           this.points = this.points + 100 + ( this.timeLeft * 10 );
         } else {
           this.points = this.points + 100;
@@ -650,6 +653,10 @@ Player.prototype.handleInput = function( input ) {
         this.isDead = false;
         this.points = 0;
         this.livesLeft = 5;
+        setEnemies(20);
+        // Pause the enemies only so that the new ones generated don't begin
+        // the next game paused:
+        this.togglePause('enemies only');
       }
       this.victory = false;
       this.isHit = false;
@@ -677,15 +684,20 @@ var player = new Player();
 
 var allEnemies = [];
 //Pick number of enemies
-var enemyCount = function( count ) {
+function addEnemies( count ) {
   for ( var i = 0; i < count; i++ ) {
     allEnemies.push( new Enemy() );
   }
   // Used in evaluating whether colissions occur:
-  player.numEnemies = count;
-};
+  player.numEnemies = allEnemies.length;
+}
 
-enemyCount( 40 );
+function setEnemies( count ) {
+  allEnemies.length = 0;
+  addEnemies( count );
+}
+
+addEnemies( 20 );
 
 
 // This listens for key presses and sends the keys to the Player.handleInput()
