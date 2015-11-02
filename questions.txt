@@ -1,4 +1,5 @@
-Q. Why does Resource.load work in engine.js? load is defined in the anonymous
-self-invoking function. What makes it return access and make load() public?
+Q. When I tab away from the window and the bugs all go to the end of their track, how
+can I make it so tehy continue moving even if it is not my active window (to prevent
+cheating).
 
-A. they are given over to window.load at the end of the self-invoking function
+A. Research non-active window.requestAnimationFrame()!

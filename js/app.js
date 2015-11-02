@@ -255,12 +255,14 @@ var Player = function() {
   // which Player uses to move around the game map.
   this.xCoord = 0;
   this.yCoord = 0;
-  this.victory = false;
   // numEnemies is generated at the bottom of app.js and is used in the
   // evaluation of colissions to cheapen the cost of the operation slightly.
   this.numEnemies = 0;
   this.paused = false;
+  this.victory = false;
   this.isHit = false;
+  this.isDead = false;
+  this.livesLeft = 5;
   // This value is used in anchoring the victory jumps the player does
   this.victorySpot = 0;
   // This is used to help guide the victory jumps as they loop in
@@ -273,7 +275,6 @@ var Player = function() {
   this.charHurt = map.playerCharsHurt;
   // This selects which value from the above three arrays is used by handleInput
   this.selection = 0;
-  this.livesLeft = 5;
 };
 
 // Until the player has selected a character, this gets rendered over the game
@@ -355,21 +356,25 @@ Player.prototype.render = function() {
     ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
     this.displayHearts();
   }
-  // Show appropriate messages for victory
   if ( this.victory === true ) {
+    // Show appropriate messages for victory
     Player.prototype.victory();
+  } else if ( this.victory === false && this.paused === true &&
+    this.isHit === false && this.isDead === false ) {
     // If the game is paused due to pressing pause button, show pause message
-  } else if ( this.victory === false && this.paused === true && this.isHit === false ) {
     Player.prototype.pauseMessage();
   } else if ( this.isHit === true ) {
-    Player.prototype.deadMessage();
+    this.hitMessage();
+    this.hitOverlay();
+  } else if ( this.isDead === true ) {
     this.deadOverlay();
+    this.deadMessage();
   }
 };
 
 Player.prototype.victory = function() {
   Player.prototype.victoryMessage();
-  Player.prototype.playAgainMessage();
+  Player.prototype.continueMessage();
 };
 
 Player.prototype.victoryMessage = function() {
@@ -381,13 +386,22 @@ Player.prototype.victoryMessage = function() {
   ctx.strokeText( 'You win!', canvas.width / 2, canvas.height / 2 );
 };
 
-Player.prototype.playAgainMessage = function() {
+Player.prototype.continueMessage = function() {
   ctx.font = '40px Impact';
   ctx.fillStyle = 'white';
   ctx.strokeStyle = 'black';
 
   ctx.fillText( 'Press enter to continue', canvas.width / 2, canvas.height - 60 );
   ctx.strokeText( 'Press enter to continue', canvas.width / 2, canvas.height - 60 );
+};
+
+Player.prototype.playAgainMessage = function() {
+  ctx.font = '40px Impact';
+  ctx.fillStyle = 'white';
+  ctx.strokeStyle = 'black';
+
+  ctx.fillText( 'Press enter to play again!', canvas.width / 2, canvas.height - 60 );
+  ctx.strokeText( 'Press enter to play again!', canvas.width / 2, canvas.height - 60 );
 };
 
 Player.prototype.pauseMsgStyle = function() {
@@ -402,13 +416,22 @@ Player.prototype.pauseMessage = function() {
   ctx.strokeText( 'Press "p" to unpause', canvas.width / 2, canvas.height / 2 );
 };
 
-Player.prototype.deadMessage = function() {
+Player.prototype.hitMessage = function() {
   ctx.font = '56px Impact';
-  ctx.fillStyle = 'black';
+  ctx.fillStyle = 'white';
   ctx.strokeStyle = 'red';
   ctx.fillText( 'You got hit!', canvas.width / 2, canvas.height - 140 );
   ctx.strokeText( 'You got hit!', canvas.width / 2, canvas.height - 140 );
-  Player.prototype.playAgainMessage();
+  Player.prototype.continueMessage();
+};
+
+Player.prototype.deadMessage = function() {
+  ctx.font = '64px Impact';
+  ctx.fillStyle = 'black';
+  ctx.strokeStyle = 'red';
+  ctx.fillText( 'Game over!', canvas.width / 2, canvas.height - 140 );
+  ctx.strokeText( 'Game over!', canvas.width / 2, canvas.height - 140 );
+  Player.prototype.continueMessage();
 };
 
 Player.prototype.togglePause = function() {
@@ -433,19 +456,23 @@ Player.prototype.hit = function() {
     this.sprite = this.charHurt[ this.selection ];
     // Reduce lives:
     this.livesLeft--;
+    if ( this.livesLeft < 1 ) {
+      this.isDead = true;
+      this.isHit = false;
+    }
   }
 };
 
 Player.prototype.displayHearts = function() {
   var position = 10;
-  for (var i = 0; i < this.livesLeft; i++){
-    ctx.drawImage(Resources.get(map.variousImages[4]), position, 10);
+  for ( var i = 0; i < this.livesLeft; i++ ) {
+    ctx.drawImage( Resources.get( map.variousImages[ 4 ] ), position, 10 );
     position += map.tileWidth;
   }
 };
 
 // Display red see-through overlay over player when player is hit:
-Player.prototype.deadOverlay = function() {
+Player.prototype.hitOverlay = function() {
   // Center gradient around current position of player:
   var grd = ctx.createRadialGradient( this.x + map.tileWidth / 2,
     this.y + map.tileWidth, map.tileWidth / 2, this.x + map.tileWidth / 2,
@@ -459,6 +486,11 @@ Player.prototype.deadOverlay = function() {
   ctx.arc( this.x, this.y + map.tileWidth / 2, map.tileWidth * 3, 0, 2 * Math.PI );
   ctx.fillStyle = grd;
   ctx.fill();
+};
+
+Player.prototype.deadOverlay = function() {
+  ctx.fillStyle = 'rgba(100, 100, 100, 0.5)';
+  ctx.fillRect( 0, map.buffer + 2 * map.tileHeight, map.totalWidth, map.totalHeight );
 };
 
 // player.sprite jumps up and down upon crossing the map:
@@ -558,13 +590,19 @@ Player.prototype.handleInput = function( input ) {
     this.move();
   }
   // If the game is paused, only the unpause button will work:
-  else if ( this.paused === true && this.victory === false && this.isHit === false ) {
+  else if ( this.paused === true && this.victory === false &&
+    this.isHit === false && this.isDead === false) {
     if ( input === 'pause' ) {
       this.togglePause();
     }
-  } // When player is hit, 'enter' can be used to reset:
-  else if ( this.victory === true || this.isHit === true ) {
+  } // 'enter' can be used to reset the game:
+  else if ( this.victory === true || this.isHit === true || this.isDead === true ) {
     if ( input === 'enter' ) {
+      console.log('pressed enter');
+      if ( this.isDead === true ) {
+        this.isDead = false;
+        this.livesLeft = 5;
+      }
       this.victory = false;
       this.isHit = false;
       this.togglePause();
