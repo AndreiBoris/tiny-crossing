@@ -196,7 +196,8 @@ var Engine = ( function( global ) {
     'images/Star',
     'images/Rock',
     'images/Key',
-    'images/Heart'
+    'images/Heart',
+    'images/corn'
   ];
 
   var sizer = function( size ) {

@@ -31,7 +31,8 @@ var Map = function() {
     'images/Star',
     'images/Rock',
     'images/Key',
-    'images/Heart'
+    'images/Heart',
+    'images/corn'
   ];
   this.enemySprites = [
     'images/enemy-bug',
@@ -187,6 +188,18 @@ Map.prototype.canGo = function( newX, newY ) {
     return false;
   }
   return true;
+};
+
+var Floats = function() {
+  this.sprite = '';
+  // Random value for the start of any given enemy
+  this.x = this.startX();
+  // Random column
+  this.y = this.startY();
+  this.speed = 150;
+  // If 1, the enemies are moving, if 0, they are not,
+  // see Enemy.prototype.togglePause() This function allows the pause to work.
+  this.moving = 1;
 };
 
 // Enemies the player must avoid
