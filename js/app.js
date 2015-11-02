@@ -67,9 +67,9 @@ var Map = function() {
     'images/water-block2',
   ];
 
-  this.slowFloaters = 100;
-  this.medFloaters = 125;
-  this.fastFloaters = 180;
+  this.slowFloaters = 30;
+  this.medFloaters = 50;
+  this.fastFloaters = 70;
 };
 
 
@@ -187,10 +187,9 @@ Map.prototype.findImages = function() {
 };
 
 Map.prototype.canGo = function( newX, newY ) {
-  // Player can't walk into rocks or water:
+  // Player can't walk into rocks:
   if ( ( newY === 9 && newX !== 1 && newX !== 5 && newX !== 9 ) ||
-    newY === 5 && newX !== 3 && newX !== 7 ||
-    newY === 2 || newY === 3 || newY === 4 ) {
+    (newY === 5 && newX !== 3 && newX !== 7) ){
     return false;
   }
   return true;
@@ -368,7 +367,8 @@ var Player = function() {
 
   this.paused = false;
   this.victory = false;
-  this.isHit = false;
+  this.ouch = false;
+  this.drowned = false;
   this.isDead = false;
   this.livesLeft = 5;
   // This value is used in anchoring the victory jumps the player does
@@ -433,9 +433,19 @@ Player.prototype.update = function( dt ) {
   window.addEventListener( 'blur', function() {
     player.blurPause();
   } );
+  // Player is not floating when not on water:
+  if ( this.yCoord !== 2 && this.yCoord !== 3 && this.yCoord !== 4){
+    this.floating = false;
+  }
   if ( this.floating === true ) {
     // Dynamically update the this.xCoord and this.x values;
-
+    if ( this.yCoord === 2){
+      this.x = this.x + map.slowFloaters * dt;
+    } else if ( this.yCoord === 3) {
+      this.x = this.x + map.mediumFloaters * dt;
+    } else if ( this.yCoord === 4) {
+      this.x = this.x + map.fastFloaters * dt;
+    }
   }
   if ( this.counting === true ) {
     this.timeKeeper -= dt;
@@ -458,7 +468,7 @@ Player.prototype.update = function( dt ) {
     floatSpots.push( [ x, y ] );
   }
   // Check to see if the player has stepped on a float:
-  if ( this.yCoord === 3 || this.yCoord === 4 || this.yCoord === 5 ) {
+  if ( this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4 ) {
     for ( var b = 0; b < this.numFloats; b++ ) {
       if ( ( this.x < floatSpots[ b ][ 0 ] + 2 * map.tileWidth &&
           this.x > floatSpots[ b ][ 0 ] ) &&
@@ -466,25 +476,25 @@ Player.prototype.update = function( dt ) {
           this.y + map.tileHeight / 8 > floatSpots[ b ][ 1 ] ) ) {
         // Floater there:
         this.floating = true;
-      } else {
-        //this.drown();
       }
+    } if ( this.floating === false ){
+      this.drown();
     }
   }
   // Holds current positions of all enemies:
   var enemySpots = [];
   for ( i = 0; i < this.numEnemies; i++ ) {
-    var x = allEnemies[ i ].x;
-    var y = allEnemies[ i ].y;
-    enemySpots.push( [ x, y ] );
+    var xE = allEnemies[ i ].x;
+    var yE = allEnemies[ i ].y;
+    enemySpots.push( [ xE, yE ] );
   }
   // Check to see if the player is close enough to any of the enemies to
   // trigger a colission
-  for ( b = 0; b < this.numEnemies; b++ ) {
-    if ( ( this.x - map.tileWidth / 2 < enemySpots[ b ][ 0 ] &&
-        this.x + map.tileWidth / 2 > enemySpots[ b ][ 0 ] ) &&
-      ( this.y - map.tileHeight / 8 < enemySpots[ b ][ 1 ] &&
-        this.y + map.tileHeight / 8 > enemySpots[ b ][ 1 ] ) ) {
+  for ( var k = 0; k < this.numEnemies; k++ ) {
+    if ( ( this.x - map.tileWidth / 2 < enemySpots[ k ][ 0 ] &&
+        this.x + map.tileWidth / 2 > enemySpots[ k ][ 0 ] ) &&
+      ( this.y - map.tileHeight / 8 < enemySpots[ k ][ 1 ] &&
+        this.y + map.tileHeight / 8 > enemySpots[ k ][ 1 ] ) ) {
       // Collision detected:
       this.hit();
     }
@@ -533,10 +543,12 @@ Player.prototype.render = function() {
     // Show appropriate messages for victory
     Player.prototype.victory();
   } else if ( this.victory === false && this.paused === true &&
-    this.isHit === false && this.isDead === false ) {
+    this.ouch === false && this.isDead === false ) {
     // If the game is paused due to pressing pause button, show pause message
     Player.prototype.pauseMessage();
-  } else if ( this.isHit === true ) {
+  } else if ( this.drowned === true ) {
+    this.drownMessage();
+  } else if ( this.ouch === true ) {
     this.hitMessage();
     this.hitOverlay();
   } else if ( this.isDead === true ) {
@@ -598,6 +610,15 @@ Player.prototype.hitMessage = function() {
   Player.prototype.continueMessage();
 };
 
+Player.prototype.drownMessage = function() {
+  ctx.font = '56px Impact';
+  ctx.fillStyle = 'white';
+  ctx.strokeStyle = 'red';
+  ctx.fillText( 'You can\'t swim!', canvas.width / 2, canvas.height - 140 );
+  ctx.strokeText( 'You can\'t swim!', canvas.width / 2, canvas.height - 140 );
+  Player.prototype.continueMessage();
+};
+
 Player.prototype.deadMessage = function() {
   ctx.font = '64px Impact';
   ctx.fillStyle = 'black';
@@ -640,14 +661,38 @@ Player.prototype.hit = function() {
     }
     this.paused = true;
     // Allows user to reset game using enter button through this.handleInput
-    this.isHit = true;
+    this.ouch = true;
     // Change to dead sprite
     this.sprite = this.charHurt[ this.selection ];
     // Reduce lives:
     this.livesLeft--;
     if ( this.livesLeft < 1 ) {
       this.isDead = true;
-      this.isHit = false;
+      this.ouch = false;
+    }
+  }
+};
+
+Player.prototype.drown = function() {
+  if ( this.paused === false ) {
+    // Pause all enemies:
+    for ( var i = 0; i < this.numEnemies; i++ ) {
+      allEnemies[ i ].togglePause();
+    }
+    for ( i = 0; i < this.numFloats; i++ ) {
+      allFloats[ i ].togglePause();
+    }
+    this.drowned = true;
+    this.paused = true;
+    // Allows user to reset game using enter button through this.handleInput
+    this.ouch = true;
+    // Change to dead sprite
+    this.sprite = this.charHurt[ this.selection ];
+    // Reduce lives:
+    this.livesLeft--;
+    if ( this.livesLeft < 1 ) {
+      this.isDead = true;
+      this.ouch = false;
     }
   }
 };
@@ -815,12 +860,13 @@ Player.prototype.handleInput = function( input ) {
   }
   // If the game is paused, only the unpause button will work:
   else if ( this.paused === true && this.victory === false &&
-    this.isHit === false && this.isDead === false ) {
+    this.ouch === false && this.isDead === false ) {
     if ( input === 'pause' ) {
       this.togglePause();
     }
   } // 'enter' can be used to reset the game:
-  else if ( this.victory === true || this.isHit === true || this.isDead === true ) {
+  else if ( this.victory === true || this.ouch === true || this.isDead === true ||
+          this.drowned === true) {
     if ( input === 'enter' ) {
       if ( this.isDead === true ) {
         this.isDead = false;
@@ -832,7 +878,8 @@ Player.prototype.handleInput = function( input ) {
         this.blurPause();
       }
       this.victory = false;
-      this.isHit = false;
+      this.ouch = false;
+      this.drowned = false;
       this.togglePause();
       // Back to starting position of game:
       this.sprite = this.charOptions[ this.selection ];
@@ -873,7 +920,7 @@ function addFloats() {
     allFloats.push( new Float( 3, map.tileWidth * 4 * i, map.medFloaters ) );
   } // Add third row of floats:
   for ( i = 0; i < 3; i++ ) {
-    allFloats.push( new Float( 4, 300 + map.tileWidth * 2.5 * i, map.fastFloaters ) );
+    allFloats.push( new Float( 4, map.tileWidth * 4.5 * i, map.fastFloaters ) );
   }
   player.numFloats = allFloats.length;
 }
