@@ -460,8 +460,8 @@ Player.prototype.victoryMessage = function() {
   ctx.fillStyle = 'lime';
   ctx.strokeStyle = 'black';
 
-  ctx.fillText( 'You win!', canvas.width / 2, canvas.height / 2 );
-  ctx.strokeText( 'You win!', canvas.width / 2, canvas.height / 2 );
+  ctx.fillText( 'Good job!', canvas.width / 2, canvas.height / 2 );
+  ctx.strokeText( 'Good job!', canvas.width / 2, canvas.height / 2 );
 };
 
 Player.prototype.continueMessage = function() {
