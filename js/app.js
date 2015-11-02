@@ -460,14 +460,14 @@ Player.prototype.deadMessage = function() {
   Player.prototype.continueMessage();
 };
 
-Player.prototype.togglePause = function(mod) {
+Player.prototype.togglePause = function( mod ) {
   // Pause all enemies:
   for ( var i = 0; i < this.numEnemies; i++ ) {
     allEnemies[ i ].togglePause();
   }
   // Causes this.render to show pause message:
-  if (mod !== 'enemies only'){
-  this.paused = !this.paused;
+  if ( mod !== 'enemies only' ) {
+    this.paused = !this.paused;
   }
 };
 
@@ -653,10 +653,10 @@ Player.prototype.handleInput = function( input ) {
         this.isDead = false;
         this.points = 0;
         this.livesLeft = 5;
-        setEnemies(20);
+        setEnemies( 20 );
         // Pause the enemies only so that the new ones generated don't begin
         // the next game paused:
-        this.togglePause('enemies only');
+        this.togglePause( 'enemies only' );
       }
       this.victory = false;
       this.isHit = false;
