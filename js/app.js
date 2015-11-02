@@ -311,13 +311,18 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
-  if (this.counting === true){
+  if ( this.counting === true ) {
     this.timeKeeper -= dt;
-    this.timeLeft = Math.round(this.timeKeeper);
-  } if (this.paused === false && this.charSelected === true){
+    this.timeLeft = Math.round( this.timeKeeper );
+  }
+  if ( this.paused === false && this.charSelected === true ) {
     this.counting = true;
-  } if (this.paused === true){
+  }
+  if ( this.paused === true ) {
     this.counting = false;
+  }
+  if ( this.timeLeft <= 0 ) {
+    this.timeLeft = "No bonus!";
   }
   // Holds current positions of all enemies
   var currentSpots = [];
@@ -360,8 +365,8 @@ Player.prototype.resetStart = function() {
   this.yCoord = map.numRows - 2;
   this.move();
 
-  this.timeLeft = 60;
-  this.timeKeeper = 60;
+  this.timeLeft = 10;
+  this.timeKeeper = 10;
 };
 
 // Draws each frame.
@@ -495,17 +500,17 @@ Player.prototype.displayHearts = function() {
 Player.prototype.displayTimer = function() {
   this.bwMsgStyle();
   ctx.textAlign = 'right';
-  ctx.fillText(this.timeLeft, map.totalWidth - 5, 50);
-  ctx.strokeText(this.timeLeft, map.totalWidth - 5, 50);
+  ctx.fillText( this.timeLeft, map.totalWidth - 5, 50 );
+  ctx.strokeText( this.timeLeft, map.totalWidth - 5, 50 );
   ctx.textAlign = 'center';
 };
 
 Player.prototype.displayPoints = function() {
   this.bwMsgStyle();
   ctx.textAlign = 'right';
-  ctx.drawImage(Resources.get(map.variousImages[1]), map.totalWidth - map.tileWidth, 52 );
-  ctx.fillText(this.points, map.totalWidth - (5 + map.tileWidth), 100);
-  ctx.strokeText(this.points, map.totalWidth - (5 + map.tileWidth), 100);
+  ctx.drawImage( Resources.get( map.variousImages[ 1 ] ), map.totalWidth - map.tileWidth, 52 );
+  ctx.fillText( this.points, map.totalWidth - ( 5 + map.tileWidth ), 100 );
+  ctx.strokeText( this.points, map.totalWidth - ( 5 + map.tileWidth ), 100 );
   ctx.textAlign = 'center';
 };
 
@@ -599,7 +604,11 @@ Player.prototype.handleInput = function( input ) {
         this.victory = true;
         this.victorySpot = this.y;
         this.sprite = this.charHappy[ this.selection ];
-        this.points = this.points + 100 + (this.timeLeft * 10);
+        if ( parseInt(Number(this.timeLeft)) === this.timeLeft) {
+          this.points = this.points + 100 + ( this.timeLeft * 10 );
+        } else {
+          this.points = this.points + 100;
+        }
         this.togglePause();
       } else {
         // Move up:
@@ -630,7 +639,7 @@ Player.prototype.handleInput = function( input ) {
   }
   // If the game is paused, only the unpause button will work:
   else if ( this.paused === true && this.victory === false &&
-    this.isHit === false && this.isDead === false) {
+    this.isHit === false && this.isDead === false ) {
     if ( input === 'pause' ) {
       this.togglePause();
     }
