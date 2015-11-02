@@ -9,7 +9,7 @@ var Map = function() {
   // The number of columns can be changed
   this.numColumns = 11;
   // The number of columns can be changed, more enemy rows will be generated
-  this.numRows = 14;
+  this.numRows = 15;
   // This is dynamically generated based this.numRows, see
   // Map.prototype.makeRows();
   this.rowImages = [];
@@ -25,7 +25,7 @@ var Map = function() {
   this.yValues = {};
   // Dynamically generated at the bottom of app.js to determine which rows
   // enemies can use. This is used by Enemy.startY()
-  this.enemyRows = [ 6, 7, 9, 10, 11 ];
+  this.enemyRows = [ 6, 7, 8, 10, 11, 12 ];
   this.variousImages = [
     'images/Selector',
     'images/Star',
@@ -93,7 +93,7 @@ Map.prototype.makeRows = function( numRows ) {
   this.rowImages.push( map.mapTiles[ 0 ] );
   this.rowImages.push( map.mapTiles[ 1 ] );
   for ( var i = 1; i < numRows - 3; i++ ) {
-    if ( i === 4 || i === 7) {
+    if ( i === 4 || i === 8) {
       this.rowImages.push( map.mapTiles[ 3 ] );
     } else if ( i === 1 || i === 2 || i === 3 ) {
       this.rowImages.push( map.mapTiles[ 4 ] );
@@ -183,7 +183,8 @@ Map.prototype.findImages = function() {
 };
 
 Map.prototype.canGo = function( newX, newY ) {
-  if ( ( newY === 8 && newX !== 1 && newX !== 5 && newX !== 9 ) ||
+  // Player can't walk into rocks or water
+  if ( ( newY === 9 && newX !== 1 && newX !== 5 && newX !== 9 ) ||
     newY === 5 && newX !== 3 && newX !== 7  ||
     newY === 2 || newY === 3 || newY === 4 ) {
     return false;
@@ -738,7 +739,7 @@ Player.prototype.handleInput = function( input ) {
         this.victory = true;
         this.victorySpot = this.y;
         this.sprite = this.charHappy[ this.selection ];
-        addEnemies( 10 );
+        addEnemies( 5 );
         if ( parseInt( Number( this.timeLeft ) ) === this.timeLeft ) {
           this.points = this.points + 100 + ( this.timeLeft * 10 );
         } else {
@@ -794,7 +795,7 @@ Player.prototype.handleInput = function( input ) {
         this.isDead = false;
         this.points = 0;
         this.livesLeft = 5;
-        setEnemies( 20 );
+        setEnemies( 15 );
         // Pause the enemies only so that the new ones generated don't begin
         // the next game paused:
         this.blurPause();
@@ -851,7 +852,7 @@ function setEnemies( count ) {
   addEnemies( count );
 }
 // Pick a number of enemies:
-addEnemies( 20 );
+addEnemies( 15 );
 
 // Generate floats:
 addFloats();
