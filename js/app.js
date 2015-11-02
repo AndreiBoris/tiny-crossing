@@ -33,7 +33,10 @@ var Map = function() {
     'images/Key',
     'images/Heart'
   ];
-  this.enemySprite = 'images/enemy-bug';
+  this.enemySprites = [
+    'images/enemy-bug',
+    'images/enemy-bug-left'
+];
   this.playerChars = [
     'images/char-boy',
     'images/char-cat-girl',
@@ -106,13 +109,16 @@ Map.prototype.findEnemyRows = function() {
 Map.prototype.findImages = function() {
   var lengthChars = this.playerChars.length,
     lengthTiles = this.mapTiles.length,
-    lengthOthers = this.variousImages.length;
+    lengthOthers = this.variousImages.length,
+    lengthEnemies = this.enemySprites.length;
   if ( this.size === 'large' ) {
-    this.enemySprite += '.png';
     for ( var i = 0; i < lengthChars; i++ ) {
       this.playerChars[ i ] += '.png';
       this.playerCharsHurt[ i ] += '.png';
       this.playerCharsHappy[ i ] += '.png';
+    }
+    for (i = 0; i < lengthEnemies; i++ ) {
+      this.enemySprites[i] += '.png';
     }
     for ( i = 0; i < lengthTiles; i++ ) {
       this.mapTiles[ i ] += '.png';
@@ -123,11 +129,13 @@ Map.prototype.findImages = function() {
   } else if ( this.size === 'medium' ) {
     this.tileWidth = 85;
     this.buffer = 42.08;
-    this.enemySprite += '-85.png';
     for ( var j = 0; j < lengthChars; j++ ) {
       this.playerChars[ j ] += '-85.png';
       this.playerCharsHurt[ j ] += '-85.png';
       this.playerCharsHappy[ j ] += '-85.png';
+    }
+    for (j = 0; j < lengthEnemies; j++ ) {
+      this.enemySprites[j] += '-85.png';
     }
     for ( j = 0; j < lengthTiles; j++ ) {
       this.mapTiles[ j ] += '-85.png';
@@ -138,11 +146,13 @@ Map.prototype.findImages = function() {
   } else if ( this.size === 'small' ) {
     this.tileWidth = 65;
     this.buffer = 32.18;
-    this.enemySprite += '-65.png';
     for ( k = 0; k < lengthChars; k++ ) {
       this.playerChars[ k ] += '-65.png';
       this.playerCharsHurt[ k ] += '-65.png';
       this.playerCharsHappy[ k ] += '-65.png';
+    }
+    for (k = 0; k < lengthEnemies; k++ ) {
+      this.enemySprites[k] += '-65.png';
     }
     for ( k = 0; k < lengthTiles; k++ ) {
       this.mapTiles[ k ] += '-65.png';
@@ -153,11 +163,13 @@ Map.prototype.findImages = function() {
   } else if ( this.size === 'tiny' ) {
     this.tileWidth = 50;
     this.buffer = 24.75;
-    this.enemySprite += '-50.png';
     for ( m = 0; m < lengthChars; m++ ) {
       this.playerChars[ m ] += '-50.png';
       this.playerCharsHurt[ m ] += '-50.png';
       this.playerCharsHappy[ m ] += '-50.png';
+    }
+    for (m = 0; m < lengthEnemies; m++ ) {
+      this.enemySprites[m] += '-50.png';
     }
     for ( m = 0; m < lengthTiles; m++ ) {
       this.mapTiles[ m ] += '-50.png';
@@ -184,12 +196,12 @@ var Enemy = function() {
 
   // The image/sprite for our enemies, this uses
   // a helper we've provided to easily load images
-  this.sprite = map.enemySprite;
+  this.sprite = '';
   // Random value for the start of any given enemy
   this.x = this.startX();
   // Random column
   this.y = this.startY();
-  this.speed = this.newSpeed();
+  this.speed = 0;
   // If 1, the enemies are moving, if 0, they are not,
   // see Enemy.prototype.togglePause() This function allows the pause to work.
   this.moving = 1;
@@ -203,7 +215,7 @@ Enemy.prototype.startX = function() {
 // Random value from array courtesy of:
 // http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
 Enemy.prototype.startY = function() {
-  // Picks one of the first 5 rows which enemies can use.
+  // Picks one of the rows which enemies can use.
   var result = map.yValues[ map.enemyRows[ Math.floor( Math.random() * map.enemyRows.length ) ] ];
   return result;
 };
@@ -216,17 +228,40 @@ Enemy.prototype.update = function( dt ) {
   // all computers. this.moving is changed to 0 when the game is paused.
   this.x = this.x + this.speed * dt * this.moving;
   // Reset enemies to the left side of the screen when they are offscreen right.
-  if ( this.x > map.totalWidth + 100 ) {
-    this.x = -100;
+  if ( this.speed === 0){
+    if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 4 ] ||
+      this.y === map.yValues[ 2 ]  ) {
+      this.speed = this.newSpeed( 'left' );
+      this.sprite = map.enemySprites[1];
+    } else {
+      this.speed = this.newSpeed( 'right' );
+      this.sprite = map.enemySprites[0];
+    }
+  }
+  if ( this.x > map.totalWidth + 100 || this.x < -100) {
     this.y = this.startY();
+    if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 4 ] ||
+      this.y === map.yValues[ 2 ]  ) {
+      this.x = map.totalWidth + 80;
+        // Change speed of the enemy for the next loop
+      this.speed = this.newSpeed( 'left' );
+      this.sprite = map.enemySprites[1];
+    } else {
+    this.x = -80;
     // Change speed of the enemy for the next loop
-    this.speed = this.newSpeed();
+    this.speed = this.newSpeed( 'right' );
+    this.sprite = map.enemySprites[0];
+  }
   }
 };
 
 // Generate a random, appropriate speed for each enemy
-Enemy.prototype.newSpeed = function() {
-  return map.tileWidth / 2 + ( Math.random() * map.tileWidth * 3 );
+Enemy.prototype.newSpeed = function( direction ) {
+  if ( direction === 'right' ) {
+    return map.tileWidth / 2 + ( Math.random() * map.tileWidth * 3 );
+  } else if (direction === 'left' ) {
+    return (map.tileWidth / -2 + ( Math.random() * map.tileWidth * -3 ));
+  }
 };
 
 // Draw the enemy on the screen, required method for game
@@ -324,8 +359,8 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
+  // Pause game if window is not active
   window.addEventListener( 'blur', function() {
-    console.log( "pausing" );
     player.blurPause();
   } );
   if ( this.counting === true ) {
@@ -666,7 +701,7 @@ Player.prototype.handleInput = function( input ) {
         return;
       } else {
         // Check if the tile is available:
-        if ( map.canGo( this.xCoord, this.yCoord + 1) ) {
+        if ( map.canGo( this.xCoord, this.yCoord + 1 ) ) {
           // Move down:
           this.yCoord++;
         }
@@ -757,3 +792,5 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: menu
 // TODO: Add nextsteps.txt features
 // TODO: Factor out findEnemyRows
+// TODO: Refactor everything
+// TODO: Add opposite direction enemies

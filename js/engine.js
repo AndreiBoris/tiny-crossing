@@ -175,6 +175,7 @@ var Engine = ( function( global ) {
     'images/water-block',
     'images/grass-block',
     'images/enemy-bug',
+    'images/enemy-bug-left',
     'images/char-boy',
     'images/char-cat-girl',
     'images/char-horn-girl',
