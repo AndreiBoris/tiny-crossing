@@ -25,7 +25,7 @@ var Map = function() {
   this.yValues = {};
   // Dynamically generated at the bottom of app.js to determine which rows
   // enemies can use. This is used by Enemy.startY()
-  this.enemyRows = [ 2, 3, 4, 9, 10, 11 ];
+  this.enemyRows = [ 6, 7, 9, 10, 11 ];
   this.variousImages = [
     'images/Selector',
     'images/Star',
@@ -93,9 +93,9 @@ Map.prototype.makeRows = function( numRows ) {
   this.rowImages.push( map.mapTiles[ 0 ] );
   this.rowImages.push( map.mapTiles[ 1 ] );
   for ( var i = 1; i < numRows - 3; i++ ) {
-    if ( i === 7 ) {
+    if ( i === 4 || i === 7) {
       this.rowImages.push( map.mapTiles[ 3 ] );
-    } else if ( i === 4 || i === 5 || i === 6 ) {
+    } else if ( i === 1 || i === 2 || i === 3 ) {
       this.rowImages.push( map.mapTiles[ 4 ] );
     } else {
       this.rowImages.push( map.mapTiles[ 2 ] );
@@ -184,7 +184,8 @@ Map.prototype.findImages = function() {
 
 Map.prototype.canGo = function( newX, newY ) {
   if ( ( newY === 8 && newX !== 1 && newX !== 5 && newX !== 9 ) ||
-    newY === 5 || newY === 6 || newY === 7 ) {
+    newY === 5 && newX !== 3 && newX !== 7  ||
+    newY === 2 || newY === 3 || newY === 4 ) {
     return false;
   }
   return true;
@@ -209,7 +210,7 @@ Float.prototype.update = function( dt ) {
   this.x = this.x + this.speed * dt * this.moving;
   // Set floats going in the correct directions:
   if ( this.speed === 0 ) {
-    if ( this.y === map.yValues[ 5 ] || this.y === map.yValues[ 7 ] ) {
+    if ( this.y === map.yValues[ 2 ] || this.y === map.yValues[ 4 ] ) {
       this.speed = this.stockSpeed;
     } else {
       this.speed = this.stockSpeed * -1;
@@ -218,7 +219,7 @@ Float.prototype.update = function( dt ) {
   // Reset floats when they go offscreen:
   if ( this.x > map.totalWidth + ( 2.5 * map.tileWidth ) ||
     this.x < -( 2.5 * map.tileWidth ) ) {
-    if ( this.y === map.yValues[ 5 ] || this.y === map.yValues[ 7 ] ) {
+    if ( this.y === map.yValues[ 2 ] || this.y === map.yValues[ 4 ] ) {
       this.x = -1 * ( 2.25 * map.tileWidth );
     } else {
       this.x = map.totalWidth + ( 2.25 * map.tileWidth );
@@ -289,8 +290,7 @@ Enemy.prototype.update = function( dt ) {
   this.x = this.x + this.speed * dt * this.moving;
   // Reset enemies to the left side of the screen when they are offscreen right.
   if ( this.speed === 0 ) {
-    if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 4 ] ||
-      this.y === map.yValues[ 2 ] ) {
+    if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 7 ] ) {
       this.speed = this.newSpeed( 'left' );
       this.sprite = map.enemySprites[ 1 ];
     } else {
@@ -300,8 +300,7 @@ Enemy.prototype.update = function( dt ) {
   }
   if ( this.x > map.totalWidth + 100 || this.x < -100 ) {
     this.y = this.startY();
-    if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 4 ] ||
-      this.y === map.yValues[ 2 ] ) {
+    if  ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 7 ] ) {
       this.x = map.totalWidth + 80;
       // Change speed of the enemy for the next loop
       this.speed = this.newSpeed( 'left' );
@@ -836,13 +835,13 @@ function addEnemies( count ) {
 function addFloats() {
   // Add first row of floats:
   for ( var i = 0; i < 3; i++ ) {
-    allFloats.push( new Float( 5, map.tileWidth * 3.5 * i, 100 ) );
+    allFloats.push( new Float( 2, map.tileWidth * 3.5 * i, 100 ) );
   } // Add second row of floats:
   for ( i = 0; i < 4; i++ ) {
-    allFloats.push( new Float( 6, map.tileWidth * 4 * i, 125 ) );
+    allFloats.push( new Float( 3, map.tileWidth * 4 * i, 125 ) );
   } // Add third row of floats:
   for ( i = 0; i < 3; i++ ) {
-    allFloats.push( new Float( 7, 300 + map.tileWidth * 2.5 * i, 180 ) );
+    allFloats.push( new Float( 4, 300 + map.tileWidth * 2.5 * i, 180 ) );
   }
   player.numFloats = allFloats.length;
 }
