@@ -182,7 +182,8 @@ Map.prototype.findImages = function() {
 };
 
 Map.prototype.canGo = function( newX, newY ) {
-  if ( newY === 8 && newX !== 1 && newX !== 5 && newX !== 9 ) {
+  if ( (newY === 8 && newX !== 1 && newX !== 5 && newX !== 9) ||
+    newY === 5 || newY === 6 || newY === 7) {
     return false;
   }
   return true;
