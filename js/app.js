@@ -95,7 +95,7 @@ Map.prototype.makeCoordinates = function() {
 Map.prototype.makeRows = function( numRows ) {
   this.rowImages.push( map.mapTiles[ 0 ] );
   this.rowImages.push( map.mapTiles[ 0 ] );
-  this.rowImages.push( map.mapTiles[ 1 ] );
+  this.rowImages.push( map.mapTiles[ 3 ] );
   for ( var i = 1; i < numRows - 3; i++ ) {
     if ( i === 4 || i === 8 ) {
       this.rowImages.push( map.mapTiles[ 3 ] );
@@ -863,7 +863,7 @@ Player.prototype.handleInput = function( input ) {
           // Move up:
           this.yCoord--;
           // Avoid coordinates:
-          if (this.floating){
+          if (this.floating && this.yCoord !== 1){
             this.waterMove('up');
             return;
           }
