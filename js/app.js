@@ -431,7 +431,6 @@ Player.prototype.character = function() {
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
   // Pause game if window is not active
-  console.log(this.x);
   window.addEventListener( 'blur', function() {
     player.blurPause();
   } );
@@ -440,22 +439,10 @@ Player.prototype.update = function( dt ) {
     // Dynamically update the this.xCoord and this.x values;
     this.trackPosition();
     if ( this.yCoord === 2 ) {
-      //console.log("we should be moving");
-      //console.log(map.slowFloaters);
-      //console.log(dt);
-      //console.log(this.moving);
       this.x = this.x + map.slowFloaters * dt * this.moving;
     } else if ( this.yCoord === 3 ) {
-      //console.log("we should be moving");
-      //console.log(map.medFloaters);
-      //console.log(dt);
-      //console.log(this.moving);
       this.x = this.x + map.medFloaters * dt * this.moving;
     } else if ( this.yCoord === 4 ) {
-      //console.log("we should be moving");
-      //console.log(map.fastFloaters);
-      //console.log(dt);
-      //console.log(this.moving);
       this.x = this.x + map.fastFloaters * dt * this.moving;
     }
   }
@@ -533,8 +520,6 @@ Player.prototype.trackPosition = function() {
 // Moves player.sprite to the current grid coordinates which get updated by
 // Player.prototype.handleInput()
 Player.prototype.move = function() {
-  console.log("did a move!");
-  console.log(this.yCoord);
   var coordArray = map.giveCoordinates( this.xCoord, this.yCoord );
   this.x = coordArray[ 0 ];
   this.y = coordArray[ 1 ];
@@ -542,7 +527,6 @@ Player.prototype.move = function() {
 
 // Less frustrating way of moving on the water:
 Player.prototype.waterMove = function(direc) {
-  console.log(this.yCoord);
   if (direc === 'left'){
     this.x = this.x - map.tileWidth;
   } else if (direc === 'right'){
@@ -1015,14 +999,18 @@ document.addEventListener( 'keyup', function( e ) {
   player.handleInput( allowedKeys[ e.keyCode ] );
 } );
 
-// TODO: signifier for pause button
-// TODO: menu
+
+
 // TODO: Add nextsteps.txt features
-// TODO: Refactor everything
-// TODO: Explain controls
-// TODO: blurPause() doesn't save timer
+
 // TODO: Add powerups, ex. time stop, take extra hit powerup,
 // TODO: Add negative powerup that increases enemy speeds
-// TODO: Move corn down slightly
 // TODO: Change sprites to make a unique look
+
 // TODO: player still moves after blurPause
+// TODO: blurPause() doesn't save timer
+
+// TODO: signifier for pause button
+// TODO: menu
+// TODO: Refactor everything
+// TODO: Explain controls
