@@ -561,6 +561,7 @@ var Player = function() {
   // Countdown timer for each round
   this.timeLeft = 30;
   this.timeKeeper = 30;
+  this.freeze = 0;
   this.counting = false;
 
   this.points = 0;
@@ -636,6 +637,19 @@ Player.prototype.update = function( dt ) {
   if ( this.counting === true && !this.paused ) {
     this.timeKeeper -= dt;
     this.timeLeft = Math.round( this.timeKeeper );
+  }
+  if (this.freeze > 0 && this.counting === true ){
+    // freeze all enemies
+    this.freeze -= dt;
+    for (var t = 0; t < numEnemies;t++){
+      allEnemies[t].moving = 0;
+    }
+    this.paused = false;
+  }
+  if (this.freeze <= 0 && !this.paused){
+    for ( t = 0; t < numEnemies;t++){
+      allEnemies[t].moving = 1;
+    }
   }
   // Start counting down once a character is selected:
   if ( this.paused === false && this.charSelected === true ) {
@@ -928,7 +942,16 @@ Player.prototype.pickUp = function(power){
   if (power.gem === 'enemy'){
     map.powerUpCount--;
     this.gemEnemy();
-  } else {
+  } else if (power.gem === 'time') {
+    if (this.timeLeft === "No bonus!"){
+      this.timeLeft = 10;
+      this.timeKeeper = 10;
+    } else {
+      this.timeLeft += 10;
+      this.timeKeeper += 10;
+    } this.freeze = 5;
+  }
+  else {
     map.powerUpCount--;
     this.points += 100;
   }
@@ -1288,6 +1311,3 @@ document.addEventListener( 'keyup', function( e ) {
 // offscreen to avoid double collisions
 // TODO: Add powerUpDelay only work when the game is not paused
 // TODO: Define Player.prototype.pickUp(SpecificPowerUp);
-// TODO: Spawn not just eneny gems but power gems
-// TODO: Set enemies to not 0 in addEnemies()
-// TODO: Set a max number of gems to appear per reset
