@@ -430,7 +430,6 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
-  console.log(this.x);
   // Pause game if window is not active
   window.addEventListener( 'blur', function() {
     player.blurPause();
@@ -441,7 +440,7 @@ Player.prototype.update = function( dt ) {
     if ( this.yCoord === 2 ) {
       this.x = this.x + map.slowFloaters * dt * this.moving;
     } else if ( this.yCoord === 3 ) {
-      this.x = this.x + map.mediumFloaters * dt * this.moving;
+      this.x = this.x + map.medFloaters * dt * this.moving;
     } else if ( this.yCoord === 4 ) {
       this.x = this.x + map.fastFloaters * dt * this.moving;
     }
@@ -516,16 +515,6 @@ Player.prototype.trackPosition = function() {
     }
   }
 };
-
-/*
-Object.prototype.getKeyByValue = function( value ) {
-    for( var prop in this ) {
-        if( this.hasOwnProperty( prop ) ) {
-             if( this[ prop ] === value )
-                 return prop;
-        }
-    }
-}*/
 
 // Moves player.sprite to the current grid coordinates which get updated by
 // Player.prototype.handleInput()
