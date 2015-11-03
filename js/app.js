@@ -434,7 +434,7 @@ Player.prototype.update = function( dt ) {
   window.addEventListener( 'blur', function() {
     player.blurPause();
   } );
-  if ( this.floating ){
+  if ( this.floating && !this.paused ){
     this.moving = 1;
     // Dynamically update the this.xCoord and this.x values;
     this.trackPosition();
