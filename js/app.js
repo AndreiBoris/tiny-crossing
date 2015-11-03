@@ -512,7 +512,6 @@ Player.prototype.update = function( dt ) {
 Player.prototype.trackPosition = function() {
   for ( var i = 0; i < ( map.numColumns - 1 ); i++ ) {
     if ( this.x > map.xValues[ i ] && this.x < map.xValues[ i + 1 ] ) {
-      console.log( this.x > map.xValues[ i ] && this.x < map.xValues[ i + 1 ] );
       this.xCoord = i;
     }
   }
@@ -542,6 +541,10 @@ Player.prototype.waterMove = function(direc) {
     this.x = this.x - map.tileWidth;
   } else if (direc === 'right'){
     this.x = this.x + map.tileWidth;
+  } else if (direc === 'up'){
+    this.y = this.y - map.tileHeight;
+  } else if (direc === 'down'){
+    this.y = this.y + map.tileHeight;
   }
 };
 
@@ -867,6 +870,11 @@ Player.prototype.handleInput = function( input ) {
         if ( map.canGo( this.xCoord, this.yCoord - 1 ) ) {
           // Move up:
           this.yCoord--;
+          // Avoid coordinates:
+          if (this.floating){
+            this.waterMove('up');
+            return;
+          }
         }
       }
     } else if ( input === 'right' ) {
@@ -894,6 +902,10 @@ Player.prototype.handleInput = function( input ) {
         if ( map.canGo( this.xCoord, this.yCoord + 1 ) ) {
           // Move down:
           this.yCoord++;
+          if (this.floating){
+            this.waterMove('down');
+            return;
+          }
         }
       }
     } else if ( input === 'pause' ) {
