@@ -199,7 +199,9 @@ Map.prototype.canGo = function( newX, newY ) {
 };
 
 Map.prototype.makeKeys = function() {
-  // Make some keys
+  allKeys.push( new Item( 'key', 1 ) );
+  allKeys.push( new Item( 'key', 5 ) );
+  allKeys.push( new Item( 'key', 9 ) );
 };
 
 var Float = function( row, pos, speed ) {
@@ -267,7 +269,16 @@ var Item = function( type, pos ) {
   this.powerUp = null;
   this.exists = true;
   this.moving = 1;
-  this.sprite = (function itemMaker( type ) {
+  this.flying = false;
+  this.throwDelay = 30;
+  this.flyingOffset = ( function offsetter( type ) {
+    if ( type === 'key' ) {
+      return Math.floor( Math.random() * map.tileWidth * 3 );
+    } else {
+      return null;
+    }
+  } )( type );
+  this.sprite = ( function itemMaker( type ) {
     if ( type === 'key' ) {
       return map.variousImages[ 3 ];
     } else if ( type === 'power' ) {
@@ -276,8 +287,8 @@ var Item = function( type, pos ) {
       this.powerUp = 'enemy';
       this.sprite = map.variousImages[ 8 ];
     }
-  })( type );
-  this.x = (function colMaker( type, pos ) {
+  } )( type );
+  this.x = ( function colMaker( type, pos ) {
     var options = [ -100, map.totalWidth + 100 ];
     if ( type === 'key' ) {
       return map.xValues[ pos ];
@@ -285,27 +296,41 @@ var Item = function( type, pos ) {
       // powerup start offscreen:
       return options[ Math.floor( Math.random * 2 ) ];
     }
-  })(type, pos);
-  this.y = (function rowMaker( type ) {
+  } )( type, pos );
+  this.y = ( function rowMaker( type ) {
     if ( type === 'key' ) {
       return map.yValues[ 1 ];
     } else {
       return Enemy.prototype.startY();
     }
-  })(type);
-  this.speed = (function speedMaker( type ) {
-    if ( type === 'key' ){
+  } )( type );
+  this.speed = ( function speedMaker( type ) {
+    if ( type === 'key' ) {
       return null;
     } else {
-      return Math.floor(50 + Math.random() * 50);
+      return Math.floor( 50 + Math.random() * 50 );
     }
-  })(type);
+  } )( type );
 
 };
 
 Item.prototype.update = function( dt ) {
   if ( this.powerUp ) {
     this.x = this.x + this.speed * dt * this.moving;
+  }
+  if ( this.flying ) {
+    if ( this.throwDelay > 0 ) {
+      this.throwDelay = this.throwDelay - 100 * dt * this.moving;
+    } else {
+      if ( this.x < map.xValues[ map.numColumns - 4 ] + this.flyingOffset ) {
+        this.x = this.x + 100 * dt *
+        // Slow down the x-movement as time goes on for a smoother animation:
+        ( map.xValues[ map.numColumns - 2 ] / this.x ) * this.moving;
+      }
+      if ( this.y < map.yValues[ map.numRows - 2 ] ) {
+        this.y = this.y + 300 * dt * this.moving;
+      }
+    }
   }
 };
 
@@ -519,6 +544,7 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
+  var numKeys = allKeys.length;
   // Pause game if window is not active
   window.addEventListener( 'blur', function() {
     player.blurPause();
@@ -575,6 +601,24 @@ Player.prototype.update = function( dt ) {
   if ( this.yCoord === 1 && this.xCoord !== 1 && this.xCoord !== 5 &&
     this.xCoord !== 9 ) {
     this.drown();
+  }
+  // Holds current positions of all keys:
+  var keySpots = [];
+  for ( i = 0; i < numKeys; i++ ) {
+    var xK = allKeys[ i ].x;
+    var yK = allKeys[ i ].y;
+    keySpots.push( [ xK, yK ] );
+  }
+  // Check to see if the player is close enough to any of the keys to
+  // pick them up:
+  for ( var p = 0; p < numKeys; p++ ) {
+    if ( ( this.x - map.tileWidth / 2 < keySpots[ p ][ 0 ] &&
+        this.x + map.tileWidth / 2 > keySpots[ p ][ 0 ] ) &&
+      ( this.y - map.tileHeight / 8 < keySpots[ p ][ 1 ] &&
+        this.y + map.tileHeight / 8 > keySpots[ p ][ 1 ] ) ) {
+      // Key picked up:
+      allKeys[ p ].flying = true;
+    }
   }
   // Holds current positions of all enemies:
   var enemySpots = [];
@@ -921,6 +965,7 @@ Player.prototype.handleInput = function( input ) {
       this.charSelected = true;
       this.sprite = this.charOptions[ this.selection ];
       this.resetStart();
+      map.makeKeys();
     }
   }
   // Controls only work when game isn't paused
@@ -1117,3 +1162,5 @@ document.addEventListener( 'keyup', function( e ) {
 // Item
 // TODO: Explain controls
 // TODO: Update player.numPowerUps
+// TODO: Disallow movement beyond the top row
+// TODO: Win when all keys are flying
