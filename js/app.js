@@ -483,6 +483,10 @@ Player.prototype.update = function( dt ) {
       this.drown();
     }
   }
+  if (this.yCoord === 1 && this.xCoord !== 1 && this.xCoord !== 5 &&
+      this.xCoord !== 9){
+        this.drown();
+      }
   // Holds current positions of all enemies:
   var enemySpots = [];
   for ( i = 0; i < this.numEnemies; i++ ) {
