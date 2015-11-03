@@ -76,6 +76,7 @@ var Map = function() {
 
   this.powerUpCount = 0;
   this.powerUpDelay = 400;
+  this.powerUpsLeft = 5;
 };
 
 Map.prototype.update = function( dt ) {
@@ -86,13 +87,14 @@ Map.prototype.update = function( dt ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 2 ) {
+  if ( this.powerUpCount < 2 && this.powerUpsLeft > 0 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 ) {
-      this.powerUpDelay = 1000;
+      this.powerUpDelay = 100;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
+      this.powerUpsLeft--;
       for ( var i = 0; i < allPowerUps.length; i++ ) {
         if ( allPowerUps[ i ].sprite === map.variousImages[ 3 ] ) {
           allPowerUps[ i ].choose();
@@ -1177,6 +1179,7 @@ Player.prototype.handleInput = function( input ) {
         this.points = 0;
         this.livesLeft = 5;
         map.powerUpCount = 0;
+        map.powerUpsLeft = 5;
         allPowerUps.length = 0;
         map.makeKeys();
         setEnemies( 15 );
@@ -1188,6 +1191,7 @@ Player.prototype.handleInput = function( input ) {
         this.justWon = true;
         map.makeKeys();
         addEnemies( 5 );
+        map.powerUpsLeft = 5;
         this.blurPause();
       }
       this.ouch = false;
