@@ -1322,7 +1322,7 @@ document.addEventListener( 'keyup', function( e ) {
 
 
 
-// TODO: Add nextsteps.txt features
+// TODO: Add good level scaling
 
 // TODO: Change sprites to make a unique look
 
@@ -1333,5 +1333,4 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Explain controls
 // TODO: Pause key when it is flying?
 
-// TODO: Signifier for shieled and time and enemy gems (really important)
-// for shield the signifier should be a shield (protoss style) sprite change
+// TODO: Countdown timer for powerups time and shield: signifier for enemy gem
