@@ -690,6 +690,9 @@ Player.prototype.update = function( dt ) {
       ( this.y - map.tileHeight / 8 < keySpots[ p ][ 1 ] &&
         this.y + map.tileHeight / 8 > keySpots[ p ][ 1 ] ) ) {
       // Key picked up:
+      if (allKeys[p].flying === false){
+        player.points += 50;
+      }
       allKeys[ p ].flying = true;
     }
   }
@@ -1183,8 +1186,6 @@ Player.prototype.handleInput = function( input ) {
       } else if ( this.victory === true ) {
         this.victory = false;
         this.justWon = true;
-        map.powerUpCount = 0;
-        allPowerUps.length = 0;
         map.makeKeys();
         addEnemies( 5 );
         this.blurPause();
