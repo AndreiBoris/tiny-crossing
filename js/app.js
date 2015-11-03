@@ -189,7 +189,7 @@ Map.prototype.findImages = function() {
 Map.prototype.canGo = function( newX, newY ) {
   // Player can't walk into rocks:
   if ( ( newY === 9 && newX !== 1 && newX !== 5 && newX !== 9 ) ||
-    (newY === 5 && newX !== 3 && newX !== 7) ){
+    ( newY === 5 && newX !== 3 && newX !== 7 ) ) {
     return false;
   }
   return true;
@@ -378,6 +378,7 @@ var Player = function() {
   this.movingUp = true;
   // Is the player on a floater?
   this.floating = false;
+  this.moving = 1;
 
   // game begins when this is true
   this.charSelected = false;
@@ -434,17 +435,19 @@ Player.prototype.update = function( dt ) {
     player.blurPause();
   } );
   // Player is not floating when not on water:
-  if ( this.yCoord !== 2 && this.yCoord !== 3 && this.yCoord !== 4){
+  /*if ( this.yCoord !== 2 && this.yCoord !== 3 && this.yCoord !== 4 ) {
     this.floating = false;
-  }
+    console.log('not floating!');
+  }*/
   if ( this.floating === true ) {
+    console.log( 'floating!' );
     // Dynamically update the this.xCoord and this.x values;
     this.trackPosition();
-    if ( this.yCoord === 2){
+    if ( this.yCoord === 2 ) {
       this.x = this.x + map.slowFloaters * dt * this.moving;
-    } else if ( this.yCoord === 3) {
+    } else if ( this.yCoord === 3 ) {
       this.x = this.x + map.mediumFloaters * dt * this.moving;
-    } else if ( this.yCoord === 4) {
+    } else if ( this.yCoord === 4 ) {
       this.x = this.x + map.fastFloaters * dt * this.moving;
     }
   }
@@ -468,8 +471,10 @@ Player.prototype.update = function( dt ) {
     var y = allFloats[ i ].y;
     floatSpots.push( [ x, y ] );
   }
+  this.floating = false;
   // Check to see if the player has stepped on a float:
-  if ( this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4 ) {
+  if ( this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4 &&
+    !this.paused ) {
     for ( var b = 0; b < this.numFloats; b++ ) {
       if ( ( this.x < floatSpots[ b ][ 0 ] + 2 * map.tileWidth &&
           this.x > floatSpots[ b ][ 0 ] ) &&
@@ -478,7 +483,8 @@ Player.prototype.update = function( dt ) {
         // Floater there:
         this.floating = true;
       }
-    } if ( this.floating === false ){
+    }
+    if ( this.floating === false ) {
       this.drown();
     }
   }
@@ -509,13 +515,14 @@ Player.prototype.update = function( dt ) {
 };
 
 Player.prototype.trackPosition = function() {
-  console.log(this.xCoord);
-  for (var i = 0; i < (map.numColumns - 1); i++ ) {
-    if (this.x > map.xValues[i] && this.x < map.xValues[i+1]){
-      console.log(this.x > map.xValues[i] && this.x < map.xValues[i+1]);
+  console.log( this.xCoord );
+  for ( var i = 0; i < ( map.numColumns - 1 ); i++ ) {
+    if ( this.x > map.xValues[ i ] && this.x < map.xValues[ i + 1 ] ) {
+      console.log( this.x > map.xValues[ i ] && this.x < map.xValues[ i + 1 ] );
       this.xCoord = i;
     }
-  } console.log(this.xCoord);
+  }
+  console.log( this.xCoord );
 };
 
 /*
@@ -658,7 +665,11 @@ Player.prototype.togglePause = function() {
     allFloats[ i ].togglePause();
   }
   this.paused = !this.paused;
-  this.moving = !this.moving;
+  if ( this.moving === 1 ) {
+    this.moving = 0;
+  } else {
+    this.moving = 1;
+  }
 };
 
 Player.prototype.blurPause = function() {
@@ -670,7 +681,7 @@ Player.prototype.blurPause = function() {
     allFloats[ i ].blurPause();
   }
   this.paused = true;
-  this.moving = !this.moving;
+  this.moving = 0;
 };
 
 Player.prototype.hit = function() {
@@ -877,6 +888,7 @@ Player.prototype.handleInput = function( input ) {
       }
     } else if ( input === 'pause' ) {
       this.togglePause();
+      return;
     }
     // Handles the move for all the possible changes in the if statements above:
     this.move();
@@ -889,7 +901,7 @@ Player.prototype.handleInput = function( input ) {
     }
   } // 'enter' can be used to reset the game:
   else if ( this.victory === true || this.ouch === true || this.isDead === true ||
-          this.drowned === true) {
+    this.drowned === true ) {
     if ( input === 'enter' ) {
       if ( this.isDead === true ) {
         this.isDead = false;
