@@ -75,7 +75,7 @@ var Map = function() {
   this.fastFloaters = 120;
 
   this.powerUpCount = 0;
-  this.powerUpDelay = 400;
+  this.powerUpDelay = 500;
   this.powerUpsLeft = 5;
 };
 
@@ -87,11 +87,11 @@ Map.prototype.update = function( dt ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 2 && this.powerUpsLeft > 0 ) {
+  if ( this.powerUpCount < 3 && this.powerUpsLeft > 0 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
-    } else if ( this.powerUpDelay <= 0 ) {
-      this.powerUpDelay = 100;
+    } else if ( this.powerUpDelay <= 0 && !player.paused ) {
+      this.powerUpDelay = 500;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       this.powerUpsLeft--;
@@ -1321,7 +1321,5 @@ document.addEventListener( 'keyup', function( e ) {
 // map.powerUpCount by 1 and move the this.x and this.y of the powerUp
 // offscreen to avoid double collisions
 // TODO: Add powerUpDelay only work when the game is not paused
-// TODO: Define Player.prototype.pickUp(SpecificPowerUp);
 // TODO: Signifier for shiled and time and enemy gems (really important)
 // for shield the signifier should be a shield (protoss style) sprite change
-// TODO: Fix bug where game is over when a collision happens with freeze on
