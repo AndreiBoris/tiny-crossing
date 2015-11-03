@@ -438,13 +438,10 @@ Player.prototype.update = function( dt ) {
     // Dynamically update the this.xCoord and this.x values;
     this.trackPosition();
     if ( this.yCoord === 2 ) {
-      console.log(map.slowFloaters * dt * this.moving);
       this.x = this.x + map.slowFloaters * dt * this.moving;
     } else if ( this.yCoord === 3 ) {
-      console.log(map.medFloaters * dt * this.moving);
       this.x = this.x + map.medFloaters * dt * this.moving;
     } else if ( this.yCoord === 4 ) {
-      console.log(map.fastFloaters * dt * this.moving);
       this.x = this.x + map.fastFloaters * dt * this.moving;
     }
   }
@@ -1005,3 +1002,10 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: menu
 // TODO: Add nextsteps.txt features
 // TODO: Refactor everything
+// TODO: Explain controls
+// TODO: Fix bug where won't float with corn
+// TODO: blurPause() doesn't save timer
+// TODO: Add powerups, ex. time stop, take extra hit powerup,
+// TODO: Add negative powerup that increases enemy speeds
+// TODO: Move corn down slightly
+// TODO: Change sprites to make a unique look
