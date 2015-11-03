@@ -86,11 +86,11 @@ Map.prototype.update = function( dt ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 4 ) {
+  if ( this.powerUpCount < 5 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 ) {
-      this.powerUpDelay = 500;
+      this.powerUpDelay = 100;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       for ( var i = 0; i < allPowerUps.length; i++ ) {
@@ -429,6 +429,7 @@ var Enemy = function() {
   // Random column
   this.y = this.startY();
   this.speed = 0;
+  this.boost = 1.0;
   // If 1, the enemies are moving, if 0, they are not,
   // see Enemy.prototype.togglePause() This function allows the pause to work.
   this.moving = 1;
@@ -483,9 +484,10 @@ Enemy.prototype.update = function( dt ) {
 // Generate a random, appropriate speed for each enemy
 Enemy.prototype.newSpeed = function( direction ) {
   if ( direction === 'right' ) {
-    return map.tileWidth / 2 + ( Math.random() * map.tileWidth * 3 );
+    // this.boost is generated when the player picks up orange gems
+    return map.tileWidth / 2 + ( Math.random() * map.tileWidth * 3 * this.boost );
   } else if ( direction === 'left' ) {
-    return ( map.tileWidth / -2 + ( Math.random() * map.tileWidth * -3 ) );
+    return ( map.tileWidth / -2 + ( Math.random() * map.tileWidth * -3 * this.boost ) );
   }
 };
 
@@ -535,6 +537,7 @@ var Player = function() {
   this.movingUp = true;
   // Is the player on a floater?
   this.floating = false;
+  this.speed = null;
   this.moving = 1;
 
   // game begins when this is true
@@ -591,11 +594,14 @@ Player.prototype.update = function( dt ) {
     numEnemies = allEnemies.length,
     numFloats = allFloats.length,
     numPowerUps = allPowerUps.length;
+
+  // Victory conditions:
   if ( map.keysCollected() && allKeys.length === 3 && this.justWon ) {
     this.justWon = false;
     this.victory = true;
     this.victorySpot = this.y;
     this.sprite = this.charHappy[ this.selection ];
+
     // Check if the countdown timer is still a number and not a string:
     if ( parseInt( Number( this.timeLeft ) ) === this.timeLeft ) {
       this.points = this.points + 100 + ( this.timeLeft * 10 );
@@ -604,29 +610,36 @@ Player.prototype.update = function( dt ) {
     }
     this.togglePause();
   }
-  // Pause game if window is not active
+
+  // Pause game if window is not active:
   window.addEventListener( 'blur', function() {
     player.blurPause();
   } );
+
+  // Player is on water floats:
   if ( this.floating && !this.paused ) {
     this.moving = 1;
     // Dynamically update the this.xCoord and this.x values;
     this.trackPosition();
     if ( this.yCoord === 2 ) {
-      this.x = this.x + map.slowFloaters * dt * this.moving;
+      this.x += this.speed * dt * this.moving;
     } else if ( this.yCoord === 3 ) {
-      this.x = this.x + map.medFloaters * dt * this.moving;
+      this.x += this.speed * dt * this.moving;
     } else if ( this.yCoord === 4 ) {
-      this.x = this.x + map.fastFloaters * dt * this.moving;
+      this.x += this.speed * dt * this.moving;
     }
   }
+
+  // Keep countdown timer going when the game is not paused:
   if ( this.counting === true && !this.paused ) {
     this.timeKeeper -= dt;
     this.timeLeft = Math.round( this.timeKeeper );
   }
+  // Start counting down once a character is selected:
   if ( this.paused === false && this.charSelected === true ) {
     this.counting = true;
   }
+  // Stop counting when the game is paused:
   if ( this.paused === true ) {
     this.counting = false;
   }
@@ -651,6 +664,7 @@ Player.prototype.update = function( dt ) {
           this.y + map.tileHeight / 8 > floatSpots[ b ][ 1 ] ) ) {
         // Floater there:
         this.floating = true;
+        this.speed = allFloats[b].speed;
       }
     }
     if ( this.floating === false ) {
@@ -907,14 +921,10 @@ Player.prototype.blurPause = function() {
 
 Player.prototype.pickUp = function(power){
   if (power.gem === 'enemy'){
-    power.x = -1000;
-    power.y = -1000;
     power.speed = 0;
     map.powerUpCount--;
-    this.hit();
+    this.gemEnemy();
   } else {
-    power.x = -1000;
-    power.y = -1000;
     power.speed = 0;
     map.powerUpCount--;
     this.points += 100;
@@ -922,6 +932,22 @@ Player.prototype.pickUp = function(power){
   // Remove powerUp from array of powerUps
   var index = allPowerUps.indexOf(power);
   allPowerUps.splice(index, 1);
+};
+
+Player.prototype.gemEnemy = function (){
+  var numEnemies = allEnemies.length,
+  numFloats = allFloats.length;
+  this.points += 100;
+  for (var i=0;i<numEnemies;i++){
+    allEnemies[i].speed *= 1.3;
+    allEnemies[i].boost += 0.3;
+  }
+  for (i=0;i<numFloats;i++){
+    allFloats[i].speed *= 1.2;
+    map.slowFloaters *= 1.2;
+    map.medFloaters *= 1.2;
+    map.fastFloaters *= 1.2;
+  }
 };
 
 Player.prototype.hit = function() {
@@ -1216,7 +1242,7 @@ function setEnemies( count ) {
   addEnemies( count );
 }
 // Pick a number of enemies:
-addEnemies( 0 );
+addEnemies( 15 );
 
 // Generate floats:
 addFloats();
@@ -1259,3 +1285,5 @@ document.addEventListener( 'keyup', function( e ) {
 // offscreen to avoid double collisions
 // TODO: Add powerUpDelay only work when the game is not paused
 // TODO: Define Player.prototype.pickUp(SpecificPowerUp);
+// TODO: Spawn not just eneny gems but power gems
+// TODO: Set enemies to not 0 in addEnemies()
