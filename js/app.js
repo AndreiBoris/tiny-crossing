@@ -483,13 +483,6 @@ var Player = function() {
   // which Player uses to move around the game map.
   this.xCoord = 0;
   this.yCoord = 0;
-  // numEnemies is generated at the bottom of app.js and is used in the
-  // evaluation of colissions to cheapen the cost of the operation slightly.
-  this.numEnemies = 0;
-  // like numEnemies and used to determine if player can walk onto the floats
-  // from the current position
-  this.numFloats = 0;
-  this.numPowerUps = 0;
 
   this.paused = false;
   this.victory = false;
@@ -557,8 +550,10 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
+  var numKeys = allKeys.length,
+  numEnemies = allEnemies.length,
+  numFloats = allFloats.length;
   if ( map.keysCollected() && allKeys.length === 3 && this.justWon ) {
-    console.log( "you won" );
     this.justWon = false;
     this.victory = true;
     this.victorySpot = this.y;
@@ -571,7 +566,6 @@ Player.prototype.update = function( dt ) {
     }
     this.togglePause();
   }
-  var numKeys = allKeys.length;
   // Pause game if window is not active
   window.addEventListener( 'blur', function() {
     player.blurPause();
@@ -603,7 +597,7 @@ Player.prototype.update = function( dt ) {
   }
   // Holds current positions of all floats:
   var floatSpots = [];
-  for ( var i = 0; i < this.numFloats; i++ ) {
+  for ( var i = 0; i < numFloats; i++ ) {
     var x = allFloats[ i ].x;
     var y = allFloats[ i ].y;
     floatSpots.push( [ x, y ] );
@@ -612,7 +606,7 @@ Player.prototype.update = function( dt ) {
   // Check to see if the player has stepped on a float:
   if ( this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4 &&
     !this.paused ) {
-    for ( var b = 0; b < this.numFloats; b++ ) {
+    for ( var b = 0; b < numFloats; b++ ) {
       if ( ( this.x + 30 < floatSpots[ b ][ 0 ] + 2 * map.tileWidth &&
           this.x + 25 > floatSpots[ b ][ 0 ] ) &&
         ( this.y - map.tileHeight / 8 < floatSpots[ b ][ 1 ] &&
@@ -649,14 +643,14 @@ Player.prototype.update = function( dt ) {
   }
   // Holds current positions of all enemies:
   var enemySpots = [];
-  for ( i = 0; i < this.numEnemies; i++ ) {
+  for ( i = 0; i < numEnemies; i++ ) {
     var xE = allEnemies[ i ].x;
     var yE = allEnemies[ i ].y;
     enemySpots.push( [ xE, yE ] );
   }
   // Check to see if the player is close enough to any of the enemies to
   // trigger a colission
-  for ( var k = 0; k < this.numEnemies; k++ ) {
+  for ( var k = 0; k < numEnemies; k++ ) {
     if ( ( this.x - map.tileWidth / 2 < enemySpots[ k ][ 0 ] &&
         this.x + map.tileWidth / 2 > enemySpots[ k ][ 0 ] ) &&
       ( this.y - map.tileHeight / 8 < enemySpots[ k ][ 1 ] &&
@@ -816,14 +810,17 @@ Player.prototype.deadMessage = function() {
 };
 
 Player.prototype.togglePause = function() {
+  var numEnemies = allEnemies.length,
+  numFloats = allFloats.length,
+  numPowerUps = allPowerUps.length;
   // Pause all enemies:
-  for ( var i = 0; i < this.numEnemies; i++ ) {
+  for ( var i = 0; i < numEnemies; i++ ) {
     allEnemies[ i ].togglePause();
   }
-  for ( i = 0; i < this.numFloats; i++ ) {
+  for ( i = 0; i < numFloats; i++ ) {
     allFloats[ i ].togglePause();
   }
-  for ( i = 0; i < this.numPowerUps; i++ ) {
+  for ( i = 0; i < numPowerUps; i++ ) {
     allPowerUps[ i ].togglePause();
   }
   this.paused = !this.paused;
@@ -835,14 +832,17 @@ Player.prototype.togglePause = function() {
 };
 
 Player.prototype.blurPause = function() {
+  var numEnemies = allEnemies.length,
+  numFloats = allFloats.length,
+  numPowerUps = allPowerUps.length;
   // Pause all enemies:
-  for ( var i = 0; i < this.numEnemies; i++ ) {
+  for ( var i = 0; i < numEnemies; i++ ) {
     allEnemies[ i ].blurPause();
   }
-  for ( i = 0; i < this.numFloats; i++ ) {
+  for ( i = 0; i < numFloats; i++ ) {
     allFloats[ i ].blurPause();
   }
-  for ( i = 0; i < this.numPowerUps; i++ ) {
+  for ( i = 0; i < numPowerUps; i++ ) {
     allPowerUps[ i ].blurPause();
   }
   this.paused = true;
@@ -851,14 +851,7 @@ Player.prototype.blurPause = function() {
 
 Player.prototype.hit = function() {
   if ( this.paused === false ) {
-    // Pause all enemies:
-    for ( var i = 0; i < this.numEnemies; i++ ) {
-      allEnemies[ i ].togglePause();
-    }
-    for ( i = 0; i < this.numFloats; i++ ) {
-      allFloats[ i ].togglePause();
-    }
-    this.paused = true;
+    this.blurPause();
     // Allows user to reset game using enter button through this.handleInput
     this.ouch = true;
     // Change to dead sprite
@@ -874,15 +867,8 @@ Player.prototype.hit = function() {
 
 Player.prototype.drown = function() {
   if ( this.paused === false ) {
-    // Pause all enemies:
-    for ( var i = 0; i < this.numEnemies; i++ ) {
-      allEnemies[ i ].togglePause();
-    }
-    for ( i = 0; i < this.numFloats; i++ ) {
-      allFloats[ i ].togglePause();
-    }
+    this.blurPause();
     this.drowned = true;
-    this.paused = true;
     // Allows user to reset game using enter button through this.handleInput
     this.ouch = true;
     // Change to dead sprite
@@ -1131,8 +1117,6 @@ function addEnemies( count ) {
   for ( var i = 0; i < count; i++ ) {
     allEnemies.push( new Enemy() );
   }
-  // Used in evaluating whether colissions occur:
-  player.numEnemies = allEnemies.length;
 }
 
 function addFloats() {
@@ -1146,7 +1130,6 @@ function addFloats() {
   for ( i = 0; i < 3; i++ ) {
     allFloats.push( new Float( 4, map.tileWidth * 4.5 * i, map.fastFloaters ) );
   }
-  player.numFloats = allFloats.length;
 }
 
 function setEnemies( count ) {
@@ -1193,4 +1176,3 @@ document.addEventListener( 'keyup', function( e ) {
 // Item
 // TODO: Explain controls
 // TODO: Update player.numPowerUps
-// TODO: Disallow movement beyond the top row
