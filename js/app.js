@@ -562,6 +562,7 @@ var Player = function() {
   this.timeLeft = 30;
   this.timeKeeper = 30;
   this.freeze = 0;
+  this.shield = 0;
   this.counting = false;
 
   this.points = 0;
@@ -647,9 +648,12 @@ Player.prototype.update = function( dt ) {
     this.paused = false;
   }
   if (this.freeze <= 0 && !this.paused){
-    for ( t = 0; t < numEnemies;t++){
-      allEnemies[t].moving = 1;
+    for ( var r = 0; r < numEnemies;r++){
+      allEnemies[r].moving = 1;
     }
+  }
+  if (this.shield > 0){
+    this.shield -= dt;
   }
   // Start counting down once a character is selected:
   if ( this.paused === false && this.charSelected === true ) {
@@ -940,21 +944,14 @@ Player.prototype.blurPause = function() {
 
 Player.prototype.pickUp = function(power){
   if (power.gem === 'enemy'){
-    map.powerUpCount--;
     this.gemEnemy();
   } else if (power.gem === 'time') {
-    if (this.timeLeft === "No bonus!"){
-      this.timeLeft = 10;
-      this.timeKeeper = 10;
-    } else {
-      this.timeLeft += 10;
-      this.timeKeeper += 10;
-    } this.freeze = 5;
+    this.gemTime();
+  }else if (power.gem === 'shield') {
+    this.gemShield();
   }
-  else {
-    map.powerUpCount--;
-    this.points += 100;
-  }
+  this.points += 100;
+  map.powerUpCount--;
   // Remove powerUp from array of powerUps
   var index = allPowerUps.indexOf(power);
   allPowerUps.splice(index, 1);
@@ -963,7 +960,6 @@ Player.prototype.pickUp = function(power){
 Player.prototype.gemEnemy = function (){
   var numEnemies = allEnemies.length,
   numFloats = allFloats.length;
-  this.points += 100;
   for (var i=0;i<numEnemies;i++){
     allEnemies[i].speed *= 1.2;
     allEnemies[i].boost += 0.2;
@@ -976,8 +972,22 @@ Player.prototype.gemEnemy = function (){
   }
 };
 
+Player.prototype.gemTime = function() {
+  if (this.timeLeft === "No bonus!"){
+    this.timeLeft = 10;
+    this.timeKeeper = 10;
+  } else {
+    this.timeLeft += 10;
+    this.timeKeeper += 10;
+  } this.freeze = 5;
+};
+
+Player.prototype.gemShield = function() {
+  this.shield = 5;
+};
+
 Player.prototype.hit = function() {
-  if ( this.paused === false ) {
+  if ( this.paused === false && this.shield <= 0 ) {
     this.blurPause();
     // Allows user to reset game using enter button through this.handleInput
     this.ouch = true;
@@ -1311,3 +1321,5 @@ document.addEventListener( 'keyup', function( e ) {
 // offscreen to avoid double collisions
 // TODO: Add powerUpDelay only work when the game is not paused
 // TODO: Define Player.prototype.pickUp(SpecificPowerUp);
+// TODO: Signifier for shiled and time and enemy gems (really important)
+// TODO: Fix bug where game is over when a collision happens with freeze on
