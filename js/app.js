@@ -256,6 +256,17 @@ Float.prototype.blurPause = function() {
   this.moving = 0;
 };
 
+var Item = function(type) {
+  this.sprite = function ItemMaker(type){
+    var options = []
+    if (type === 'key'){
+      return map.variousImages[3];
+    } else if (type === 'powerup'){
+      return map.variousImages[];
+    }
+  };
+}
+
 // Enemies the player must avoid
 var Enemy = function() {
 
