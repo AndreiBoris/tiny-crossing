@@ -75,7 +75,7 @@ var Map = function() {
   this.fastFloaters = 120;
 
   this.powerUpCount = 0;
-  this.powerUpDelay = 100;
+  this.powerUpDelay = 400;
 };
 
 Map.prototype.update = function( dt ) {
@@ -86,11 +86,11 @@ Map.prototype.update = function( dt ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 5 ) {
+  if ( this.powerUpCount < 2 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 ) {
-      this.powerUpDelay = 100;
+      this.powerUpDelay = 1000;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       for ( var i = 0; i < allPowerUps.length; i++ ) {
@@ -921,11 +921,9 @@ Player.prototype.blurPause = function() {
 
 Player.prototype.pickUp = function(power){
   if (power.gem === 'enemy'){
-    power.speed = 0;
     map.powerUpCount--;
     this.gemEnemy();
   } else {
-    power.speed = 0;
     map.powerUpCount--;
     this.points += 100;
   }
@@ -939,14 +937,14 @@ Player.prototype.gemEnemy = function (){
   numFloats = allFloats.length;
   this.points += 100;
   for (var i=0;i<numEnemies;i++){
-    allEnemies[i].speed *= 1.3;
-    allEnemies[i].boost += 0.3;
+    allEnemies[i].speed *= 1.2;
+    allEnemies[i].boost += 0.2;
   }
   for (i=0;i<numFloats;i++){
-    allFloats[i].speed *= 1.2;
-    map.slowFloaters *= 1.2;
-    map.medFloaters *= 1.2;
-    map.fastFloaters *= 1.2;
+    allFloats[i].speed *= 1.1;
+    map.slowFloaters *= 1.1;
+    map.medFloaters *= 1.1;
+    map.fastFloaters *= 1.1;
   }
 };
 
@@ -1287,3 +1285,4 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Define Player.prototype.pickUp(SpecificPowerUp);
 // TODO: Spawn not just eneny gems but power gems
 // TODO: Set enemies to not 0 in addEnemies()
+// TODO: Set a max number of gems to appear per reset
