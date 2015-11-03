@@ -68,7 +68,7 @@ var Map = function() {
   ];
 
   this.slowFloaters = 30;
-  this.medFloaters = 50;
+  this.medFloaters = -50;
   this.fastFloaters = 70;
 };
 
@@ -200,8 +200,8 @@ var Float = function( row, pos, speed ) {
   this.x = pos;
   // Random column
   this.y = this.floatRow( row );
-  this.stockSpeed = speed;
-  this.speed = 0;
+  //this.stockSpeed = speed;
+  this.speed = speed;
   // If 1, the floats are moving, if 0, they are not,
   // see Float.prototype.togglePause() This function allows the pause to work.
   this.moving = 1;
@@ -213,13 +213,13 @@ Float.prototype.update = function( dt ) {
   // all computers. this.moving is changed to 0 when the game is paused.
   this.x = this.x + this.speed * dt * this.moving;
   // Set floats going in the correct directions:
-  if ( this.speed === 0 ) {
+  /*if ( this.speed === 0 ) {
     if ( this.y === map.yValues[ 2 ] || this.y === map.yValues[ 4 ] ) {
       this.speed = this.stockSpeed;
     } else {
       this.speed = this.stockSpeed * -1;
     }
-  }
+  }*/
   // Reset floats when they go offscreen:
   if ( this.x > map.totalWidth + ( 2.5 * map.tileWidth ) ||
     this.x < -( 2.5 * map.tileWidth ) ) {
@@ -438,10 +438,13 @@ Player.prototype.update = function( dt ) {
     // Dynamically update the this.xCoord and this.x values;
     this.trackPosition();
     if ( this.yCoord === 2 ) {
+      console.log(map.slowFloaters * dt * this.moving);
       this.x = this.x + map.slowFloaters * dt * this.moving;
     } else if ( this.yCoord === 3 ) {
+      console.log(map.medFloaters * dt * this.moving);
       this.x = this.x + map.medFloaters * dt * this.moving;
     } else if ( this.yCoord === 4 ) {
+      console.log(map.fastFloaters * dt * this.moving);
       this.x = this.x + map.fastFloaters * dt * this.moving;
     }
   }
@@ -843,7 +846,7 @@ Player.prototype.handleInput = function( input ) {
       }
     } else if ( input === 'up' ) {
       // Going to the top of the game field results in a victory:
-      if ( this.yCoord === 2 ) {
+      if ( this.yCoord === 1 ) {
         this.victory = true;
         this.victorySpot = this.y;
         this.sprite = this.charHappy[ this.selection ];
