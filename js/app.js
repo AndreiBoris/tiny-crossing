@@ -205,6 +205,16 @@ Map.prototype.makeKeys = function() {
   allKeys.push( new Item( 'key', 9 ) );
 };
 
+Map.prototype.keysCollected = function() {
+  var win = true;
+  for ( var i = 0; i < allKeys.length; i++ ) {
+    if ( allKeys[ i ].flying === false ) {
+      win = false;
+    }
+  }
+  return win;
+};
+
 var Float = function( row, pos, speed ) {
   this.sprite = map.variousImages[ 5 ];
   this.x = pos;
@@ -325,8 +335,8 @@ Item.prototype.update = function( dt ) {
     } else {
       if ( this.x < map.xValues[ map.numColumns - 4 ] + this.flyingOffset ) {
         this.x = this.x + 100 * dt *
-        // Slow down the x-movement as time goes on for a smoother animation:
-        ( map.xValues[ map.numColumns - 2 ] / this.x ) * this.moving;
+          // Slow down the x-movement as time goes on for a smoother animation:
+          ( map.xValues[ map.numColumns - 2 ] / this.x ) * this.moving;
       }
       if ( this.y < map.yValues[ map.numRows - 2 ] ) {
         this.y = this.y + 300 * dt * this.moving;
@@ -482,6 +492,7 @@ var Player = function() {
 
   this.paused = false;
   this.victory = false;
+  this.justWon = true;
   this.ouch = false;
   this.drowned = false;
   this.isDead = false;
@@ -545,6 +556,20 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
+  if ( map.keysCollected() && allKeys.length === 3 && this.justWon ) {
+    console.log("you won");
+    this.justWon = false;
+    this.victory = true;
+    this.victorySpot = this.y;
+    this.sprite = this.charHappy[ this.selection ];
+    // Check if the countdown timer is still a number and not a string:
+    if ( parseInt( Number( this.timeLeft ) ) === this.timeLeft ) {
+      this.points = this.points + 100 + ( this.timeLeft * 10 );
+    } else {
+      this.points = this.points + 100;
+    }
+    this.togglePause();
+  }
   var numKeys = allKeys.length;
   // Pause game if window is not active
   window.addEventListener( 'blur', function() {
@@ -971,6 +996,7 @@ Player.prototype.handleInput = function( input ) {
   }
   // Controls only work when game isn't paused
   else if ( this.charSelected === true && this.paused === false ) {
+
     if ( input === 'left' ) {
       // If on water, just move a tile width over, don't use coordinates:
       if ( this.floating ) {
@@ -988,28 +1014,28 @@ Player.prototype.handleInput = function( input ) {
         }
       }
     } else if ( input === 'up' ) {
-      // Going to the top of the game field results in a victory:
-      if ( this.yCoord === 1 ) {
-        this.victory = true;
-        this.victorySpot = this.y;
-        this.sprite = this.charHappy[ this.selection ];
-        addEnemies( 5 );
-        if ( parseInt( Number( this.timeLeft ) ) === this.timeLeft ) {
-          this.points = this.points + 100 + ( this.timeLeft * 10 );
-        } else {
-          this.points = this.points + 100;
-        }
-        this.togglePause();
-      } else {
-        // Check if the tile is available:
-        if ( map.canGo( this.xCoord, this.yCoord - 1 ) ) {
-          // Move up:
-          this.yCoord--;
-          // Avoid coordinates:
-          if ( this.floating && this.yCoord !== 1 ) {
-            this.waterMove( 'up' );
-            return;
-          }
+      /*{
+            // Going up having selected the final key results in a victory:
+            if ( map.keysCollected() ) {
+              this.victory = true;
+              this.victorySpot = this.y;
+              this.sprite = this.charHappy[ this.selection ];
+              addEnemies( 5 );
+              // Check if the countdown timer is still a number and not a string:
+              if ( parseInt( Number( this.timeLeft ) ) === this.timeLeft ) {
+                this.points = this.points + 100 + ( this.timeLeft * 10 );
+              } else {
+                this.points = this.points + 100;
+              }
+              this.togglePause(); }*/
+      // Check if the tile is available:
+      if ( map.canGo( this.xCoord, this.yCoord - 1 ) ) {
+        // Move up:
+        this.yCoord--;
+        // Avoid coordinates:
+        if ( this.floating && this.yCoord !== 1 ) {
+          this.waterMove( 'up' );
+          return;
         }
       }
     } else if ( input === 'right' ) {
@@ -1047,6 +1073,8 @@ Player.prototype.handleInput = function( input ) {
       this.togglePause();
       return;
     }
+
+
     // Handles the move for all the possible changes in the if statements above:
     this.move();
   }
@@ -1069,8 +1097,11 @@ Player.prototype.handleInput = function( input ) {
         // Pause the enemies only, so that the new ones generated don't begin
         // the next game paused:
         this.blurPause();
+      } else if ( this.victory === true ) {
+        this.victory = false;
+        this.justWon = true;
+        map.makeKeys();
       }
-      this.victory = false;
       this.ouch = false;
       this.drowned = false;
       this.togglePause();
