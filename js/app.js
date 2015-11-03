@@ -510,7 +510,7 @@ Player.prototype.update = function( dt ) {
 
 Player.prototype.trackPosition = function() {
   for ( var i = 0; i < ( map.numColumns - 1 ); i++ ) {
-    if ( this.x > map.xValues[ i ] && this.x < map.xValues[ i + 1 ] ) {
+    if ( this.x > map.xValues[ i ] - 25 && this.x < map.xValues[ i + 1 ] - 25 ) {
       this.xCoord = i;
     }
   }
@@ -519,6 +519,7 @@ Player.prototype.trackPosition = function() {
 // Moves player.sprite to the current grid coordinates which get updated by
 // Player.prototype.handleInput()
 Player.prototype.move = function() {
+  console.log(this.yCoord);
   var coordArray = map.giveCoordinates( this.xCoord, this.yCoord );
   this.x = coordArray[ 0 ];
   this.y = coordArray[ 1 ];
@@ -526,6 +527,7 @@ Player.prototype.move = function() {
 
 // Less frustrating way of moving on the water:
 Player.prototype.waterMove = function(direc) {
+  console.log(this.yCoord);
   if (direc === 'left'){
     this.x = this.x - map.tileWidth;
   } else if (direc === 'right'){
