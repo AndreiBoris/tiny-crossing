@@ -192,7 +192,8 @@ Map.prototype.findImages = function() {
 Map.prototype.canGo = function( newX, newY ) {
   // Player can't walk into rocks:
   if ( ( newY === 9 && newX !== 1 && newX !== 5 && newX !== 9 ) ||
-    ( newY === 5 && newX !== 3 && newX !== 7 ) ) {
+    ( newY === 5 && newX !== 3 && newX !== 7 ) ||
+    newY === 0 || newY === map.numRows - 1 ) {
     return false;
   }
   return true;
@@ -557,7 +558,7 @@ Player.prototype.character = function() {
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
   if ( map.keysCollected() && allKeys.length === 3 && this.justWon ) {
-    console.log("you won");
+    console.log( "you won" );
     this.justWon = false;
     this.victory = true;
     this.victorySpot = this.y;
@@ -1055,18 +1056,13 @@ Player.prototype.handleInput = function( input ) {
         }
       }
     } else if ( input === 'down' ) {
-      // Bottom-most position:
-      if ( this.yCoord === map.numRows - 2 ) {
-        return;
-      } else {
-        // Check if the tile is available:
-        if ( map.canGo( this.xCoord, this.yCoord + 1 ) ) {
-          // Move down:
-          this.yCoord++;
-          if ( this.floating ) {
-            this.waterMove( 'down' );
-            return;
-          }
+      // Check if the tile is available:
+      if ( map.canGo( this.xCoord, this.yCoord + 1 ) ) {
+        // Move down:
+        this.yCoord++;
+        if ( this.floating ) {
+          this.waterMove( 'down' );
+          return;
         }
       }
     } else if ( input === 'pause' ) {
@@ -1101,7 +1097,7 @@ Player.prototype.handleInput = function( input ) {
         this.victory = false;
         this.justWon = true;
         map.makeKeys();
-        addEnemies(5);
+        addEnemies( 5 );
         this.blurPause();
       }
       this.ouch = false;
@@ -1198,4 +1194,3 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Explain controls
 // TODO: Update player.numPowerUps
 // TODO: Disallow movement beyond the top row
-// TODO: Win when all keys are flying
