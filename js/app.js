@@ -1101,6 +1101,8 @@ Player.prototype.handleInput = function( input ) {
         this.victory = false;
         this.justWon = true;
         map.makeKeys();
+        addEnemies(5);
+        this.blurPause();
       }
       this.ouch = false;
       this.drowned = false;
