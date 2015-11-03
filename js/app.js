@@ -67,9 +67,9 @@ var Map = function() {
     'images/water-block2',
   ];
 
-  this.slowFloaters = 30;
-  this.medFloaters = -50;
-  this.fastFloaters = 70;
+  this.slowFloaters = 70;
+  this.medFloaters = -100;
+  this.fastFloaters = 120;
 };
 
 
