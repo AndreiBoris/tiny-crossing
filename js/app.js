@@ -439,12 +439,13 @@ Player.prototype.update = function( dt ) {
   }
   if ( this.floating === true ) {
     // Dynamically update the this.xCoord and this.x values;
+    this.trackPosition();
     if ( this.yCoord === 2){
-      this.x = this.x + map.slowFloaters * dt;
+      this.x = this.x + map.slowFloaters * dt * this.moving;
     } else if ( this.yCoord === 3) {
-      this.x = this.x + map.mediumFloaters * dt;
+      this.x = this.x + map.mediumFloaters * dt * this.moving;
     } else if ( this.yCoord === 4) {
-      this.x = this.x + map.fastFloaters * dt;
+      this.x = this.x + map.fastFloaters * dt * this.moving;
     }
   }
   if ( this.counting === true ) {
@@ -506,6 +507,26 @@ Player.prototype.update = function( dt ) {
     this.victoryBounce( this.victorySpot, dt );
   }
 };
+
+Player.prototype.trackPosition = function() {
+  console.log(this.xCoord);
+  for (var i = 0; i < (map.numColumns - 1); i++ ) {
+    if (this.x > map.xValues[i] && this.x < map.xValues[i+1]){
+      console.log(this.x > map.xValues[i] && this.x < map.xValues[i+1]);
+      this.xCoord = i;
+    }
+  } console.log(this.xCoord);
+};
+
+/*
+Object.prototype.getKeyByValue = function( value ) {
+    for( var prop in this ) {
+        if( this.hasOwnProperty( prop ) ) {
+             if( this[ prop ] === value )
+                 return prop;
+        }
+    }
+}*/
 
 // Moves player.sprite to the current grid coordinates which get updated by
 // Player.prototype.handleInput()
@@ -637,6 +658,7 @@ Player.prototype.togglePause = function() {
     allFloats[ i ].togglePause();
   }
   this.paused = !this.paused;
+  this.moving = !this.moving;
 };
 
 Player.prototype.blurPause = function() {
@@ -648,6 +670,7 @@ Player.prototype.blurPause = function() {
     allFloats[ i ].blurPause();
   }
   this.paused = true;
+  this.moving = !this.moving;
 };
 
 Player.prototype.hit = function() {
