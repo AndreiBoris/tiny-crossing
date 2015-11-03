@@ -1020,9 +1020,9 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Add nextsteps.txt features
 // TODO: Refactor everything
 // TODO: Explain controls
-// TODO: Fix bug where won't float with corn
 // TODO: blurPause() doesn't save timer
 // TODO: Add powerups, ex. time stop, take extra hit powerup,
 // TODO: Add negative powerup that increases enemy speeds
 // TODO: Move corn down slightly
 // TODO: Change sprites to make a unique look
+// TODO: player still moves after blurPause
