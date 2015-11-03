@@ -62,6 +62,13 @@ var Map = function() {
     'images/char-pink-girl-happy',
     'images/char-princess-girl-happy'
   ];
+  this.playerCharsShield = [
+    'images/char-boy-shield',
+    'images/char-cat-girl-shield',
+    'images/char-horn-girl-shield',
+    'images/char-pink-girl-shield',
+    'images/char-princess-girl-shield'
+  ]
   this.mapTiles = [
     'images/white-block',
     'images/water-block',
@@ -149,6 +156,7 @@ Map.prototype.findImages = function() {
       this.playerChars[ i ] += '.png';
       this.playerCharsHurt[ i ] += '.png';
       this.playerCharsHappy[ i ] += '.png';
+      this.playerCharsShield[ i ] += '.png';
     }
     for ( i = 0; i < lengthEnemies; i++ ) {
       this.enemySprites[ i ] += '.png';
@@ -166,6 +174,7 @@ Map.prototype.findImages = function() {
       this.playerChars[ j ] += '-85.png';
       this.playerCharsHurt[ j ] += '-85.png';
       this.playerCharsHappy[ j ] += '-85.png';
+      this.playerCharsShield[ j ] += '-85.png';
     }
     for ( j = 0; j < lengthEnemies; j++ ) {
       this.enemySprites[ j ] += '-85.png';
@@ -183,6 +192,7 @@ Map.prototype.findImages = function() {
       this.playerChars[ k ] += '-65.png';
       this.playerCharsHurt[ k ] += '-65.png';
       this.playerCharsHappy[ k ] += '-65.png';
+      this.playerCharsShield[ k ] += '-65.png';
     }
     for ( k = 0; k < lengthEnemies; k++ ) {
       this.enemySprites[ k ] += '-65.png';
@@ -200,6 +210,7 @@ Map.prototype.findImages = function() {
       this.playerChars[ m ] += '-50.png';
       this.playerCharsHurt[ m ] += '-50.png';
       this.playerCharsHappy[ m ] += '-50.png';
+      this.playerCharsShield[ m ] += '-50.png';
     }
     for ( m = 0; m < lengthEnemies; m++ ) {
       this.enemySprites[ m ] += '-50.png';
@@ -557,6 +568,7 @@ var Player = function() {
   this.charOptions = map.playerChars;
   this.charHappy = map.playerCharsHappy;
   this.charHurt = map.playerCharsHurt;
+  this.charShield = map.playerCharsShield;
 
   // Countdown timer for each round
   this.timeLeft = 30;
@@ -654,6 +666,12 @@ Player.prototype.update = function( dt ) {
   }
   if (this.shield > 0){
     this.shield -= dt;
+    if (this.shield > 4.5){
+      this.sprite = this.charShield[this.selection];
+    }
+    else if (this.shield < 0.25){
+      this.sprite = this.charOptions[this.selection];
+    }
   }
   // Start counting down once a character is selected:
   if ( this.paused === false && this.charSelected === true ) {
