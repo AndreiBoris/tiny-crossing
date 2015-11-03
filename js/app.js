@@ -73,8 +73,31 @@ var Map = function() {
   this.slowFloaters = 70;
   this.medFloaters = -100;
   this.fastFloaters = 120;
+
+  this.powerUpCount = 0;
+  this.powerUpDelay = 100;
 };
 
+Map.prototype.update = function( dt ) {
+  if ( this.powerUpCount === 0 ) {
+    // Clean up array
+    allPowerUps.length = 0;
+  }
+  if ( this.powerUpCount < 2 ) {
+    if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
+      this.powerUpDelay -= dt * 100;
+    } else if ( this.powerUpDelay <= 0 ) {
+      this.powerUpDelay = 1000;
+      this.powerUpCount++;
+      allPowerUps.push( new Item( 'power' ) );
+      for ( var i = 0; i < allPowerUps.length; i++ ) {
+        if ( allPowerUps[ i ].sprite === map.variousImages[ 3 ] ) {
+          allPowerUps[ i ].choose();
+        }
+      }
+    }
+  }
+};
 
 // Allows Player.prototype.move to work to move the player around using
 // coordinates
@@ -278,11 +301,12 @@ Float.prototype.blurPause = function() {
 };
 
 var Item = function( type, pos ) {
-  this.powerUp = null;
+  this.type = type;
   this.exists = true;
   this.moving = 1;
   this.flying = false;
   this.throwDelay = 30;
+  this.movingRight = false;
   this.flyingOffset = ( function offsetter( type ) {
     if ( type === 'key' ) {
       return Math.floor( Math.random() * map.tileWidth * 3 );
@@ -290,23 +314,23 @@ var Item = function( type, pos ) {
       return null;
     }
   } )( type );
-  this.sprite = ( function itemMaker( type ) {
-    if ( type === 'key' ) {
-      return map.variousImages[ 3 ];
-    } else if ( type === 'power' ) {
-      return this.random();
-    } else if ( type === 'enemy' ) {
-      this.powerUp = 'enemy';
-      this.sprite = map.variousImages[ 8 ];
+  this.choice = ( function choiceMaker( type ) {
+    if ( type === 'power' ) {
+      var options = [ 6, 7, 8 ];
+      // Choose a random gem:
+      var choice = options[ Math.floor( Math.random() * options.length ) ];
+      return choice;
     }
   } )( type );
+  this.sprite = map.variousImages[ 3 ];
   this.x = ( function colMaker( type, pos ) {
     var options = [ -100, map.totalWidth + 100 ];
+    var choice;
     if ( type === 'key' ) {
       return map.xValues[ pos ];
     } else {
       // powerup start offscreen:
-      return options[ Math.floor( Math.random * 2 ) ];
+      return options[ Math.floor( Math.random() * 2 ) ];
     }
   } )( type, pos );
   this.y = ( function rowMaker( type ) {
@@ -320,15 +344,31 @@ var Item = function( type, pos ) {
     if ( type === 'key' ) {
       return null;
     } else {
-      return Math.floor( 50 + Math.random() * 50 );
+      return Math.floor( 20 + Math.random() * 15 );
     }
   } )( type );
 
 };
 
+Item.prototype.choose = function() {
+  if ( this.type === 'power' ) {
+    this.sprite = map.variousImages[ this.choice ];
+  } else if ( this.type === 'enemy' ) {
+    this.sprite = map.variousImages[ 8 ];
+  }
+};
+
 Item.prototype.update = function( dt ) {
-  if ( this.powerUp ) {
-    this.x = this.x + this.speed * dt * this.moving;
+  if ( this.type === 'power' || this.type === 'enemy' ) {
+    if (this.x > -50 && this.movingRight === false){
+      this.x -= this.moving * this.speed * dt;
+    } else if (this.x <= -40 && !this.movingRight){
+      this.movingRight = true;
+    } else if (this.movingRight && this.x <= map.totalWidth + 50){
+      this.x += this.moving * this.speed * dt;
+    } else {
+      this.movingRight = false;
+    }
   }
   if ( this.flying ) {
     if ( this.throwDelay > 0 ) {
@@ -352,20 +392,6 @@ Item.prototype.render = function() {
   }
 };
 
-Item.prototype.random = function() {
-  var options = [ 6, 7, 8 ];
-  // Choose a random gem:
-  var choice = options[ Math.floor( Math.random() * options.length ) ];
-  if ( choice === 6 ) {
-    this.powerUp = 'time';
-  } else if ( choice === 7 ) {
-    this.powerUp = 'shield';
-  } else if ( choice === 8 ) {
-    this.powerUp = 'enemy';
-  }
-  // Return the gem to update sprite:
-  return map.variousImages[ choice ];
-};
 
 Item.prototype.togglePause = function() {
   if ( this.moving === 1 ) {
@@ -551,8 +577,9 @@ Player.prototype.character = function() {
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
   var numKeys = allKeys.length,
-  numEnemies = allEnemies.length,
-  numFloats = allFloats.length;
+    numEnemies = allEnemies.length,
+    numFloats = allFloats.length,
+    numPowerUps = allPowerUps.length;
   if ( map.keysCollected() && allKeys.length === 3 && this.justWon ) {
     this.justWon = false;
     this.victory = true;
@@ -811,8 +838,8 @@ Player.prototype.deadMessage = function() {
 
 Player.prototype.togglePause = function() {
   var numEnemies = allEnemies.length,
-  numFloats = allFloats.length,
-  numPowerUps = allPowerUps.length;
+    numFloats = allFloats.length,
+    numPowerUps = allPowerUps.length;
   // Pause all enemies:
   for ( var i = 0; i < numEnemies; i++ ) {
     allEnemies[ i ].togglePause();
@@ -833,8 +860,8 @@ Player.prototype.togglePause = function() {
 
 Player.prototype.blurPause = function() {
   var numEnemies = allEnemies.length,
-  numFloats = allFloats.length,
-  numPowerUps = allPowerUps.length;
+    numFloats = allFloats.length,
+    numPowerUps = allPowerUps.length;
   // Pause all enemies:
   for ( var i = 0; i < numEnemies; i++ ) {
     allEnemies[ i ].blurPause();
@@ -1167,12 +1194,15 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Add negative powerup that increases enemy speeds
 // TODO: Change sprites to make a unique look
 
-// TODO: player still moves after blurPause
-// TODO: blurPause() doesn't save timer
-
 // TODO: signifier for pause button
 // TODO: menu
 // TODO: Refactor everything, particularly methods belonging to Float, Enemy and
 // Item
 // TODO: Explain controls
 // TODO: Update player.numPowerUps
+// TODO: Pause key when it is flying
+
+// TODO: Add pickedUp() to Item for powerUps. Make sure it lowers
+// map.powerUpCount by 1 and move the this.x and this.y of the powerUp
+// offscreen to avoid double collisions
+// TODO: Add powerUpDelay only work when the game is not paused

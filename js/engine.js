@@ -108,6 +108,7 @@ var Engine = ( function( global ) {
     allPowerUps.forEach( function( power ) {
       power.update( dt );
     });
+    map.update( dt );
     player.update( dt );
   }
 
