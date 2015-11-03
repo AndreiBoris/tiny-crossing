@@ -430,17 +430,12 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
+  console.log(this.x);
   // Pause game if window is not active
   window.addEventListener( 'blur', function() {
     player.blurPause();
   } );
-  // Player is not floating when not on water:
-  /*if ( this.yCoord !== 2 && this.yCoord !== 3 && this.yCoord !== 4 ) {
-    this.floating = false;
-    console.log('not floating!');
-  }*/
   if ( this.floating === true ) {
-    console.log( 'floating!' );
     // Dynamically update the this.xCoord and this.x values;
     this.trackPosition();
     if ( this.yCoord === 2 ) {
@@ -476,8 +471,8 @@ Player.prototype.update = function( dt ) {
   if ( this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4 &&
     !this.paused ) {
     for ( var b = 0; b < this.numFloats; b++ ) {
-      if ( ( this.x < floatSpots[ b ][ 0 ] + 2 * map.tileWidth &&
-          this.x > floatSpots[ b ][ 0 ] ) &&
+      if ( ( this.x - 10 < floatSpots[ b ][ 0 ] + 2 * map.tileWidth &&
+          this.x + 10 > floatSpots[ b ][ 0 ] ) &&
         ( this.y - map.tileHeight / 8 < floatSpots[ b ][ 1 ] &&
           this.y + map.tileHeight / 8 > floatSpots[ b ][ 1 ] ) ) {
         // Floater there:
@@ -515,14 +510,12 @@ Player.prototype.update = function( dt ) {
 };
 
 Player.prototype.trackPosition = function() {
-  console.log( this.xCoord );
   for ( var i = 0; i < ( map.numColumns - 1 ); i++ ) {
     if ( this.x > map.xValues[ i ] && this.x < map.xValues[ i + 1 ] ) {
       console.log( this.x > map.xValues[ i ] && this.x < map.xValues[ i + 1 ] );
       this.xCoord = i;
     }
   }
-  console.log( this.xCoord );
 };
 
 /*
@@ -541,6 +534,15 @@ Player.prototype.move = function() {
   var coordArray = map.giveCoordinates( this.xCoord, this.yCoord );
   this.x = coordArray[ 0 ];
   this.y = coordArray[ 1 ];
+};
+
+// Less frustrating way of moving on the water:
+Player.prototype.waterMove = function(direc) {
+  if (direc === 'left'){
+    this.x = this.x - map.tileWidth;
+  } else if (direc === 'right'){
+    this.x = this.x + map.tileWidth;
+  }
 };
 
 Player.prototype.resetStart = function() {
@@ -832,7 +834,11 @@ Player.prototype.handleInput = function( input ) {
   // Controls only work when game isn't paused
   else if ( this.charSelected === true && this.paused === false ) {
     if ( input === 'left' ) {
-      // Leftmost position:
+      // If on water, just move a tile width over, don't use coordinates:
+      if (this.floating){
+        this.waterMove('left');
+        return;
+      } // Leftmost position:
       if ( this.xCoord === 0 ) {
         // Move to rightmost tile:
         this.xCoord = map.numColumns - 1;
@@ -864,7 +870,11 @@ Player.prototype.handleInput = function( input ) {
         }
       }
     } else if ( input === 'right' ) {
-      // Rightmost position:
+      // If on water, just move a tile width over, don't use coordinates:
+      if (this.floating){
+        this.waterMove('right');
+        return;
+      } // Rightmost position:
       if ( this.xCoord === map.numColumns - 1 ) {
         // Move to leftmost tile:
         this.xCoord = 0;
