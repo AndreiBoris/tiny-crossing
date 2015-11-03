@@ -199,6 +199,7 @@ Map.prototype.canGo = function( newX, newY ) {
 };
 
 Map.prototype.makeKeys = function() {
+  allKeys.length = 0;
   allKeys.push( new Item( 'key', 1 ) );
   allKeys.push( new Item( 'key', 5 ) );
   allKeys.push( new Item( 'key', 9 ) );
@@ -1063,6 +1064,7 @@ Player.prototype.handleInput = function( input ) {
         this.isDead = false;
         this.points = 0;
         this.livesLeft = 5;
+        map.makeKeys();
         setEnemies( 15 );
         // Pause the enemies only, so that the new ones generated don't begin
         // the next game paused:
