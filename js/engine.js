@@ -102,6 +102,12 @@ var Engine = ( function( global ) {
     allFloats.forEach( function( float ) {
       float.update( dt );
     } );
+    allKeys.forEach( function( key ) {
+      key.update( dt );
+    });
+    allPowerUps.forEach( function( power ) {
+      power.update( dt );
+    });
     player.update( dt );
   }
 
@@ -166,6 +172,12 @@ var Engine = ( function( global ) {
     allFloats.forEach( function( float ) {
       float.render();
     } );
+    allKeys.forEach( function( key ) {
+      key.render();
+    });
+    allPowerUps.forEach( function( power ) {
+      power.render();
+    });
 
     player.render();
   }
@@ -211,7 +223,10 @@ var Engine = ( function( global ) {
     'images/Rock',
     'images/Key',
     'images/Heart',
-    'images/corn'
+    'images/corn',
+    'images/Green',
+    'images/Blue',
+    'images/Orange'
   ];
 
   var sizer = function( size ) {

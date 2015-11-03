@@ -32,7 +32,10 @@ var Map = function() {
     'images/Rock',
     'images/Key',
     'images/Heart',
-    'images/corn'
+    'images/corn',
+    'images/Blue',
+    'images/Green',
+    'images/Orange'
   ];
   this.enemySprites = [
     'images/enemy-bug',
@@ -195,6 +198,10 @@ Map.prototype.canGo = function( newX, newY ) {
   return true;
 };
 
+Map.prototype.makeKeys = function() {
+  // Make some keys
+};
+
 var Float = function( row, pos, speed ) {
   this.sprite = map.variousImages[ 5 ];
   this.x = pos;
@@ -256,16 +263,86 @@ Float.prototype.blurPause = function() {
   this.moving = 0;
 };
 
-var Item = function(type) {
-  this.sprite = function ItemMaker(type){
-    var options = []
-    if (type === 'key'){
-      return map.variousImages[3];
-    } else if (type === 'powerup'){
-      return map.variousImages[];
+var Item = function( type, pos ) {
+  this.powerUp = null;
+  this.exists = true;
+  this.moving = 1;
+  this.sprite = (function itemMaker( type ) {
+    if ( type === 'key' ) {
+      return map.variousImages[ 3 ];
+    } else if ( type === 'power' ) {
+      return this.random();
+    } else if ( type === 'enemy' ) {
+      this.powerUp = 'enemy';
+      this.sprite = map.variousImages[ 8 ];
     }
-  };
-}
+  })( type );
+  this.x = (function colMaker( type, pos ) {
+    var options = [ -100, map.totalWidth + 100 ];
+    if ( type === 'key' ) {
+      return map.xValues[ pos ];
+    } else {
+      // powerup start offscreen:
+      return options[ Math.floor( Math.random * 2 ) ];
+    }
+  })(type, pos);
+  this.y = (function rowMaker( type ) {
+    if ( type === 'key' ) {
+      return map.yValues[ 1 ];
+    } else {
+      return Enemy.prototype.startY();
+    }
+  })(type);
+  this.speed = (function speedMaker( type ) {
+    if ( type === 'key' ){
+      return null;
+    } else {
+      return Math.floor(50 + Math.random() * 50);
+    }
+  })(type);
+
+};
+
+Item.prototype.update = function( dt ) {
+  if ( this.powerUp ) {
+    this.x = this.x + this.speed * dt * this.moving;
+  }
+};
+
+Item.prototype.render = function() {
+  if ( player.charSelected === true ) {
+    ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
+  }
+};
+
+Item.prototype.random = function() {
+  var options = [ 6, 7, 8 ];
+  // Choose a random gem:
+  var choice = options[ Math.floor( Math.random() * options.length ) ];
+  if ( choice === 6 ) {
+    this.powerUp = 'time';
+  } else if ( choice === 7 ) {
+    this.powerUp = 'shield';
+  } else if ( choice === 8 ) {
+    this.powerUp = 'enemy';
+  }
+  // Return the gem to update sprite:
+  return map.variousImages[ choice ];
+};
+
+Item.prototype.togglePause = function() {
+  if ( this.moving === 1 ) {
+    // this.moving gets multiplied by the speed of each bug to determine whether
+    // an enemy is moving or not.
+    this.moving = 0;
+  } else {
+    this.moving = 1;
+  }
+};
+
+Item.prototype.blurPause = function() {
+  this.moving = 0;
+};
 
 // Enemies the player must avoid
 var Enemy = function() {
@@ -375,6 +452,7 @@ var Player = function() {
   // like numEnemies and used to determine if player can walk onto the floats
   // from the current position
   this.numFloats = 0;
+  this.numPowerUps = 0;
 
   this.paused = false;
   this.victory = false;
@@ -494,10 +572,10 @@ Player.prototype.update = function( dt ) {
       this.drown();
     }
   }
-  if (this.yCoord === 1 && this.xCoord !== 1 && this.xCoord !== 5 &&
-      this.xCoord !== 9){
-        this.drown();
-      }
+  if ( this.yCoord === 1 && this.xCoord !== 1 && this.xCoord !== 5 &&
+    this.xCoord !== 9 ) {
+    this.drown();
+  }
   // Holds current positions of all enemies:
   var enemySpots = [];
   for ( i = 0; i < this.numEnemies; i++ ) {
@@ -674,6 +752,9 @@ Player.prototype.togglePause = function() {
   for ( i = 0; i < this.numFloats; i++ ) {
     allFloats[ i ].togglePause();
   }
+  for ( i = 0; i < this.numPowerUps; i++ ) {
+    allPowerUps[ i ].togglePause();
+  }
   this.paused = !this.paused;
   if ( this.moving === 1 ) {
     this.moving = 0;
@@ -689,6 +770,9 @@ Player.prototype.blurPause = function() {
   }
   for ( i = 0; i < this.numFloats; i++ ) {
     allFloats[ i ].blurPause();
+  }
+  for ( i = 0; i < this.numPowerUps; i++ ) {
+    allPowerUps[ i ].blurPause();
   }
   this.paused = true;
   this.moving = 0;
@@ -964,6 +1048,8 @@ var player = new Player();
 
 var allEnemies = [];
 var allFloats = [];
+var allKeys = [];
+var allPowerUps = [];
 
 function addEnemies( count ) {
   for ( var i = 0; i < count; i++ ) {
@@ -1027,5 +1113,7 @@ document.addEventListener( 'keyup', function( e ) {
 
 // TODO: signifier for pause button
 // TODO: menu
-// TODO: Refactor everything
+// TODO: Refactor everything, particularly methods belonging to Float, Enemy and
+// Item
 // TODO: Explain controls
+// TODO: Update player.numPowerUps
