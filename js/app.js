@@ -1306,8 +1306,6 @@ document.addEventListener( 'keyup', function( e ) {
 
 // TODO: Add nextsteps.txt features
 
-// TODO: Add powerups, ex. time stop, take extra hit powerup,
-// TODO: Add negative powerup that increases enemy speeds
 // TODO: Change sprites to make a unique look
 
 // TODO: signifier for pause button
@@ -1315,8 +1313,7 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Refactor everything, particularly methods belonging to Float, Enemy and
 // Item
 // TODO: Explain controls
-// TODO: Update player.numPowerUps
-// TODO: Pause key when it is flying
+// TODO: Pause key when it is flying?
 
-// TODO: Signifier for shiled and time and enemy gems (really important)
+// TODO: Signifier for shieled and time and enemy gems (really important)
 // for shield the signifier should be a shield (protoss style) sprite change
