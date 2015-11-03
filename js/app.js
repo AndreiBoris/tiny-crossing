@@ -431,17 +431,31 @@ Player.prototype.character = function() {
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
   // Pause game if window is not active
+  console.log(this.x);
   window.addEventListener( 'blur', function() {
     player.blurPause();
   } );
-  if ( this.floating === true ) {
+  if ( this.floating ){
+    this.moving = 1;
     // Dynamically update the this.xCoord and this.x values;
     this.trackPosition();
     if ( this.yCoord === 2 ) {
+      //console.log("we should be moving");
+      //console.log(map.slowFloaters);
+      //console.log(dt);
+      //console.log(this.moving);
       this.x = this.x + map.slowFloaters * dt * this.moving;
     } else if ( this.yCoord === 3 ) {
+      //console.log("we should be moving");
+      //console.log(map.medFloaters);
+      //console.log(dt);
+      //console.log(this.moving);
       this.x = this.x + map.medFloaters * dt * this.moving;
     } else if ( this.yCoord === 4 ) {
+      //console.log("we should be moving");
+      //console.log(map.fastFloaters);
+      //console.log(dt);
+      //console.log(this.moving);
       this.x = this.x + map.fastFloaters * dt * this.moving;
     }
   }
@@ -470,7 +484,7 @@ Player.prototype.update = function( dt ) {
   if ( this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4 &&
     !this.paused ) {
     for ( var b = 0; b < this.numFloats; b++ ) {
-      if ( ( this.x - 25 < floatSpots[ b ][ 0 ] + 2 * map.tileWidth &&
+      if ( ( this.x + 30 < floatSpots[ b ][ 0 ] + 2 * map.tileWidth &&
           this.x + 25 > floatSpots[ b ][ 0 ] ) &&
         ( this.y - map.tileHeight / 8 < floatSpots[ b ][ 1 ] &&
           this.y + map.tileHeight / 8 > floatSpots[ b ][ 1 ] ) ) {
@@ -519,6 +533,7 @@ Player.prototype.trackPosition = function() {
 // Moves player.sprite to the current grid coordinates which get updated by
 // Player.prototype.handleInput()
 Player.prototype.move = function() {
+  console.log("did a move!");
   console.log(this.yCoord);
   var coordArray = map.giveCoordinates( this.xCoord, this.yCoord );
   this.x = coordArray[ 0 ];
@@ -921,7 +936,7 @@ Player.prototype.handleInput = function( input ) {
         this.points = 0;
         this.livesLeft = 5;
         setEnemies( 15 );
-        // Pause the enemies only so that the new ones generated don't begin
+        // Pause the enemies only, so that the new ones generated don't begin
         // the next game paused:
         this.blurPause();
       }
