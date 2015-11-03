@@ -134,11 +134,15 @@ var Engine = ( function( global ) {
          * we're using them over and over.
          */
         ctx.drawImage( Resources.get( rowImages[ row ] ), col * map.tileWidth, row * map.tileHeight );
-        if ( (row === 10 && col !== 1 && col !== 5 && col !== 9) ||
-              row === 6 && col !== 3 && col !== 7) {
+        if ( ( row === 10 && col !== 1 && col !== 5 && col !== 9 ) ||
+          row === 6 && col !== 3 && col !== 7 ) {
           // Place rocks in appropriate places:
           ctx.drawImage( Resources.get( map.variousImages[ 2 ] ),
-          col * map.tileWidth, ( row * map.tileHeight ) - 15 );
+            col * map.tileWidth, ( row * map.tileHeight ) - 15 );
+        }
+        if ( row === 2 && col !== 1 && col !== 5 && col !== 9 ) {
+          ctx.drawImage( Resources.get( map.mapTiles[ 1 ] ),
+            col * map.tileWidth, ( row * map.tileHeight ) );
         }
       }
     }

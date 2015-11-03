@@ -434,7 +434,7 @@ Player.prototype.update = function( dt ) {
   window.addEventListener( 'blur', function() {
     player.blurPause();
   } );
-  if ( this.floating && !this.paused ){
+  if ( this.floating && !this.paused ) {
     this.moving = 1;
     // Dynamically update the this.xCoord and this.x values;
     this.trackPosition();
@@ -526,14 +526,14 @@ Player.prototype.move = function() {
 };
 
 // Less frustrating way of moving on the water:
-Player.prototype.waterMove = function(direc) {
-  if (direc === 'left'){
+Player.prototype.waterMove = function( direc ) {
+  if ( direc === 'left' ) {
     this.x = this.x - map.tileWidth;
-  } else if (direc === 'right'){
+  } else if ( direc === 'right' ) {
     this.x = this.x + map.tileWidth;
-  } else if (direc === 'up'){
+  } else if ( direc === 'up' ) {
     this.y = this.y - map.tileHeight;
-  } else if (direc === 'down'){
+  } else if ( direc === 'down' ) {
     this.y = this.y + map.tileHeight;
   }
 };
@@ -828,8 +828,8 @@ Player.prototype.handleInput = function( input ) {
   else if ( this.charSelected === true && this.paused === false ) {
     if ( input === 'left' ) {
       // If on water, just move a tile width over, don't use coordinates:
-      if (this.floating){
-        this.waterMove('left');
+      if ( this.floating ) {
+        this.waterMove( 'left' );
         return;
       } // Leftmost position:
       if ( this.xCoord === 0 ) {
@@ -861,16 +861,16 @@ Player.prototype.handleInput = function( input ) {
           // Move up:
           this.yCoord--;
           // Avoid coordinates:
-          if (this.floating && this.yCoord !== 1){
-            this.waterMove('up');
+          if ( this.floating && this.yCoord !== 1 ) {
+            this.waterMove( 'up' );
             return;
           }
         }
       }
     } else if ( input === 'right' ) {
       // If on water, just move a tile width over, don't use coordinates:
-      if (this.floating){
-        this.waterMove('right');
+      if ( this.floating ) {
+        this.waterMove( 'right' );
         return;
       } // Rightmost position:
       if ( this.xCoord === map.numColumns - 1 ) {
@@ -892,8 +892,8 @@ Player.prototype.handleInput = function( input ) {
         if ( map.canGo( this.xCoord, this.yCoord + 1 ) ) {
           // Move down:
           this.yCoord++;
-          if (this.floating){
-            this.waterMove('down');
+          if ( this.floating ) {
+            this.waterMove( 'down' );
             return;
           }
         }
