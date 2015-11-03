@@ -1317,9 +1317,5 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Update player.numPowerUps
 // TODO: Pause key when it is flying
 
-// TODO: Add pickedUp() to Item for powerUps. Make sure it lowers
-// map.powerUpCount by 1 and move the this.x and this.y of the powerUp
-// offscreen to avoid double collisions
-// TODO: Add powerUpDelay only work when the game is not paused
 // TODO: Signifier for shiled and time and enemy gems (really important)
 // for shield the signifier should be a shield (protoss style) sprite change
