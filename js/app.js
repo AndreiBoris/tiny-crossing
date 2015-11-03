@@ -446,7 +446,7 @@ Player.prototype.update = function( dt ) {
       this.x = this.x + map.fastFloaters * dt * this.moving;
     }
   }
-  if ( this.counting === true ) {
+  if ( this.counting === true && !this.paused ) {
     this.timeKeeper -= dt;
     this.timeLeft = Math.round( this.timeKeeper );
   }
