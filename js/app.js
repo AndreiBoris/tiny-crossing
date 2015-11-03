@@ -79,15 +79,18 @@ var Map = function() {
 };
 
 Map.prototype.update = function( dt ) {
+  //if ( allPowerUps[0] ){
+  //  console.log(allPowerUps[0].x);
+  //}
   if ( this.powerUpCount === 0 ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 2 ) {
+  if ( this.powerUpCount < 4 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 ) {
-      this.powerUpDelay = 1000;
+      this.powerUpDelay = 500;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       for ( var i = 0; i < allPowerUps.length; i++ ) {
@@ -353,7 +356,15 @@ var Item = function( type, pos ) {
 Item.prototype.choose = function() {
   if ( this.type === 'power' ) {
     this.sprite = map.variousImages[ this.choice ];
+    if (this.choice === 6){
+      this.gem = 'time';
+    } else if (this.choice === 7){
+      this.gem = 'shield';
+    } else if (this.choice === 8){
+      this.gem = 'enemy';
+    }
   } else if ( this.type === 'enemy' ) {
+    this.gem = 'enemy';
     this.sprite = map.variousImages[ 8 ];
   }
 };
@@ -686,6 +697,24 @@ Player.prototype.update = function( dt ) {
       this.hit();
     }
   }
+  // Holds current positions of all powerUps:
+  var powerSpots = [];
+  for ( i = 0; i < numPowerUps; i++ ) {
+    var xP = allPowerUps[ i ].x;
+    var yP = allPowerUps[ i ].y;
+    powerSpots.push( [ xP, yP ] );
+  }
+  // Check to see if the player is close enough to any of the enemies to
+  // trigger a colission
+  for ( p = 0; p < numPowerUps; p++ ) {
+    if ( ( this.x - map.tileWidth / 2 < powerSpots[ p ][ 0 ] &&
+        this.x + map.tileWidth / 2 > powerSpots[ p ][ 0 ] ) &&
+      ( this.y - map.tileHeight / 8 < powerSpots[ p ][ 1 ] &&
+        this.y + map.tileHeight / 8 > powerSpots[ p ][ 1 ] ) ) {
+      // Collision detected:
+      this.pickUp(allPowerUps[p]);
+    }
+  }
   // If player reached the end objective, character does a little bounce,
   // this.victorySpot is determined when the player reaches the objective and
   // doesn't get changed by the loop
@@ -874,6 +903,25 @@ Player.prototype.blurPause = function() {
   }
   this.paused = true;
   this.moving = 0;
+};
+
+Player.prototype.pickUp = function(power){
+  if (power.gem === 'enemy'){
+    power.x = -1000;
+    power.y = -1000;
+    power.speed = 0;
+    map.powerUpCount--;
+    this.hit();
+  } else {
+    power.x = -1000;
+    power.y = -1000;
+    power.speed = 0;
+    map.powerUpCount--;
+    this.points += 100;
+  }
+  // Remove powerUp from array of powerUps
+  var index = allPowerUps.indexOf(power);
+  allPowerUps.splice(index, 1);
 };
 
 Player.prototype.hit = function() {
@@ -1101,6 +1149,8 @@ Player.prototype.handleInput = function( input ) {
         this.isDead = false;
         this.points = 0;
         this.livesLeft = 5;
+        map.powerUpCount = 0;
+        allPowerUps.length = 0;
         map.makeKeys();
         setEnemies( 15 );
         // Pause the enemies only, so that the new ones generated don't begin
@@ -1109,6 +1159,8 @@ Player.prototype.handleInput = function( input ) {
       } else if ( this.victory === true ) {
         this.victory = false;
         this.justWon = true;
+        map.powerUpCount = 0;
+        allPowerUps.length = 0;
         map.makeKeys();
         addEnemies( 5 );
         this.blurPause();
@@ -1164,7 +1216,7 @@ function setEnemies( count ) {
   addEnemies( count );
 }
 // Pick a number of enemies:
-addEnemies( 15 );
+addEnemies( 0 );
 
 // Generate floats:
 addFloats();
@@ -1206,3 +1258,4 @@ document.addEventListener( 'keyup', function( e ) {
 // map.powerUpCount by 1 and move the this.x and this.y of the powerUp
 // offscreen to avoid double collisions
 // TODO: Add powerUpDelay only work when the game is not paused
+// TODO: Define Player.prototype.pickUp(SpecificPowerUp);
