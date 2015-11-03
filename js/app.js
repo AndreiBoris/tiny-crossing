@@ -473,7 +473,7 @@ Player.prototype.update = function( dt ) {
   if ( this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4 &&
     !this.paused ) {
     for ( var b = 0; b < this.numFloats; b++ ) {
-      if ( ( this.x - 25 floatSpots[ b ][ 0 ] + 2 * map.tileWidth &&
+      if ( ( this.x - 25 < floatSpots[ b ][ 0 ] + 2 * map.tileWidth &&
           this.x + 25 > floatSpots[ b ][ 0 ] ) &&
         ( this.y - map.tileHeight / 8 < floatSpots[ b ][ 1 ] &&
           this.y + map.tileHeight / 8 > floatSpots[ b ][ 1 ] ) ) {
