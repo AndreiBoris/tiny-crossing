@@ -988,6 +988,7 @@ Player.prototype.gemShield = function() {
 
 Player.prototype.hit = function() {
   if ( this.paused === false && this.shield <= 0 ) {
+    this.freeze = 0;
     this.blurPause();
     // Allows user to reset game using enter button through this.handleInput
     this.ouch = true;
@@ -1322,4 +1323,5 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Add powerUpDelay only work when the game is not paused
 // TODO: Define Player.prototype.pickUp(SpecificPowerUp);
 // TODO: Signifier for shiled and time and enemy gems (really important)
+// for shield the signifier should be a shield (protoss style) sprite change
 // TODO: Fix bug where game is over when a collision happens with freeze on
