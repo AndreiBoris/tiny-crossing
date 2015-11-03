@@ -716,24 +716,6 @@ Player.prototype.update = function( dt ) {
       allKeys[ p ].flying = true;
     }
   }
-  // Holds current positions of all enemies:
-  var enemySpots = [];
-  for ( i = 0; i < numEnemies; i++ ) {
-    var xE = allEnemies[ i ].x;
-    var yE = allEnemies[ i ].y;
-    enemySpots.push( [ xE, yE ] );
-  }
-  // Check to see if the player is close enough to any of the enemies to
-  // trigger a colission
-  for ( var k = 0; k < numEnemies; k++ ) {
-    if ( ( this.x - map.tileWidth / 2 < enemySpots[ k ][ 0 ] &&
-        this.x + map.tileWidth / 2 > enemySpots[ k ][ 0 ] ) &&
-      ( this.y - map.tileHeight / 8 < enemySpots[ k ][ 1 ] &&
-        this.y + map.tileHeight / 8 > enemySpots[ k ][ 1 ] ) ) {
-      // Collision detected:
-      this.hit();
-    }
-  }
   // Holds current positions of all powerUps:
   var powerSpots = [];
   for ( i = 0; i < numPowerUps; i++ ) {
@@ -750,6 +732,24 @@ Player.prototype.update = function( dt ) {
         this.y + map.tileHeight / 8 > powerSpots[ p ][ 1 ] ) ) {
       // Collision detected:
       this.pickUp(allPowerUps[p]);
+    }
+  }
+  // Holds current positions of all enemies:
+  var enemySpots = [];
+  for ( i = 0; i < numEnemies; i++ ) {
+    var xE = allEnemies[ i ].x;
+    var yE = allEnemies[ i ].y;
+    enemySpots.push( [ xE, yE ] );
+  }
+  // Check to see if the player is close enough to any of the enemies to
+  // trigger a colission
+  for ( var k = 0; k < numEnemies; k++ ) {
+    if ( ( this.x - map.tileWidth / 2 < enemySpots[ k ][ 0 ] &&
+        this.x + map.tileWidth / 2 > enemySpots[ k ][ 0 ] ) &&
+      ( this.y - map.tileHeight / 8 < enemySpots[ k ][ 1 ] &&
+        this.y + map.tileHeight / 8 > enemySpots[ k ][ 1 ] ) ) {
+      // Collision detected:
+      this.hit();
     }
   }
   // If player reached the end objective, character does a little bounce,
@@ -958,17 +958,18 @@ Player.prototype.pickUp = function(power){
 };
 
 Player.prototype.gemEnemy = function (){
+  this.points += 50;
   var numEnemies = allEnemies.length,
   numFloats = allFloats.length;
   for (var i=0;i<numEnemies;i++){
-    allEnemies[i].speed *= 1.2;
-    allEnemies[i].boost += 0.2;
+    allEnemies[i].speed *= 1.1;
+    allEnemies[i].boost += 0.1;
   }
   for (i=0;i<numFloats;i++){
-    allFloats[i].speed *= 1.1;
-    map.slowFloaters *= 1.1;
-    map.medFloaters *= 1.1;
-    map.fastFloaters *= 1.1;
+    allFloats[i].speed *= 1.05;
+    map.slowFloaters *= 1.05;
+    map.medFloaters *= 1.05;
+    map.fastFloaters *= 1.05;
   }
 };
 
