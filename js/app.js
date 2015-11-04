@@ -98,8 +98,8 @@ var Map = function() {
   this.fastFloaters = 120;
 
   this.powerUpCount = 0;
-  this.powerUpDelay = 4;
-  this.powerUpsLeft = 10;
+  this.powerUpDelay = 200;
+  this.powerUpsLeft = 15;
 };
 
 Map.prototype.update = function( dt ) {
@@ -114,7 +114,7 @@ Map.prototype.update = function( dt ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 && !player.paused ) {
-      this.powerUpDelay = 1;
+      this.powerUpDelay = 200;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       this.powerUpsLeft--;
@@ -581,7 +581,6 @@ var Player = function() {
 
   this.paused = false;
   this.victory = false;
-  this.justWon = true;
   this.ouch = false;
   this.drowned = false;
   this.isDead = false;
@@ -661,8 +660,7 @@ Player.prototype.character = function() {
 Player.prototype.update = function( dt ) {
 
   // Victory conditions:
-  if ( map.keysCollected() && allKeys.length === 3 && this.justWon ) {
-    this.justWon = false;
+  if ( map.keysCollected() && allKeys.length === 3 && !this.victory ) {
     this.victory = true;
     this.victorySpot = this.y;
     this.sprite = this.charHappy[ this.selection ];
@@ -673,7 +671,7 @@ Player.prototype.update = function( dt ) {
     } else {
       this.points = this.points + 100;
     }
-    this.togglePause();
+    this.blurPause();
   }
 
   // Pause game if window is not active:
@@ -1316,20 +1314,6 @@ Player.prototype.handleInput = function( input ) {
         }
       }
     } else if ( input === 'up' ) {
-      /*{
-            // Going up having selected the final key results in a victory:
-            if ( map.keysCollected() ) {
-              this.victory = true;
-              this.victorySpot = this.y;
-              this.sprite = this.charHappy[ this.selection ];
-              addEnemies( 5 );
-              // Check if the countdown timer is still a number and not a string:
-              if ( parseInt( Number( this.timeLeft ) ) === this.timeLeft ) {
-                this.points = this.points + 100 + ( this.timeLeft * 10 );
-              } else {
-                this.points = this.points + 100;
-              }
-              this.togglePause(); }*/
       // Check if the tile is available:
       if ( map.canGo( this.xCoord, this.yCoord - 1 ) ) {
         // Move up:
@@ -1399,7 +1383,6 @@ Player.prototype.handleInput = function( input ) {
         this.blurPause();
       } else if ( this.victory === true ) {
         this.victory = false;
-        this.justWon = true;
         map.makeKeys();
         addEnemies( 3 );
         map.powerUpsLeft = 5;
@@ -1499,6 +1482,6 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Fix bug that happens when you have water power up and you get last key
 // you can still move around?? Maybe this happens if you move past the last key
 // horizontally?
-// TODO: Fix bug where the GAME OVER menu appears lower than expected. Happened
-// when dying with a power up active.
-// TODO: Fix bug with lasso + water walking speed run
+// TODO: Fix bug with lasso + water walking speed run where the game weirdly
+// pauses and requires an unpause before it can be reset
+// TODO: Fix bug that happens when you win while holding time gem
