@@ -1614,6 +1614,7 @@ Player.prototype.handleInput = function( input ) {
         map.powerUpCount = 0;
         map.powerUpsLeft = 5;
         allPowerUps.length = 0;
+        allClouds.length = 0;
         map.makeKeys();
         // Back to round 1.
         map.round = 1;
@@ -1645,6 +1646,10 @@ Player.prototype.handleInput = function( input ) {
         // Clouds and a second burrower will appear on the 5th round:
         if ( map.round === 5 ) {
           addClouds( 3 );
+          allEnemies.push( new Enemy( 'burrow2' ) );
+        }
+        // Add another borrower 2 on the 6th round:
+        if ( map.round === 6 ){
           allEnemies.push( new Enemy( 'burrow2' ) );
         }
         // Clouds will be added starting on the fifth round:
