@@ -1455,3 +1455,5 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Fix bug that happens when you have water power up and you get last key
 // you can still move around?? Maybe this happens if you move past the last key
 // horizontally?
+// TODO: Reset lasso and water timers upon getting hit
+// TODO: Lower lasso time to 8
