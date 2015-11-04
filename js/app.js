@@ -84,8 +84,8 @@ var Map = function() {
   this.fastFloaters = 120;
 
   this.powerUpCount = 0;
-  this.powerUpDelay = 300;
-  this.powerUpsLeft = 5;
+  this.powerUpDelay = 1;
+  this.powerUpsLeft = 50;
 };
 
 Map.prototype.update = function( dt ) {
@@ -96,11 +96,11 @@ Map.prototype.update = function( dt ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 3 && this.powerUpsLeft > 0 ) {
+  if ( this.powerUpCount < 50 && this.powerUpsLeft > 0 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 && !player.paused ) {
-      this.powerUpDelay = 500;
+      this.powerUpDelay = 1;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       this.powerUpsLeft--;
@@ -634,10 +634,6 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
-  var numKeys = allKeys.length,
-    numEnemies = allEnemies.length,
-    numFloats = allFloats.length,
-    numPowerUps = allPowerUps.length;
 
   // Victory conditions:
   if ( map.keysCollected() && allKeys.length === 3 && this.justWon ) {
@@ -696,6 +692,7 @@ Player.prototype.update = function( dt ) {
     this.timeKeeper -= dt;
     this.timeLeft = Math.round( this.timeKeeper );
   }
+  var numEnemies = allEnemies.length;
   if ( this.freeze > 0 && this.counting === true ) {
     // freeze all enemies
     this.freeze -= dt;
@@ -730,6 +727,7 @@ Player.prototype.update = function( dt ) {
   }
   // Holds current positions of all floats:
   var floatSpots = [];
+  var numFloats = allFloats.length;
   for ( var i = 0; i < numFloats; i++ ) {
     var x = allFloats[ i ].x;
     var y = allFloats[ i ].y;
@@ -759,6 +757,8 @@ Player.prototype.update = function( dt ) {
   }
   // Holds current positions of all keys:
   var keySpots = [];
+  var numKeys = allKeys.length;
+
   for ( i = 0; i < numKeys; i++ ) {
     var xK = allKeys[ i ].x;
     var yK = allKeys[ i ].y;
@@ -790,26 +790,34 @@ Player.prototype.update = function( dt ) {
       allKeys[ p ].flying = true;
     }
   }
-  // Holds current positions of all powerUps:
+  // Holds current positions of all power ups:
   var powerSpots = [];
-  for ( i = 0; i < numPowerUps; i++ ) {
-    var xP = allPowerUps[ i ].x;
-    var yP = allPowerUps[ i ].y;
+  var numPowerUps = allPowerUps.length;
+
+  for ( p = 0; p < numPowerUps; p++ ) {
+    var xP = allPowerUps[ p ].x;
+    var yP = allPowerUps[ p ].y;
     powerSpots.push( [ xP, yP ] );
   }
-  // Check to see if the player is close enough to any of the enemies to
-  // trigger a colission
+  // Check to see if the player is close enough to any of the power ups to
+  // pick them up
   for ( p = 0; p < numPowerUps; p++ ) {
     if ( ( this.x - map.tileWidth / 2 < powerSpots[ p ][ 0 ] &&
         this.x + map.tileWidth / 2 > powerSpots[ p ][ 0 ] ) &&
       ( this.y - map.tileHeight / 8 < powerSpots[ p ][ 1 ] &&
         this.y + map.tileHeight / 8 > powerSpots[ p ][ 1 ] ) ) {
       // Collision detected:
+      console.log('---------------------------------');
+      console.log('length top: ' + allPowerUps.length);
+      console.log(numPowerUps);
+      console.log(p);
       this.pickUp( allPowerUps[ p ] );
+      break;
     }
   }
   // Holds current positions of all enemies:
   var enemySpots = [];
+  numEnemies = allEnemies.length;
   for ( i = 0; i < numEnemies; i++ ) {
     var xE = allEnemies[ i ].x;
     var yE = allEnemies[ i ].y;
@@ -1064,6 +1072,8 @@ Player.prototype.pickUp = function( power ) {
   try {
     var handler = power.gem;
   } catch ( err ) {
+    console.log('catch position: ' + allPowerUps.indexOf( power ));
+    console.log('array length: ' + allPowerUps.length);
     console.log( "An error occured: " + err );
     return;
   }
@@ -1081,9 +1091,11 @@ Player.prototype.pickUp = function( power ) {
   }
   this.points += 100;
   map.powerUpCount--;
+  console.log('length middle: ' + allPowerUps.length);
   // Remove powerUp from array of powerUps
   var index = allPowerUps.indexOf( power );
   allPowerUps.splice( index, 1 );
+  console.log('length after: ' + allPowerUps.length);
 };
 
 Player.prototype.gemEnemy = function() {
@@ -1418,7 +1430,7 @@ function setEnemies( count ) {
   addEnemies( count );
 }
 // Pick a number of enemies:
-addEnemies( 15 );
+addEnemies( 0 );
 
 // Generate floats:
 addFloats();
@@ -1447,7 +1459,6 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Refactor everything, particularly methods belonging to Float, Enemy and
 // Item
 // TODO: Explain controls
-// TODO: Pause key when it is flying?
 
 // TODO: Add good level scaling
 // TODO: Z-pattern enemies
