@@ -357,10 +357,10 @@ Float.prototype.update = function( dt ) {
     }
   }*/
   // Reset floats when they go offscreen:
-  if (this.x > map.totalWidth + ( 2.5 * map.tileWidth )){
+  if ( this.x > map.totalWidth + ( 2.5 * map.tileWidth ) ) {
     this.x = -2.0 * map.tileWidth;
   }
-  if (this.x < -2.5 * map.tileWidth){
+  if ( this.x < -2.5 * map.tileWidth ) {
     this.x = map.totalWidth + 2.0 * map.tileWidth;
   }
   /*
@@ -708,10 +708,10 @@ Enemy.prototype.update = function( dt ) {
     this.alterDirection( this.zigzag );
   }
   if ( this.y <= map.yValues[ 10 ] && this.y > map.yValues[ 9 ] && this.ySpeed < 0 ) {
-    this.alterDirectionSide( );
+    this.alterDirectionSide();
   }
   if ( this.y >= map.yValues[ 8 ] && this.y < map.yValues[ 9 ] && this.ySpeed > 0 ) {
-    this.alterDirectionSide( );
+    this.alterDirectionSide();
   }
   if ( this.xSpeed > 0 ) {
     this.sprite = map.enemySprites[ 0 ];
@@ -749,7 +749,7 @@ Enemy.prototype.activateZigzag = function() {
   }
 };
 
-Enemy.prototype.alterDirectionSide = function(){
+Enemy.prototype.alterDirectionSide = function() {
   var options = [ 'left', 'right' ];
   var speed = Math.abs( this.ySpeed );
   this.ySpeed = 0;
@@ -877,6 +877,8 @@ var Player = function() {
   this.counting = false;
 
   this.points = 0;
+
+  this.pointsScreen = false;
 };
 
 // Until the player has selected a character, this gets rendered over the game
@@ -890,6 +892,9 @@ Player.prototype.character = function() {
   ctx.fillText( 'Collect the keys.', map.totalWidth / 2, map.tileHeight );
   ctx.fillText( 'Beat the time for bonus points.', map.totalWidth / 2, map.tileHeight * 1.75 );
   ctx.fillText( 'Collect gems for more points and effects.', map.totalWidth / 2, map.tileHeight * 2.5 );
+  ctx.fillText( 'Use the arrow or \'wasd\' keys to move around.', map.totalWidth / 2, map.tileHeight * 4.5 );
+  ctx.fillText( 'You can press \'p\' to pause.', map.totalWidth / 2, map.tileHeight * 5.5 );
+  ctx.fillText( 'Complete levels for a harder experience.', map.totalWidth / 2, map.tileHeight * 6.5 );
   this.bwMsgStyle();
   ctx.fillText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.strokeText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
@@ -1233,6 +1238,7 @@ Player.prototype.render = function() {
   } else if ( this.isDead === true ) {
     this.deadOverlay();
     this.deadMessage();
+    this.playAgainMessage();
   }
 };
 
@@ -1288,7 +1294,9 @@ Player.prototype.hitMessage = function() {
   ctx.strokeStyle = 'red';
   ctx.fillText( 'You got hit!', canvas.width / 2, canvas.height - 140 );
   ctx.strokeText( 'You got hit!', canvas.width / 2, canvas.height - 140 );
-  Player.prototype.continueMessage();
+  if ( !this.isDead ) {
+    Player.prototype.continueMessage();
+  }
 };
 
 Player.prototype.drownMessage = function() {
@@ -1297,7 +1305,9 @@ Player.prototype.drownMessage = function() {
   ctx.strokeStyle = 'red';
   ctx.fillText( 'You can\'t swim!', canvas.width / 2, canvas.height - 140 );
   ctx.strokeText( 'You can\'t swim!', canvas.width / 2, canvas.height - 140 );
-  Player.prototype.continueMessage();
+  if ( !this.isDead ) {
+    Player.prototype.continueMessage();
+  }
 };
 
 Player.prototype.deadMessage = function() {
@@ -1305,9 +1315,8 @@ Player.prototype.deadMessage = function() {
   ctx.fillStyle = 'black';
   ctx.strokeStyle = 'red';
   ctx.alignText = 'center';
-  ctx.fillText( 'Game over!', canvas.width / 2, canvas.height - 140 );
-  ctx.strokeText( 'Game over!', canvas.width / 2, canvas.height - 140 );
-  Player.prototype.continueMessage();
+  ctx.fillText( 'You got ' + this.points + ' points!', canvas.width / 2, canvas.height - 140 );
+  ctx.strokeText( 'You got ' + this.points + ' points!', canvas.width / 2, canvas.height - 140 );
 };
 
 Player.prototype.togglePause = function() {
@@ -1398,10 +1407,9 @@ Player.prototype.gemEnemy = function() {
   for ( var i = 0; i < numEnemies; i++ ) {
     allEnemies[ i ].xSpeed *= 1.4;
     allEnemies[ i ].ySpeed *= 1.4;
-    allEnemies[ i ].boost += 0.1;
   }
   for ( i = 0; i < numFloats; i++ ) {
-    allFloats[ i ].speed *= 1.06;
+    allFloats[ i ].speed *= 1.05;
   }
 };
 
@@ -1443,7 +1451,7 @@ Player.prototype.gemSlow = function() {
 Player.prototype.gemReverse = function() {
   var numFloats = allFloats.length;
   for ( i = 0; i < numFloats; i++ ) {
-  allFloats[ i ].speed *= -1;
+    allFloats[ i ].speed *= -1;
   }
 };
 
@@ -1658,7 +1666,6 @@ Player.prototype.handleInput = function( input ) {
     if ( input === 'enter' ) {
       if ( this.isDead === true ) {
         this.isDead = false;
-        this.points = 0;
         this.livesLeft = 5;
         map.powerUpCount = 0;
         map.powerUpsLeft = 5;
@@ -1671,7 +1678,7 @@ Player.prototype.handleInput = function( input ) {
         // Pause the enemies only, so that the new ones generated don't begin
         // the next game paused:
         this.blurPause();
-        alert('You got ' + map.points + 'points.');
+        this.points = 0;
       } else if ( this.victory === true ) {
         this.victory = false;
         map.round++;
@@ -1699,7 +1706,7 @@ Player.prototype.handleInput = function( input ) {
           allEnemies.push( new Enemy( 'burrow2' ) );
         }
         // Add another borrower 2 on the 6th round:
-        if ( map.round === 6 ){
+        if ( map.round === 6 ) {
           allEnemies.push( new Enemy( 'burrow2' ) );
         }
         // Clouds will be added starting on the fifth round:
@@ -1756,11 +1763,11 @@ function addEnemies( count ) {
 
 function addFloats() {
   // Add first row of floats:
-  for ( var i = 0; i < 3; i++ ) {
-    allFloats.push( new Float( 2, map.tileWidth * 3.5 * i, map.slowFloaters ) );
+  for ( var i = 0; i < 4; i++ ) {
+    allFloats.push( new Float( 2, ( map.tileWidth * 3.5 * i ) - map.tileWidth, map.slowFloaters ) );
   } // Add second row of floats:
-  for ( i = 0; i < 4; i++ ) {
-    allFloats.push( new Float( 3, map.tileWidth * 4 * i, map.medFloaters ) );
+  for ( i = 0; i < 3; i++ ) {
+    allFloats.push( new Float( 3, map.tileWidth * 5 * i, map.medFloaters ) );
   } // Add third row of floats:
   for ( i = 0; i < 3; i++ ) {
     allFloats.push( new Float( 4, map.tileWidth * 4.5 * i, map.fastFloaters ) );
@@ -1812,3 +1819,4 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Fix time bug?
 // TODO: Nerf zigzag
 // TODO: Make sure zig zag doesn't remove enemies from the playing field
+// TODO: Make sure speed and slow are finite
