@@ -40,8 +40,10 @@ var Map = function() {
     'images/Yellow'
   ];
   this.enemySprites = [
-    'images/enemy-bug',
-    'images/enemy-bug-left'
+    'images/enemy-bug-right',
+    'images/enemy-bug-left',
+    'images/enemy-bug-up',
+    'images/enemy-bug-down'
   ];
   this.playerChars = [
     'images/char-boy',
@@ -484,8 +486,10 @@ var Enemy = function() {
   this.x = this.startX();
   // Random column
   this.y = this.startY();
-  this.speed = 0;
+  this.xSpeed = 0;
   this.boost = 1.0;
+  this.ySpeed = 0;
+  this.zigzag = 0;
   // If 1, the enemies are moving, if 0, they are not,
   // see Enemy.prototype.togglePause() This function allows the pause to work.
   this.moving = 1;
@@ -510,30 +514,69 @@ Enemy.prototype.update = function( dt ) {
   // You should multiply any movement by the dt parameter
   // which will ensure the game runs at the same speed for
   // all computers. this.moving is changed to 0 when the game is paused.
-  this.x = this.x + this.speed * dt * this.moving;
+  this.x = this.x + this.xSpeed * dt * this.moving;
   // Reset enemies to the left side of the screen when they are offscreen right.
-  if ( this.speed === 0 ) {
+  if ( this.xSpeed === 0 && this.ySpeed === 0 ) {
     if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 7 ] ) {
-      this.speed = this.newSpeed( 'left' );
-      this.sprite = map.enemySprites[ 1 ];
+      this.xSpeed = this.newSpeed( 'left' );
+      //this.sprite = map.enemySprites[ 1 ];
     } else {
-      this.speed = this.newSpeed( 'right' );
-      this.sprite = map.enemySprites[ 0 ];
+      this.xSpeed = this.newSpeed( 'right' );
+      //this.sprite = map.enemySprites[ 0 ];
     }
   }
+
+  if ( this.xSpeed > 0 ) {
+    this.sprite = map.enemySprites[ 0 ];
+  }
+  if ( this.xSpeed < 0 ) {
+    this.sprite = map.enemySprites[ 1 ];
+  }
+  if ( this.ySpeed < 0 ) {
+    this.sprite = map.enemySprites[ 2 ];
+  }
+  if ( this.ySpeed > 0 ) {
+    this.sprite = map.enemySprites[ 3 ];
+  }
+
   if ( this.x > map.totalWidth + 100 || this.x < -100 ) {
     this.y = this.startY();
     if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 7 ] ) {
       this.x = map.totalWidth + 80;
       // Change speed of the enemy for the next loop
-      this.speed = this.newSpeed( 'left' );
-      this.sprite = map.enemySprites[ 1 ];
+      this.xSpeed = this.newSpeed( 'left' );
+      //this.sprite = map.enemySprites[ 1 ];
     } else {
       this.x = -80;
       // Change speed of the enemy for the next loop
-      this.speed = this.newSpeed( 'right' );
-      this.sprite = map.enemySprites[ 0 ];
+      this.xSpeed = this.newSpeed( 'right' );
+      //this.sprite = map.enemySprites[ 0 ];
     }
+  }
+};
+
+Enemy.prototype.alterDirection = function() {
+  options = [ 'left', 'up', 'down', 'right' ];
+  var speed;
+  if ( this.xSpeed === 0 ) {
+    speed = Math.abs( this.ySpeed );
+  } else {
+    speed = Math.abs( this.xSpeed );
+  }
+
+  this.xSpeed = 0;
+  this.ySpeed = 0;
+
+  var choice = options[ Math.floor( Math.random() * 4 ) ];
+
+  if ( choice === 'left' ) {
+    this.xSpeed = -1 * speed;
+  } else if ( choice === 'right' ) {
+    this.xSpeed = speed;
+  } else if ( choice === 'up' ) {
+    this.ySpeed = -1 * speed;
+  } else if ( choice === 'down' ) {
+    this.ySpeed = speed;
   }
 };
 
@@ -679,7 +722,7 @@ Player.prototype.update = function( dt ) {
     window.addEventListener( 'blur', function() {
       player.blurPause();
     } );
-  };
+  }
 
   // Player with water gem buff ignores floating:
   if ( this.lasso > 0 ) {
