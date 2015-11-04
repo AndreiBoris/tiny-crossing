@@ -341,13 +341,14 @@ var Float = function( row, pos, speed ) {
   // If 1, the floats are moving, if 0, they are not,
   // see Float.prototype.togglePause() This function allows the pause to work.
   this.moving = 1;
+  this.gemSpeed = 1.0;
 };
 
 Float.prototype.update = function( dt ) {
   // You should multiply any movement by the dt parameter
   // which will ensure the game runs at the same speed for
   // all computers. this.moving is changed to 0 when the game is paused.
-  this.x = this.x + this.speed * dt * this.moving;
+  this.x = this.x + this.speed * dt * this.moving * this.gemSpeed;
   // Set floats going in the correct directions:
   /*if ( this.speed === 0 ) {
     if ( this.y === map.yValues[ 2 ] || this.y === map.yValues[ 4 ] ) {
@@ -548,7 +549,7 @@ var Enemy = function( burrow ) {
   // Random column
   this.y = this.startY( burrow );
   this.xSpeed = 0;
-  this.boost = 1.0;
+  this.gemSpeed = 1.0;
   this.ySpeed = 0;
   this.zigzag = false;
   this.alterDirCount = 2 + Math.random() * 12;
@@ -683,8 +684,8 @@ Enemy.prototype.update = function( dt ) {
   // You should multiply any movement by the dt parameter
   // which will ensure the game runs at the same speed for
   // all computers. this.moving is changed to 0 when the game is paused.
-  this.x = this.x + this.xSpeed * dt * this.moving;
-  this.y = this.y + this.ySpeed * dt * this.moving;
+  this.x = this.x + this.xSpeed * dt * this.moving * this.gemSpeed;
+  this.y = this.y + this.ySpeed * dt * this.moving * this.gemSpeed;
   // Reset enemies to the left side of the screen when they are offscreen right.
   if ( this.xSpeed === 0 && this.ySpeed === 0 && !this.burrow && !this.burrow2 ) {
     if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 7 ] ) {
@@ -793,10 +794,9 @@ Enemy.prototype.alterDirection = function( bool ) {
 // Generate a random, appropriate speed for each enemy
 Enemy.prototype.newSpeed = function( direction ) {
   if ( direction === 'right' ) {
-    // this.boost is generated when the player picks up orange gems
-    return map.tileWidth / 2 + ( Math.random() * map.tileWidth * 3 * this.boost );
+    return map.tileWidth / 2 + ( Math.random() * map.tileWidth * 3  );
   } else if ( direction === 'left' ) {
-    return ( map.tileWidth / -2 + ( Math.random() * map.tileWidth * -3 * this.boost ) );
+    return ( map.tileWidth / -2 + ( Math.random() * map.tileWidth * -3 ) );
   }
 };
 
@@ -870,6 +870,7 @@ var Player = function() {
   // Countdown timer for each round
   this.timeLeft = 30;
   this.timeKeeper = 30;
+  this.enemySpeedTime = 0;
   this.freeze = 0;
   this.shield = 0;
   this.water = 0;
@@ -918,6 +919,9 @@ Player.prototype.character = function() {
 // This gets run for every frame of the game
 Player.prototype.update = function( dt ) {
 
+  var numFloats = allFloats.length;
+  var numEnemies = allEnemies.length;
+
   // Victory conditions:
   if ( map.keysCollected() && allKeys.length === 3 && !this.victory ) {
     this.victory = true;
@@ -938,6 +942,19 @@ Player.prototype.update = function( dt ) {
     window.addEventListener( 'blur', function() {
       player.blurPause();
     } );
+  }
+
+  // Enemies are fast:
+  if (this.enemySpeedTime >= 0){
+    this.enemySpeedTime -= dt;
+  } else if (this.enemySpeedTime <= 0 && this.enemySpeedTime >= -1) {
+    this.enemySpeedTime -= 2;
+    for ( var q = 0; q < numEnemies; q++ ) {
+      allEnemies[ q ].gemSpeed = 1.0;
+    }
+    for ( q = 0; q < numFloats; q++ ) {
+      allFloats[ q ].gemSpeed = 1.0;
+    }
   }
 
   // Player with water gem buff ignores floating:
@@ -995,7 +1012,6 @@ Player.prototype.update = function( dt ) {
     this.timeKeeper -= dt;
     this.timeLeft = Math.round( this.timeKeeper );
   }
-  var numEnemies = allEnemies.length;
   if ( this.freeze > 0 && this.counting === true && !this.victory ) {
     // freeze all enemies
     this.freeze -= dt;
@@ -1022,7 +1038,6 @@ Player.prototype.update = function( dt ) {
   }
   // Holds current positions of all floats:
   var floatSpots = [];
-  var numFloats = allFloats.length;
   for ( var i = 0; i < numFloats; i++ ) {
     var x = allFloats[ i ].x;
     var y = allFloats[ i ].y;
@@ -1403,14 +1418,14 @@ Player.prototype.pickUp = function( power ) {
 
 Player.prototype.gemEnemy = function() {
   this.points += 50;
+  this.enemySpeedTime = 5;
   var numEnemies = allEnemies.length,
     numFloats = allFloats.length;
   for ( var i = 0; i < numEnemies; i++ ) {
-    allEnemies[ i ].xSpeed *= 1.4;
-    allEnemies[ i ].ySpeed *= 1.4;
+    allEnemies[ i ].gemSpeed = 1.5;
   }
   for ( i = 0; i < numFloats; i++ ) {
-    allFloats[ i ].speed *= 1.05;
+    allFloats[ i ].gemSpeed = 1.5;
   }
 };
 
@@ -1817,7 +1832,6 @@ document.addEventListener( 'keyup', function( e ) {
 
 // TODO: Level editor to move rocks
 
-// TODO: Fix time bug?
 // TODO: Nerf zigzag
 // TODO: Make sure zig zag doesn't remove enemies from the playing field
 // TODO: Make sure speed and slow are finite
