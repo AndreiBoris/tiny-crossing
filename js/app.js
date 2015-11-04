@@ -1247,6 +1247,8 @@ Player.prototype.handleInput = function( input ) {
         map.powerUpsLeft = 5;
         this.blurPause();
       }
+      this.freeze = 0;
+      this.shield = 0;
       this.ouch = false;
       this.drowned = false;
       this.togglePause();
@@ -1334,3 +1336,6 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Pause key when it is flying?
 
 // TODO: Countdown timer for powerups time and shield: signifier for enemy gem
+// TODO: Specify timer is for bonus points only
+// TODO: Buff the orange gems
+// TODO: Give instructions to player
