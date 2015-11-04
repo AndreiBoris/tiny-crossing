@@ -84,8 +84,8 @@ var Map = function() {
   this.fastFloaters = 120;
 
   this.powerUpCount = 0;
-  this.powerUpDelay = 200;
-  this.powerUpsLeft = 50;
+  this.powerUpDelay = 300;
+  this.powerUpsLeft = 5;
 };
 
 Map.prototype.update = function( dt ) {
@@ -96,11 +96,11 @@ Map.prototype.update = function( dt ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 15 && this.powerUpsLeft > 0 ) {
+  if ( this.powerUpCount < 3 && this.powerUpsLeft > 0 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 && !player.paused ) {
-      this.powerUpDelay = 10;
+      this.powerUpDelay = 500;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       this.powerUpsLeft--;
@@ -325,6 +325,7 @@ var Item = function( type, pos ) {
   this.exists = true;
   this.moving = 1;
   this.flying = false;
+  this.lasso = false;
   this.throwDelay = 30;
   this.movingRight = false;
   this.flyingOffset = ( function offsetter( type ) {
@@ -373,15 +374,15 @@ var Item = function( type, pos ) {
 Item.prototype.choose = function() {
   if ( this.type === 'power' ) {
     this.sprite = map.variousImages[ this.choice ];
-    if (this.choice === 6){
+    if ( this.choice === 6 ) {
       this.gem = 'time';
-    } else if (this.choice === 7){
+    } else if ( this.choice === 7 ) {
       this.gem = 'shield';
-    } else if (this.choice === 8){
+    } else if ( this.choice === 8 ) {
       this.gem = 'enemy';
-    } else if (this.choice === 9){
+    } else if ( this.choice === 9 ) {
       this.gem = 'water';
-    } else if (this.choice === 10){
+    } else if ( this.choice === 10 ) {
       this.gem = 'lasso';
     }
   } else if ( this.type === 'enemy' ) {
@@ -392,11 +393,11 @@ Item.prototype.choose = function() {
 
 Item.prototype.update = function( dt ) {
   if ( this.type === 'power' || this.type === 'enemy' ) {
-    if (this.x > -50 && this.movingRight === false){
+    if ( this.x > -50 && this.movingRight === false ) {
       this.x -= this.moving * this.speed * dt;
-    } else if (this.x <= -40 && !this.movingRight){
+    } else if ( this.x <= -40 && !this.movingRight ) {
       this.movingRight = true;
-    } else if (this.movingRight && this.x <= map.totalWidth + 50){
+    } else if ( this.movingRight && this.x <= map.totalWidth + 50 ) {
       this.x += this.moving * this.speed * dt;
     } else {
       this.movingRight = false;
@@ -414,6 +415,17 @@ Item.prototype.update = function( dt ) {
       if ( this.y < map.yValues[ map.numRows - 2 ] ) {
         this.y = this.y + 300 * dt * this.moving;
       }
+    }
+  } if (this.lasso && !this.flying){
+    if (this.x > player.x){
+      this.x -= 230 * dt * this.moving;
+    } else if (this.x < player.x){
+      this.x += 230 * dt * this.moving;
+    }
+    if (this.y > player.y){
+      this.y -= 100 * dt * this.moving;
+    } else if (this.y < player.y){
+      this.y += 100 * dt * this.moving;
     }
   }
 };
@@ -583,6 +595,8 @@ var Player = function() {
   this.timeKeeper = 30;
   this.freeze = 0;
   this.shield = 0;
+  this.water = 0;
+  this.lasso = 0;
   this.counting = false;
 
   this.points = 0;
@@ -597,8 +611,8 @@ Player.prototype.character = function() {
   ctx.textAlign = 'center';
   ctx.font = '30px Impact';
   ctx.fillText( 'Collect the keys.', map.totalWidth / 2, map.tileHeight );
-  ctx.fillText( 'Beat the time for bonus points.', map.totalWidth / 2, map.tileHeight*1.75 );
-  ctx.fillText( 'Collect gems for more points and effects.', map.totalWidth / 2, map.tileHeight*2.5 );
+  ctx.fillText( 'Beat the time for bonus points.', map.totalWidth / 2, map.tileHeight * 1.75 );
+  ctx.fillText( 'Collect gems for more points and effects.', map.totalWidth / 2, map.tileHeight * 2.5 );
   this.bwMsgStyle();
   ctx.fillText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.strokeText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
@@ -646,6 +660,21 @@ Player.prototype.update = function( dt ) {
     player.blurPause();
   } );
 
+  // Player with water gem buff ignores floating:
+  if (this.lasso > 0){
+    this.lasso -= dt;
+    this.extention = 100;
+  }
+  if (this.lasso <= 0){
+    this.extention = 0;
+  }
+
+  // Player with water gem buff ignores floating:
+  if (this.water > 0){
+    this.water -= dt;
+    this.floating = false;
+  }
+
   // Player is on water floats:
   if ( this.floating && !this.paused ) {
     this.moving = 1;
@@ -665,26 +694,25 @@ Player.prototype.update = function( dt ) {
     this.timeKeeper -= dt;
     this.timeLeft = Math.round( this.timeKeeper );
   }
-  if (this.freeze > 0 && this.counting === true ){
+  if ( this.freeze > 0 && this.counting === true ) {
     // freeze all enemies
     this.freeze -= dt;
-    for (var t = 0; t < numEnemies;t++){
-      allEnemies[t].moving = 0;
+    for ( var t = 0; t < numEnemies; t++ ) {
+      allEnemies[ t ].moving = 0;
     }
     this.paused = false;
   }
-  if (this.freeze <= 0 && !this.paused){
-    for ( var r = 0; r < numEnemies;r++){
-      allEnemies[r].moving = 1;
+  if ( this.freeze <= 0 && !this.paused ) {
+    for ( var r = 0; r < numEnemies; r++ ) {
+      allEnemies[ r ].moving = 1;
     }
   }
-  if (this.shield > 0){
+  if ( this.shield > 0 ) {
     this.shield -= dt;
-    if (this.shield > 4.5){
-      this.sprite = this.charShield[this.selection];
-    }
-    else if (this.shield < 0.25){
-      this.sprite = this.charOptions[this.selection];
+    if ( this.shield > 4.5 ) {
+      this.sprite = this.charShield[ this.selection ];
+    } else if ( this.shield < 0.25 ) {
+      this.sprite = this.charOptions[ this.selection ];
     }
   }
   // Start counting down once a character is selected:
@@ -716,7 +744,7 @@ Player.prototype.update = function( dt ) {
           this.y + map.tileHeight / 8 > floatSpots[ b ][ 1 ] ) ) {
         // Floater there:
         this.floating = true;
-        this.speed = allFloats[b].speed;
+        this.speed = allFloats[ b ].speed;
       }
     }
     if ( this.floating === false ) {
@@ -734,15 +762,27 @@ Player.prototype.update = function( dt ) {
     var yK = allKeys[ i ].y;
     keySpots.push( [ xK, yK ] );
   }
+
+  for ( var p = 0; p < numKeys; p++ ) {
+    if ( ( this.x - this.extention < keySpots[ p ][ 0 ] &&
+        this.x + this.extention > keySpots[ p ][ 0 ] ) &&
+      ( this.y - this.extention < keySpots[ p ][ 1 ] &&
+        this.y + this.extention > keySpots[ p ][ 1 ] )  &&
+        this.lasso > 0 ) {
+      // Key lassoed:
+      allKeys[ p ].lasso = true;
+    }
+  }
+
   // Check to see if the player is close enough to any of the keys to
   // pick them up:
-  for ( var p = 0; p < numKeys; p++ ) {
+  for ( p = 0; p < numKeys; p++ ) {
     if ( ( this.x - map.tileWidth / 2 < keySpots[ p ][ 0 ] &&
         this.x + map.tileWidth / 2 > keySpots[ p ][ 0 ] ) &&
       ( this.y - map.tileHeight / 8 < keySpots[ p ][ 1 ] &&
         this.y + map.tileHeight / 8 > keySpots[ p ][ 1 ] ) ) {
       // Key picked up:
-      if (allKeys[p].flying === false){
+      if ( allKeys[ p ].flying === false ) {
         player.points += 50;
       }
       allKeys[ p ].flying = true;
@@ -763,7 +803,7 @@ Player.prototype.update = function( dt ) {
       ( this.y - map.tileHeight / 8 < powerSpots[ p ][ 1 ] &&
         this.y + map.tileHeight / 8 > powerSpots[ p ][ 1 ] ) ) {
       // Collision detected:
-      this.pickUp(allPowerUps[p]);
+      this.pickUp( allPowerUps[ p ] );
     }
   }
   // Holds current positions of all enemies:
@@ -846,19 +886,38 @@ Player.prototype.render = function() {
     this.displayHearts();
   }
 
-  if (this.shield > 0){
-    ctx.font = '30px Impact';
+  if ( this.shield > 0 ) {
+    ctx.font = '24px Impact';
     ctx.textAlign = 'left';
     ctx.fillStyle = 'green';
-    ctx.fillText('Shield: ' + Math.ceil(this.shield), map.totalWidth/2.1, map.tileHeight);
+    ctx.fillText( 'Shield: ' + Math.ceil( this.shield ), map.totalWidth / 2.1, map.tileHeight * 0.6 );
   }
 
-  if (this.freeze > 0){
-    ctx.font = '30px Impact';
+  if ( this.freeze > 0 ) {
+    ctx.font = '24px Impact';
     ctx.textAlign = 'left';
     ctx.fillStyle = 'blue';
-    ctx.fillText('Freeze: ' + Math.ceil(this.freeze), map.totalWidth/2.1, map.tileHeight*2);
+    ctx.fillText( 'Freeze: ' + Math.ceil( this.freeze ), map.totalWidth / 2.1, map.tileHeight * 1.2 );
   }
+
+  if ( this.water > 0 ) {
+    ctx.font = '24px Impact';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'purple';
+    ctx.fillText( 'Water: ' + Math.ceil( this.water ), map.totalWidth / 2.1, map.tileHeight * 1.8 );
+  }
+
+  if ( this.lasso > 0 ) {
+    ctx.font = '24px Impact';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'yellow';
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = '1';
+    ctx.fillText( 'Lasso: ' + Math.ceil( this.lasso ), map.totalWidth / 2.1, map.tileHeight * 2.4 );
+    ctx.strokeText( 'Lasso: ' + Math.ceil( this.lasso ), map.totalWidth / 2.1, map.tileHeight * 2.4 );
+    ctx.lineWidth = '2';
+  }
+
 
   if ( this.victory === true ) {
     // Show appropriate messages for victory
@@ -991,46 +1050,66 @@ Player.prototype.blurPause = function() {
   this.moving = 0;
 };
 
-Player.prototype.pickUp = function(power){
-  if (power.gem === 'enemy'){
+Player.prototype.pickUp = function( power ) {
+  try {
+    var handler = power.gem;
+  } catch ( err ) {
+    console.log( "An error occured: " + err );
+    return;
+  }
+  console.log( 'just this: ' + power );
+  if ( power.gem === 'enemy' ) {
     this.gemEnemy();
-  } else if (power.gem === 'time') {
+  } else if ( power.gem === 'time' ) {
     this.gemTime();
-  }else if (power.gem === 'shield') {
+  } else if ( power.gem === 'shield' ) {
     this.gemShield();
+  } else if ( power.gem === 'water' ) {
+    this.gemWater();
+  } else if ( power.gem === 'lasso' ) {
+    this.gemLasso();
   }
   this.points += 100;
   map.powerUpCount--;
   // Remove powerUp from array of powerUps
-  var index = allPowerUps.indexOf(power);
-  allPowerUps.splice(index, 1);
+  var index = allPowerUps.indexOf( power );
+  allPowerUps.splice( index, 1 );
 };
 
-Player.prototype.gemEnemy = function (){
+Player.prototype.gemEnemy = function() {
   this.points += 50;
   var numEnemies = allEnemies.length,
-  numFloats = allFloats.length;
-  for (var i=0;i<numEnemies;i++){
-    allEnemies[i].speed *= 1.4;
-    allEnemies[i].boost += 0.15;
+    numFloats = allFloats.length;
+  for ( var i = 0; i < numEnemies; i++ ) {
+    allEnemies[ i ].speed *= 1.4;
+    allEnemies[ i ].boost += 0.15;
   }
-  for (i=0;i<numFloats;i++){
-    allFloats[i].speed *= 1.06;
+  for ( i = 0; i < numFloats; i++ ) {
+    allFloats[ i ].speed *= 1.06;
   }
 };
 
 Player.prototype.gemTime = function() {
-  if (this.timeLeft === "No bonus!"){
+  if ( this.timeLeft === "No bonus!" ) {
     this.timeLeft = 10;
     this.timeKeeper = 10;
   } else {
     this.timeLeft += 10;
     this.timeKeeper += 10;
-  } this.freeze = 5;
+  }
+  this.freeze = 5;
 };
 
 Player.prototype.gemShield = function() {
   this.shield = 5;
+};
+
+Player.prototype.gemWater = function() {
+  this.water = 4;
+};
+
+Player.prototype.gemLasso = function() {
+  this.lasso = 10;
 };
 
 Player.prototype.hit = function() {
@@ -1051,7 +1130,8 @@ Player.prototype.hit = function() {
 };
 
 Player.prototype.drown = function() {
-  if ( this.paused === false ) {
+  if ( this.paused === false && this.water <= 0 ) {
+    this.freeze = 0;
     this.blurPause();
     this.drowned = true;
     // Allows user to reset game using enter button through this.handleInput
@@ -1328,7 +1408,7 @@ function setEnemies( count ) {
   addEnemies( count );
 }
 // Pick a number of enemies:
-addEnemies( 0 );
+addEnemies( 15 );
 
 // Generate floats:
 addFloats();
@@ -1362,9 +1442,10 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Add good level scaling
 // TODO: Z-pattern enemies
 // TODO: clouds
-// TODO: water-walking power up
-// TODO: lasso-power up
 
 // TODO: Fix bug where two gems are collected simultaneously --> crash
+// This seems to be caused by a power up being passed into pickUp when it is
+// not actually a gem at all
 // TODO: Fix but where collecting one gem someetimes causes others to be picked
 // up too
+// TODO: Level editor to move rocks
