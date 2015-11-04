@@ -84,8 +84,8 @@ var Map = function() {
   this.fastFloaters = 120;
 
   this.powerUpCount = 0;
-  this.powerUpDelay = 1;
-  this.powerUpsLeft = 50;
+  this.powerUpDelay = 400;
+  this.powerUpsLeft = 5;
 };
 
 Map.prototype.update = function( dt ) {
@@ -96,11 +96,11 @@ Map.prototype.update = function( dt ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 50 && this.powerUpsLeft > 0 ) {
+  if ( this.powerUpCount < 3 && this.powerUpsLeft > 0 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 && !player.paused ) {
-      this.powerUpDelay = 1;
+      this.powerUpDelay = 500;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       this.powerUpsLeft--;
@@ -807,10 +807,6 @@ Player.prototype.update = function( dt ) {
       ( this.y - map.tileHeight / 8 < powerSpots[ p ][ 1 ] &&
         this.y + map.tileHeight / 8 > powerSpots[ p ][ 1 ] ) ) {
       // Collision detected:
-      console.log('---------------------------------');
-      console.log('length top: ' + allPowerUps.length);
-      console.log(numPowerUps);
-      console.log(p);
       this.pickUp( allPowerUps[ p ] );
       break;
     }
@@ -1069,15 +1065,6 @@ Player.prototype.blurPause = function() {
 };
 
 Player.prototype.pickUp = function( power ) {
-  try {
-    var handler = power.gem;
-  } catch ( err ) {
-    console.log('catch position: ' + allPowerUps.indexOf( power ));
-    console.log('array length: ' + allPowerUps.length);
-    console.log( "An error occured: " + err );
-    return;
-  }
-  console.log( 'just this: ' + power );
   if ( power.gem === 'enemy' ) {
     this.gemEnemy();
   } else if ( power.gem === 'time' ) {
@@ -1091,11 +1078,9 @@ Player.prototype.pickUp = function( power ) {
   }
   this.points += 100;
   map.powerUpCount--;
-  console.log('length middle: ' + allPowerUps.length);
   // Remove powerUp from array of powerUps
   var index = allPowerUps.indexOf( power );
   allPowerUps.splice( index, 1 );
-  console.log('length after: ' + allPowerUps.length);
 };
 
 Player.prototype.gemEnemy = function() {
@@ -1119,7 +1104,7 @@ Player.prototype.gemTime = function() {
     this.timeLeft += 10;
     this.timeKeeper += 10;
   }
-  this.freeze = 5;
+  this.freeze = 6;
 };
 
 Player.prototype.gemShield = function() {
@@ -1127,11 +1112,11 @@ Player.prototype.gemShield = function() {
 };
 
 Player.prototype.gemWater = function() {
-  this.water = 4;
+  this.water = 5;
 };
 
 Player.prototype.gemLasso = function() {
-  this.lasso = 10;
+  this.lasso = 8;
 };
 
 Player.prototype.hit = function() {
@@ -1373,12 +1358,14 @@ Player.prototype.handleInput = function( input ) {
         this.victory = false;
         this.justWon = true;
         map.makeKeys();
-        addEnemies( 5 );
+        addEnemies( 3 );
         map.powerUpsLeft = 5;
         this.blurPause();
       }
       this.freeze = 0;
       this.shield = 0;
+      this.lasso = 0;
+      this.water = 0;
       this.ouch = false;
       this.drowned = false;
       this.togglePause();
@@ -1430,7 +1417,7 @@ function setEnemies( count ) {
   addEnemies( count );
 }
 // Pick a number of enemies:
-addEnemies( 0 );
+addEnemies( 15 );
 
 // Generate floats:
 addFloats();
@@ -1464,15 +1451,10 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Z-pattern enemies
 // TODO: clouds
 
-// TODO: Fix bug where two gems are collected simultaneously --> crash
-// This seems to be caused by a power up being passed into pickUp when it is
-// not actually a gem at all
-// TODO: Fix but where collecting one gem someetimes causes others to be picked
-// up too
 // TODO: Level editor to move rocks
 
 // TODO: Fix bug that happens when you have water power up and you get last key
 // you can still move around?? Maybe this happens if you move past the last key
 // horizontally?
-// TODO: Reset lasso and water timers upon getting hit
-// TODO: Lower lasso time to 8
+// TODO: Fix bug where the GAME OVER menu appears lower than expected. Happened
+// when dying with a power up active.
