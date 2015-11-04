@@ -294,7 +294,7 @@ Map.prototype.keysCollected = function() {
 };
 
 var Cloud = function() {
-  this.x = 300 + Math.random() * 250;
+  this.x = -400 - Math.random() * 450;
   this.y = Math.random() * map.totalHeight;
   this.sprite = map.clouds[ Math.floor( Math.random() * 4 ) ];
   this.moving = 1;
@@ -543,6 +543,13 @@ var Enemy = function( burrow ) {
       return false;
     }
   } )( burrow );
+  this.burrow2 = ( function isBurrower2( burrow ) {
+    if ( burrow === 'burrow2' ) {
+      return true;
+    } else {
+      return false;
+    }
+  } )( burrow );
   this.lastBurrow = 5;
   this.burrowWait = 5;
   this.unburrowed = 0;
@@ -553,7 +560,7 @@ var Enemy = function( burrow ) {
 
 // Generate a start position for each enemy
 Enemy.prototype.startX = function( burrow ) {
-  if ( burrow === 'burrow' ) {
+  if ( burrow === 'burrow' || burrow === 'burrow2' ) {
     return -100;
   } else {
     return Math.random() * map.totalWidth * 1.0;
@@ -563,7 +570,7 @@ Enemy.prototype.startX = function( burrow ) {
 // Random value from array courtesy of:
 // http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
 Enemy.prototype.startY = function( burrow ) {
-  if ( burrow === 'burrow' ) {
+  if ( burrow === 'burrow' || burrow === 'burrow2' ) {
     return -100;
   } else {
     // Picks one of the rows which enemies can use.
@@ -601,10 +608,23 @@ Enemy.prototype.unburrow = function() {
   }
 };
 
-Enemy.prototype.hide = function() {
+Enemy.prototype.unburrow2 = function() {
+  this.unburrowed = 3;
+  this.y = map.yValues[ 13 ];
+  this.x = map.xValues[ Math.floor( Math.random() * map.numColumns ) ];
+};
+
+Enemy.prototype.hide = function( time ) {
   this.x = -100;
   this.y = -100;
-  this.burrowWait = 5;
+  this.burrowWait = time;
+};
+
+Enemy.prototype.resetBurrow = function() {
+  var numEnemies = allEnemies.length;
+  for ( var i = 0; i < numEnemies; i++ ) {
+    allEnemies.burrowWait = 5;
+  }
 };
 
 // Update the enemy's position, required method for game
@@ -614,7 +634,7 @@ Enemy.prototype.update = function( dt ) {
     if ( this.burrowWait >= 0 ) {
       this.burrowWait -= dt * this.moving;
     }
-    if ( this.unburrowed <= 1 || this.unburrowed >= 3 ) {
+    if ( this.unburrowed <= 1 || this.unburrowed >= 2.5 ) {
       this.sprite = map.enemySprites[ 4 ];
     } else {
       this.sprite = map.enemySprites[ 5 ];
@@ -626,10 +646,28 @@ Enemy.prototype.update = function( dt ) {
       this.unburrowed -= dt * this.moving;
     }
     if ( this.unburrowed <= 0 && this.burrowWait <= 0 ) {
-      this.hide();
+      this.hide( 5 );
     }
-    console.log( this.x );
-    console.log( this.y );
+  }
+
+  if ( this.burrow2 === true ) {
+    if ( this.burrowWait >= 0 ) {
+      this.burrowWait -= dt * this.moving;
+    }
+    if ( this.unburrowed <= 1 || this.unburrowed >= 2.5 ) {
+      this.sprite = map.enemySprites[ 4 ];
+    } else {
+      this.sprite = map.enemySprites[ 5 ];
+    }
+    if ( this.burrowWait <= 0 && this.unburrowed <= 0 ) {
+      this.unburrow2();
+    }
+    if ( this.unburrowed > 0 ) {
+      this.unburrowed -= dt * this.moving;
+    }
+    if ( this.unburrowed <= 0 && this.burrowWait <= 0 ) {
+      this.hide( 3 );
+    }
   }
   // You should multiply any movement by the dt parameter
   // which will ensure the game runs at the same speed for
@@ -637,7 +675,7 @@ Enemy.prototype.update = function( dt ) {
   this.x = this.x + this.xSpeed * dt * this.moving;
   this.y = this.y + this.ySpeed * dt * this.moving;
   // Reset enemies to the left side of the screen when they are offscreen right.
-  if ( this.xSpeed === 0 && this.ySpeed === 0 && !this.burrow ) {
+  if ( this.xSpeed === 0 && this.ySpeed === 0 && !this.burrow && !this.burrow2 ) {
     if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 7 ] ) {
       this.xSpeed = this.newSpeed( 'left' );
       //this.sprite = map.enemySprites[ 1 ];
@@ -1579,7 +1617,7 @@ Player.prototype.handleInput = function( input ) {
         map.makeKeys();
         // Back to round 1.
         map.round = 1;
-        setEnemies( 15 );
+        setEnemies( 8 );
         // Pause the enemies only, so that the new ones generated don't begin
         // the next game paused:
         this.blurPause();
@@ -1588,25 +1626,33 @@ Player.prototype.handleInput = function( input ) {
         map.round++;
         map.makeKeys();
         // More enemies each rounch
-        if ( map.round === 2 ) {
-          addEnemies( 5 );
-        }
         if ( allEnemies.length <= 40 ) {
           addEnemies( 2 );
         }
-        // Add a burrower starting on the second round:
+        if ( map.round === 2 ) {
+          // Extra add in for round 2:
+          addEnemies( 5 );
+        }
+        // Add a burrower starting on the third round:
         if ( map.round === 3 ) {
           allEnemies.push( new Enemy( 'burrow' ) );
         }
-        // Enemies will zig zag starting on the third round:
+        // Enemies will be able to move in all 4 directions starting on the
+        // fourth round:
         if ( map.round >= 4 ) {
           Enemy.prototype.activateZigzag();
         }
-        // Clouds will be added starting on the fourth round:
+        // Clouds and a second burrower will appear on the 5th round:
+        if ( map.round === 5 ) {
+          addClouds( 3 );
+          allEnemies.push( new Enemy( 'burrow2' ) );
+        }
+        // Clouds will be added starting on the fifth round:
         if ( allClouds.length <= 15 && map.round >= 5 ) {
-          addClouds( 5 );
+          addClouds( 1 );
         }
         map.powerUpsLeft = 5;
+        Enemy.prototype.resetBurrow();
         this.blurPause();
       }
       this.freeze = 0;
@@ -1713,4 +1759,5 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Add feedback to the enemy gem
 
 // TODO: Fix time bug?
-// TODO: expand y colission boxes with enemies
+// TODO: Add 4 more cloud types
+// TODO: Add new burrower at the bottom row (random) starting at round 5
