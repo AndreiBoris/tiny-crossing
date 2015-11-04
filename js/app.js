@@ -674,12 +674,12 @@ Player.prototype.update = function( dt ) {
     this.blurPause();
   }
 
-  // Pause game if window is not active:
-  window.addEventListener( 'blur', function() {
-    if ( this.charSelected ) {
+  if ( this.charSelected ) {
+    // Pause game if window is not active:
+    window.addEventListener( 'blur', function() {
       player.blurPause();
-    }
-  } );
+    } );
+  };
 
   // Player with water gem buff ignores floating:
   if ( this.lasso > 0 ) {
