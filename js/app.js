@@ -1478,10 +1478,3 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: clouds
 
 // TODO: Level editor to move rocks
-
-// TODO: Fix bug that happens when you have water power up and you get last key
-// you can still move around?? Maybe this happens if you move past the last key
-// horizontally?
-// TODO: Fix bug with lasso + water walking speed run where the game weirdly
-// pauses and requires an unpause before it can be reset
-// TODO: Fix bug that happens when you win while holding time gem
