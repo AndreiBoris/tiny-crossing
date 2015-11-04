@@ -879,6 +879,8 @@ var Player = function() {
   this.counting = false;
 
   this.points = 0;
+  this.latestPoints = 0;
+  this.pointsY = -200;
 
   this.pointsScreen = false;
 };
@@ -931,11 +933,15 @@ Player.prototype.update = function( dt ) {
 
     // Check if the countdown timer is still a number and not a string:
     if ( parseInt( Number( this.timeLeft ) ) === this.timeLeft ) {
-      this.points = this.points + 100 + ( this.timeLeft * 10 );
+      this.winPoints( 100 + ( this.timeLeft * 10 ), 'victory');
     } else {
-      this.points = this.points + 100;
+      this.winPoints(100, 'victory');
     }
     this.blurPause();
+  }
+
+  if ( this.pointsY > -200 ){
+    this.pointsY -= 150 * dt;
   }
 
   if ( this.charSelected ) {
@@ -1097,7 +1103,7 @@ Player.prototype.update = function( dt ) {
         this.y + map.tileHeight / 8 > keySpots[ p ][ 1 ] ) ) {
       // Key picked up:
       if ( allKeys[ p ].flying === false ) {
-        player.points += 50;
+        this.winPoints(50);
       }
       allKeys[ p ].flying = true;
     }
@@ -1193,6 +1199,9 @@ Player.prototype.resetStart = function() {
 // Draws each frame.
 Player.prototype.render = function() {
   // Show character selection at start of game
+
+  this.announcePoints(this.latestPoints);
+
   if ( this.charSelected === false ) {
     this.character();
   }
@@ -1260,7 +1269,22 @@ Player.prototype.render = function() {
   }
 };
 
+Player.prototype.winPoints = function(points, lastKey){
+  this.points += points;
+  this.pointsY = map.tileHeight * 5;
+  this.latestPoints = points;
+  if (lastKey){
+    this.latestPoints = points + 50;
+  }
+};
 
+Player.prototype.announcePoints = function(points){
+  ctx.fillStyle = 'orange';
+  ctx.strokeStyle = 'black';
+  ctx.font = '56px Impact';
+  ctx.fillText('+' + points, map.totalWidth - map.tileWidth * 1.5, this.pointsY);
+  ctx.strokeText('+' + points, map.totalWidth - map.tileWidth * 1.5, this.pointsY);
+};
 
 Player.prototype.victory = function() {
   Player.prototype.victoryMessage();
@@ -1411,7 +1435,6 @@ Player.prototype.pickUp = function( power ) {
   } else if ( power.gem === 'reverse' ) {
     this.gemReverse();
   }
-  this.points += 100;
   map.powerUpCount--;
   // Remove powerUp from array of powerUps
   var index = allPowerUps.indexOf( power );
@@ -1419,7 +1442,7 @@ Player.prototype.pickUp = function( power ) {
 };
 
 Player.prototype.gemEnemy = function() {
-  this.points += 50;
+  this.winPoints(150);
   this.enemySpeedTime = 5;
   this.gemSpeed = 1.5;
   var numEnemies = allEnemies.length,
@@ -1433,6 +1456,7 @@ Player.prototype.gemEnemy = function() {
 };
 
 Player.prototype.gemTime = function() {
+  this.winPoints(100);
   if ( this.timeLeft === "No bonus!" ) {
     this.timeLeft = 10;
     this.timeKeeper = 10;
@@ -1444,22 +1468,26 @@ Player.prototype.gemTime = function() {
 };
 
 Player.prototype.gemShield = function() {
+  this.winPoints(100);
   this.shield = 5;
 };
 
 Player.prototype.gemWater = function() {
+  this.winPoints(100);
   this.water = 4;
 };
 
 Player.prototype.gemLasso = function() {
+  this.winPoints(100);
   this.lasso = 8;
 };
 
 Player.prototype.gemPoints = function() {
-  this.points += 200;
+  this.winPoints(300);
 };
 
 Player.prototype.gemSlow = function() {
+  this.winPoints(100);
   this.enemySpeedTime = 5;
   this.gemSpeed = 0.5;
   var numEnemies = allEnemies.length,
@@ -1473,6 +1501,7 @@ Player.prototype.gemSlow = function() {
 };
 
 Player.prototype.gemReverse = function() {
+  this.winPoints(100);
   var numFloats = allFloats.length;
   for ( i = 0; i < numFloats; i++ ) {
     allFloats[ i ].speed *= -1;
