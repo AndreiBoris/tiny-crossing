@@ -657,7 +657,9 @@ Player.prototype.update = function( dt ) {
 
   // Pause game if window is not active:
   window.addEventListener( 'blur', function() {
+    if (this.charSelected){
     player.blurPause();
+  }
   } );
 
   // Player with water gem buff ignores floating:
@@ -1449,3 +1451,7 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Fix but where collecting one gem someetimes causes others to be picked
 // up too
 // TODO: Level editor to move rocks
+
+// TODO: Fix bug that happens when you have water power up and you get last key
+// you can still move around?? Maybe this happens if you move past the last key
+// horizontally?
