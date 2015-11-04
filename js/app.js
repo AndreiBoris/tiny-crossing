@@ -71,6 +71,20 @@ var Map = function() {
     'images/char-pink-girl-shield',
     'images/char-princess-girl-shield'
   ];
+  this.playerCharsLasso = [
+    'images/char-boy-lasso',
+    'images/char-cat-girl-lasso',
+    'images/char-horn-girl-lasso',
+    'images/char-pink-girl-lasso',
+    'images/char-princess-girl-lasso'
+  ];
+  this.playerCharsWater = [
+    'images/char-boy-water',
+    'images/char-cat-girl-water',
+    'images/char-horn-girl-water',
+    'images/char-pink-girl-water',
+    'images/char-princess-girl-water',
+  ];
   this.mapTiles = [
     'images/white-block',
     'images/water-block',
@@ -161,6 +175,8 @@ Map.prototype.findImages = function() {
       this.playerCharsHurt[ i ] += '.png';
       this.playerCharsHappy[ i ] += '.png';
       this.playerCharsShield[ i ] += '.png';
+      this.playerCharsLasso[ i ] += '.png';
+      this.playerCharsWater[ i ] += '.png';
     }
     for ( i = 0; i < lengthEnemies; i++ ) {
       this.enemySprites[ i ] += '.png';
@@ -179,6 +195,8 @@ Map.prototype.findImages = function() {
       this.playerCharsHurt[ j ] += '-85.png';
       this.playerCharsHappy[ j ] += '-85.png';
       this.playerCharsShield[ j ] += '-85.png';
+      this.playerCharsLasso[ j ] += '-85.png';
+      this.playerCharsWater[ j ] += '-85.png';
     }
     for ( j = 0; j < lengthEnemies; j++ ) {
       this.enemySprites[ j ] += '-85.png';
@@ -197,6 +215,8 @@ Map.prototype.findImages = function() {
       this.playerCharsHurt[ k ] += '-65.png';
       this.playerCharsHappy[ k ] += '-65.png';
       this.playerCharsShield[ k ] += '-65.png';
+      this.playerCharsLasso[ k ] += '-65.png';
+      this.playerCharsWater[ k ] += '-65.png';
     }
     for ( k = 0; k < lengthEnemies; k++ ) {
       this.enemySprites[ k ] += '-65.png';
@@ -215,6 +235,8 @@ Map.prototype.findImages = function() {
       this.playerCharsHurt[ m ] += '-50.png';
       this.playerCharsHappy[ m ] += '-50.png';
       this.playerCharsShield[ m ] += '-50.png';
+      this.playerCharsLasso[ m ] += '-50.png';
+      this.playerCharsWater[ m ] += '-50.png';
     }
     for ( m = 0; m < lengthEnemies; m++ ) {
       this.enemySprites[ m ] += '-50.png';
@@ -416,15 +438,16 @@ Item.prototype.update = function( dt ) {
         this.y = this.y + 300 * dt * this.moving;
       }
     }
-  } if (this.lasso && !this.flying){
-    if (this.x > player.x){
+  }
+  if ( this.lasso && !this.flying ) {
+    if ( this.x > player.x ) {
       this.x -= 230 * dt * this.moving;
-    } else if (this.x < player.x){
+    } else if ( this.x < player.x ) {
       this.x += 230 * dt * this.moving;
     }
-    if (this.y > player.y){
+    if ( this.y > player.y ) {
       this.y -= 100 * dt * this.moving;
-    } else if (this.y < player.y){
+    } else if ( this.y < player.y ) {
       this.y += 100 * dt * this.moving;
     }
   }
@@ -589,6 +612,8 @@ var Player = function() {
   this.charHappy = map.playerCharsHappy;
   this.charHurt = map.playerCharsHurt;
   this.charShield = map.playerCharsShield;
+  this.charLasso = map.playerCharsLasso;
+  this.charWater = map.playerCharsWater;
 
   // Countdown timer for each round
   this.timeLeft = 30;
@@ -653,24 +678,45 @@ Player.prototype.update = function( dt ) {
 
   // Pause game if window is not active:
   window.addEventListener( 'blur', function() {
-    if (this.charSelected){
-    player.blurPause();
-  }
+    if ( this.charSelected ) {
+      player.blurPause();
+    }
   } );
 
   // Player with water gem buff ignores floating:
-  if (this.lasso > 0){
+  if ( this.lasso > 0 ) {
     this.lasso -= dt;
-    this.extention = 100;
-  }
-  if (this.lasso <= 0){
-    this.extention = 0;
+    if ( this.lasso > 0.1 ) {
+      if ( this.shield <= 0.09 && this.water <= 0.09 ) {
+        this.sprite = this.charLasso[ this.selection ];
+      }
+      this.extention = 100;
+    } else if ( this.lasso < 0.09 ) {
+      if ( this.shield <= 0.09 && this.water <= 0.09 ) {
+        this.sprite = this.charOptions[ this.selection ];
+      }
+      this.extention = 0;
+    }
   }
 
   // Player with water gem buff ignores floating:
-  if (this.water > 0){
+  if ( this.water > 0 ) {
     this.water -= dt;
     this.floating = false;
+    if ( this.water > 0.1 && this.shield <= 0.09 ) {
+      this.sprite = this.charWater[ this.selection ];
+    } else if ( this.water < 0.09 && this.shield <= 0.09 ) {
+      this.sprite = this.charOptions[ this.selection ];
+    }
+  }
+
+  if ( this.shield > 0 ) {
+    this.shield -= dt;
+    if ( this.shield > 0.1 ) {
+      this.sprite = this.charShield[ this.selection ];
+    } else if ( this.shield < 0.09 ) {
+      this.sprite = this.charOptions[ this.selection ];
+    }
   }
 
   // Player is on water floats:
@@ -704,14 +750,6 @@ Player.prototype.update = function( dt ) {
   if ( this.freeze <= 0 && !this.paused ) {
     for ( var r = 0; r < numEnemies; r++ ) {
       allEnemies[ r ].moving = 1;
-    }
-  }
-  if ( this.shield > 0 ) {
-    this.shield -= dt;
-    if ( this.shield > 4.5 ) {
-      this.sprite = this.charShield[ this.selection ];
-    } else if ( this.shield < 0.25 ) {
-      this.sprite = this.charOptions[ this.selection ];
     }
   }
   // Start counting down once a character is selected:
@@ -769,8 +807,8 @@ Player.prototype.update = function( dt ) {
     if ( ( this.x - this.extention < keySpots[ p ][ 0 ] &&
         this.x + this.extention > keySpots[ p ][ 0 ] ) &&
       ( this.y - this.extention < keySpots[ p ][ 1 ] &&
-        this.y + this.extention > keySpots[ p ][ 1 ] )  &&
-        this.lasso > 0 ) {
+        this.y + this.extention > keySpots[ p ][ 1 ] ) &&
+      this.lasso > 0 ) {
       // Key lassoed:
       allKeys[ p ].lasso = true;
     }
