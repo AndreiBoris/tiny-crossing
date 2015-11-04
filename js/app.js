@@ -935,6 +935,7 @@ Player.prototype.render = function() {
     ctx.textAlign = 'left';
     ctx.fillStyle = 'green';
     ctx.fillText( 'Shield: ' + Math.ceil( this.shield ), map.totalWidth / 2.1, map.tileHeight * 0.6 );
+    ctx.textAlign = 'center';
   }
 
   if ( this.freeze > 0 ) {
@@ -942,6 +943,7 @@ Player.prototype.render = function() {
     ctx.textAlign = 'left';
     ctx.fillStyle = 'blue';
     ctx.fillText( 'Freeze: ' + Math.ceil( this.freeze ), map.totalWidth / 2.1, map.tileHeight * 1.2 );
+    ctx.textAlign = 'center';
   }
 
   if ( this.water > 0 ) {
@@ -949,6 +951,7 @@ Player.prototype.render = function() {
     ctx.textAlign = 'left';
     ctx.fillStyle = 'purple';
     ctx.fillText( 'Water: ' + Math.ceil( this.water ), map.totalWidth / 2.1, map.tileHeight * 1.8 );
+    ctx.textAlign = 'center';
   }
 
   if ( this.lasso > 0 ) {
@@ -960,6 +963,7 @@ Player.prototype.render = function() {
     ctx.fillText( 'Lasso: ' + Math.ceil( this.lasso ), map.totalWidth / 2.1, map.tileHeight * 2.4 );
     ctx.strokeText( 'Lasso: ' + Math.ceil( this.lasso ), map.totalWidth / 2.1, map.tileHeight * 2.4 );
     ctx.lineWidth = '2';
+    ctx.textAlign = 'center';
   }
 
 
@@ -1049,6 +1053,7 @@ Player.prototype.deadMessage = function() {
   ctx.font = '64px Impact';
   ctx.fillStyle = 'black';
   ctx.strokeStyle = 'red';
+  ctx.alignText = 'center';
   ctx.fillText( 'Game over!', canvas.width / 2, canvas.height - 140 );
   ctx.strokeText( 'Game over!', canvas.width / 2, canvas.height - 140 );
   Player.prototype.continueMessage();
