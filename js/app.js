@@ -35,7 +35,9 @@ var Map = function() {
     'images/corn',
     'images/Blue',
     'images/Green',
-    'images/Orange'
+    'images/Orange',
+    'images/Purple',
+    'images/Yellow'
   ];
   this.enemySprites = [
     'images/enemy-bug',
@@ -82,8 +84,8 @@ var Map = function() {
   this.fastFloaters = 120;
 
   this.powerUpCount = 0;
-  this.powerUpDelay = 500;
-  this.powerUpsLeft = 5;
+  this.powerUpDelay = 200;
+  this.powerUpsLeft = 50;
 };
 
 Map.prototype.update = function( dt ) {
@@ -94,15 +96,17 @@ Map.prototype.update = function( dt ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 3 && this.powerUpsLeft > 0 ) {
+  if ( this.powerUpCount < 15 && this.powerUpsLeft > 0 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 && !player.paused ) {
-      this.powerUpDelay = 500;
+      this.powerUpDelay = 10;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       this.powerUpsLeft--;
       for ( var i = 0; i < allPowerUps.length; i++ ) {
+        // the starting sprite is a key, if the sprite is a key, it should be
+        // changed
         if ( allPowerUps[ i ].sprite === map.variousImages[ 3 ] ) {
           allPowerUps[ i ].choose();
         }
@@ -332,7 +336,7 @@ var Item = function( type, pos ) {
   } )( type );
   this.choice = ( function choiceMaker( type ) {
     if ( type === 'power' ) {
-      var options = [ 6, 7, 8 ];
+      var options = [ 6, 7, 8, 9, 10 ];
       // Choose a random gem:
       var choice = options[ Math.floor( Math.random() * options.length ) ];
       return choice;
@@ -375,6 +379,10 @@ Item.prototype.choose = function() {
       this.gem = 'shield';
     } else if (this.choice === 8){
       this.gem = 'enemy';
+    } else if (this.choice === 9){
+      this.gem = 'water';
+    } else if (this.choice === 10){
+      this.gem = 'lasso';
     }
   } else if ( this.type === 'enemy' ) {
     this.gem = 'enemy';
@@ -1007,7 +1015,7 @@ Player.prototype.gemEnemy = function (){
     allEnemies[i].boost += 0.15;
   }
   for (i=0;i<numFloats;i++){
-    allFloats[i].speed *= 1.075;
+    allFloats[i].speed *= 1.06;
   }
 };
 
@@ -1320,7 +1328,7 @@ function setEnemies( count ) {
   addEnemies( count );
 }
 // Pick a number of enemies:
-addEnemies( 15 );
+addEnemies( 0 );
 
 // Generate floats:
 addFloats();
@@ -1343,18 +1351,20 @@ document.addEventListener( 'keyup', function( e ) {
 } );
 
 
-
-// TODO: Add good level scaling
-
 // TODO: Change sprites to make a unique look
 
-// TODO: signifier for pause button
 // TODO: menu
 // TODO: Refactor everything, particularly methods belonging to Float, Enemy and
 // Item
 // TODO: Explain controls
 // TODO: Pause key when it is flying?
 
-// TODO: Signifier for enemy gem
-// TODO: Specify timer is for bonus points only
-// TODO: Give instructions to player
+// TODO: Add good level scaling
+// TODO: Z-pattern enemies
+// TODO: clouds
+// TODO: water-walking power up
+// TODO: lasso-power up
+
+// TODO: Fix bug where two gems are collected simultaneously --> crash
+// TODO: Fix but where collecting one gem someetimes causes others to be picked
+// up too

@@ -231,7 +231,9 @@ var Engine = ( function( global ) {
     'images/corn',
     'images/Green',
     'images/Blue',
-    'images/Orange'
+    'images/Orange',
+    'images/Purple',
+    'images/Yellow'
   ];
 
   var sizer = function( size ) {
