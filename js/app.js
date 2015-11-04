@@ -26,6 +26,12 @@ var Map = function() {
   // Dynamically generated at the bottom of app.js to determine which rows
   // enemies can use. This is used by Enemy.startY()
   this.enemyRows = [ 6, 7, 8, 10, 11, 12 ];
+  this.clouds = [
+    'images/cloud1-50.png',
+    'images/cloud2-50.png',
+    'images/cloud3-50.png',
+    'images/cloud4-50.png'
+  ];
   this.variousImages = [
     'images/Selector',
     'images/Star',
@@ -103,7 +109,7 @@ var Map = function() {
 
   this.powerUpCount = 0;
   this.powerUpDelay = 400;
-  this.powerUpsLeft = 15;
+  this.powerUpsLeft = 5;
 
   this.round = 1;
 };
@@ -116,11 +122,11 @@ Map.prototype.update = function( dt ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 15 && this.powerUpsLeft > 0 ) {
+  if ( this.powerUpCount < 3 && this.powerUpsLeft > 0 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 && !player.paused ) {
-      this.powerUpDelay = 100;
+      this.powerUpDelay = 500;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       this.powerUpsLeft--;
@@ -286,6 +292,41 @@ Map.prototype.keysCollected = function() {
   }
   return win;
 };
+
+var Cloud = function() {
+  this.x = 300 + Math.random() * 250;
+  this.y = Math.random() * map.totalHeight;
+  this.sprite = map.clouds[ Math.floor( Math.random() * 4 ) ];
+  this.moving = 1;
+  this.speed = 20 + Math.random() * 80;
+};
+
+Cloud.prototype.update = function( dt ) {
+  this.x += this.speed * dt * this.moving;
+  if ( this.x > map.totalWidth + 410 ) {
+    this.x = -410;
+    this.y = Math.random() * map.totalHeight;
+    this.sprite = map.clouds[ Math.floor( Math.random() * 4 ) ];
+    this.speed = 20 + Math.random() * 80;
+  }
+};
+
+Cloud.prototype.render = function() {
+  ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
+};
+
+Cloud.prototype.togglePause = function() {
+  if ( this.moving === 0 ) {
+    this.moving = 1;
+  } else {
+    this.moving = 0;
+  }
+};
+
+Cloud.prototype.blurPause = function() {
+  this.moving = 0;
+};
+
 
 var Float = function( row, pos, speed ) {
   this.sprite = map.variousImages[ 5 ];
@@ -534,25 +575,25 @@ Enemy.prototype.startY = function( burrow ) {
 Enemy.prototype.unburrow = function() {
   this.unburrowed = 3;
   if ( this.lastBurrow === 5 ) {
-    console.log('number 1');
+    console.log( 'number 1' );
     this.lastBurrow = 1;
     this.x = map.xValues[ 3 ];
     this.y = map.yValues[ 5 ];
   } else {
     if ( this.lastBurrow === 1 ) {
-      console.log('number 2');
+      console.log( 'number 2' );
       this.x = map.xValues[ 7 ];
       this.y = map.yValues[ 5 ];
     } else if ( this.lastBurrow === 2 ) {
-      console.log('number 3');
+      console.log( 'number 3' );
       this.x = map.xValues[ 1 ];
       this.y = map.yValues[ 9 ];
     } else if ( this.lastBurrow === 3 ) {
-      console.log('number 4');
+      console.log( 'number 4' );
       this.x = map.xValues[ 5 ];
       this.y = map.yValues[ 9 ];
     } else if ( this.lastBurrow === 4 ) {
-      console.log('number 5');
+      console.log( 'number 5' );
       this.x = map.xValues[ 9 ];
       this.y = map.yValues[ 9 ];
     }
@@ -581,10 +622,10 @@ Enemy.prototype.update = function( dt ) {
     if ( this.burrowWait <= 0 && this.unburrowed <= 0 ) {
       this.unburrow();
     }
-    if (this.unburrowed > 0){
+    if ( this.unburrowed > 0 ) {
       this.unburrowed -= dt * this.moving;
     }
-    if (this.unburrowed <= 0 && this.burrowWait <= 0){
+    if ( this.unburrowed <= 0 && this.burrowWait <= 0 ) {
       this.hide();
     }
     console.log( this.x );
@@ -1010,8 +1051,8 @@ Player.prototype.update = function( dt ) {
   for ( var k = 0; k < numEnemies; k++ ) {
     if ( ( this.x - map.tileWidth / 2 < enemySpots[ k ][ 0 ] &&
         this.x + map.tileWidth / 2 > enemySpots[ k ][ 0 ] ) &&
-      ( this.y - map.tileHeight / 8 < enemySpots[ k ][ 1 ] &&
-        this.y + map.tileHeight / 8 > enemySpots[ k ][ 1 ] ) ) {
+      ( this.y - map.tileHeight / 2 < enemySpots[ k ][ 1 ] &&
+        this.y + map.tileHeight / 2 > enemySpots[ k ][ 1 ] ) ) {
       // Collision detected:
       this.hit();
     }
@@ -1211,6 +1252,7 @@ Player.prototype.togglePause = function() {
   var numEnemies = allEnemies.length,
     numFloats = allFloats.length,
     numKeys = allKeys.length,
+    numClouds = allClouds.length,
     numPowerUps = allPowerUps.length;
   // Pause all enemies:
   for ( var i = 0; i < numEnemies; i++ ) {
@@ -1225,6 +1267,9 @@ Player.prototype.togglePause = function() {
   for ( i = 0; i < numPowerUps; i++ ) {
     allPowerUps[ i ].togglePause();
   }
+  for ( i = 0; i < numClouds; i++ ) {
+    allClouds[ i ].togglePause();
+  }
   this.paused = !this.paused;
   if ( this.moving === 1 ) {
     this.moving = 0;
@@ -1237,6 +1282,7 @@ Player.prototype.blurPause = function() {
   var numEnemies = allEnemies.length,
     numFloats = allFloats.length,
     numKeys = allKeys.length,
+    numClouds = allClouds.length,
     numPowerUps = allPowerUps.length;
   // Pause all enemies:
   for ( var i = 0; i < numEnemies; i++ ) {
@@ -1250,6 +1296,9 @@ Player.prototype.blurPause = function() {
   }
   for ( i = 0; i < numPowerUps; i++ ) {
     allPowerUps[ i ].blurPause();
+  }
+  for ( i = 0; i < numClouds; i++ ) {
+    allClouds[ i ].blurPause();
   }
   this.paused = true;
   this.moving = 0;
@@ -1281,7 +1330,7 @@ Player.prototype.gemEnemy = function() {
   for ( var i = 0; i < numEnemies; i++ ) {
     allEnemies[ i ].xSpeed *= 1.4;
     allEnemies[ i ].ySpeed *= 1.4;
-    allEnemies[ i ].boost += 0.15;
+    allEnemies[ i ].boost += 0.1;
   }
   for ( i = 0; i < numFloats; i++ ) {
     allFloats[ i ].speed *= 1.06;
@@ -1539,14 +1588,23 @@ Player.prototype.handleInput = function( input ) {
         map.round++;
         map.makeKeys();
         // More enemies each rounch
-        addEnemies( 3 );
-        // Add a burrower starting on the second round:
         if ( map.round === 2 ) {
+          addEnemies( 5 );
+        }
+        if ( allEnemies.length <= 40 ) {
+          addEnemies( 2 );
+        }
+        // Add a burrower starting on the second round:
+        if ( map.round === 3 ) {
           allEnemies.push( new Enemy( 'burrow' ) );
         }
-        // Enemies will zig zag starting on the second round:
-        if ( map.round >= 3 ) {
+        // Enemies will zig zag starting on the third round:
+        if ( map.round >= 4 ) {
           Enemy.prototype.activateZigzag();
+        }
+        // Clouds will be added starting on the fourth round:
+        if ( allClouds.length <= 15 && map.round >= 5 ) {
+          addClouds( 5 );
         }
         map.powerUpsLeft = 5;
         this.blurPause();
@@ -1581,6 +1639,13 @@ var allEnemies = [];
 var allFloats = [];
 var allKeys = [];
 var allPowerUps = [];
+var allClouds = [];
+
+function addClouds( count ) {
+  for ( var i = 0; i < count; i++ ) {
+    allClouds.push( new Cloud() );
+  }
+}
 
 function addEnemies( count ) {
   for ( var i = 0; i < count; i++ ) {
@@ -1606,7 +1671,7 @@ function setEnemies( count ) {
   addEnemies( count );
 }
 // Pick a number of enemies:
-addEnemies( 15 );
+addEnemies( 8 );
 
 // Generate floats:
 addFloats();
@@ -1642,7 +1707,10 @@ document.addEventListener( 'keyup', function( e ) {
 
 // TODO: Level editor to move rocks
 
-// TODO: Add switch directions power-up
-// TODO: Add enemy slow down power up
+// TODO: Add switch directions power-up (red)
+// TODO: Add enemy slow down power up (only works until enemies respawn) (white)
+// TODO: Add +300 points gem (black)
+// TODO: Add feedback to the enemy gem
 
-// TODO: Fix time bug
+// TODO: Fix time bug?
+// TODO: expand y colission boxes with enemies

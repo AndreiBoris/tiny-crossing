@@ -6,7 +6,7 @@ module.exports = function( grunt ) {
         options: {
           engine: 'im',
           sizes: [ {
-            width: 85,
+            width: 50,
             quality: 100
           }, {
             width: 65,
@@ -18,7 +18,7 @@ module.exports = function( grunt ) {
         },
         files: [ {
           expand: true,
-          src: [ '*.{gif,jpg,png}' ],
+          src: [ 'cloud?.{gif,jpg,png}' ],
           cwd: 'images_src/',
           dest: 'images/'
         } ]

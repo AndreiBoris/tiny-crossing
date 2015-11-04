@@ -104,12 +104,15 @@ var Engine = ( function( global ) {
     } );
     allKeys.forEach( function( key ) {
       key.update( dt );
-    });
+    } );
     allPowerUps.forEach( function( power ) {
       power.update( dt );
-    });
+    } );
     map.update( dt );
     player.update( dt );
+    allClouds.forEach( function( cloud ) {
+      cloud.update( dt );
+    } );
   }
 
   /* This function initially draws the "game level", it will then call
@@ -175,11 +178,14 @@ var Engine = ( function( global ) {
     } );
     allKeys.forEach( function( key ) {
       key.render();
-    });
+    } );
     allPowerUps.forEach( function( power ) {
       power.render();
-    });
+    } );
     player.render();
+    allClouds.forEach( function( cloud ) {
+      cloud.render();
+    } );
   }
 
   /* This function does nothing but it could have been a good place to
@@ -247,7 +253,11 @@ var Engine = ( function( global ) {
     'images/Blue',
     'images/Orange',
     'images/Purple',
-    'images/Yellow'
+    'images/Yellow',
+    'images/cloud1',
+    'images/cloud2',
+    'images/cloud3',
+    'images/cloud4'
   ];
 
   var sizer = function( size ) {
