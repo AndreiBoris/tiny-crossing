@@ -1791,10 +1791,15 @@ addFloats();
 document.addEventListener( 'keyup', function( e ) {
   var allowedKeys = {
     37: 'left',
+    65: 'left',
     38: 'up',
+    87: 'up',
     39: 'right',
+    68: 'right',
     40: 'down',
+    83: 'down',
     13: 'enter',
+    32: 'enter',
     80: 'pause',
     19: 'pause'
   };
@@ -1811,11 +1816,6 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Explain controls
 
 // TODO: Level editor to move rocks
-
-// TODO: Add switch directions power-up (red)
-// TODO: Add enemy slow down power up (only works until enemies respawn) (white)
-// TODO: Add +300 points gem (black)
-// TODO: Add feedback to the enemy gem
 
 // TODO: Fix time bug?
 // TODO: Nerf zigzag
