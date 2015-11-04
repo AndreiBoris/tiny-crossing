@@ -84,8 +84,8 @@ var Map = function() {
   this.fastFloaters = 120;
 
   this.powerUpCount = 0;
-  this.powerUpDelay = 400;
-  this.powerUpsLeft = 5;
+  this.powerUpDelay = 4;
+  this.powerUpsLeft = 10;
 };
 
 Map.prototype.update = function( dt ) {
@@ -96,11 +96,11 @@ Map.prototype.update = function( dt ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 3 && this.powerUpsLeft > 0 ) {
+  if ( this.powerUpCount < 10 && this.powerUpsLeft > 0 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 && !player.paused ) {
-      this.powerUpDelay = 500;
+      this.powerUpDelay = 1;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       this.powerUpsLeft--;
@@ -1458,3 +1458,4 @@ document.addEventListener( 'keyup', function( e ) {
 // horizontally?
 // TODO: Fix bug where the GAME OVER menu appears lower than expected. Happened
 // when dying with a power up active.
+// TODO: Fix bug with lasso + water walking speed run
