@@ -114,8 +114,8 @@ var Map = function() {
   this.fastFloaters = 120;
 
   this.powerUpCount = 0;
-  this.powerUpDelay = 40;
-  this.powerUpsLeft = 15;
+  this.powerUpDelay = 400;
+  this.powerUpsLeft = 5;
 
   this.round = 1;
 };
@@ -125,11 +125,11 @@ Map.prototype.update = function( dt ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 13 && this.powerUpsLeft > 0 ) {
+  if ( this.powerUpCount < 3 && this.powerUpsLeft > 0 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 && !player.paused ) {
-      this.powerUpDelay = 50;
+      this.powerUpDelay = 500;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       this.powerUpsLeft--;
@@ -846,6 +846,7 @@ var Player = function() {
   // Is the player on a floater?
   this.floating = false;
   this.speed = null;
+  this.gemSpeed = 1.0;
   this.moving = 1;
 
   // game begins when this is true
@@ -949,6 +950,7 @@ Player.prototype.update = function( dt ) {
     this.enemySpeedTime -= dt;
   } else if ( this.enemySpeedTime <= 0 && this.enemySpeedTime >= -1 ) {
     this.enemySpeedTime -= 2;
+    this.gemSpeed = 1.0;
     for ( var q = 0; q < numEnemies; q++ ) {
       allEnemies[ q ].gemSpeed = 1.0;
     }
@@ -999,11 +1001,11 @@ Player.prototype.update = function( dt ) {
     // Dynamically update the this.xCoord and this.x values;
     this.trackPosition();
     if ( this.yCoord === 2 ) {
-      this.x += this.speed * dt * this.moving;
+      this.x += this.speed * dt * this.moving * this.gemSpeed;
     } else if ( this.yCoord === 3 ) {
-      this.x += this.speed * dt * this.moving;
+      this.x += this.speed * dt * this.moving * this.gemSpeed;
     } else if ( this.yCoord === 4 ) {
-      this.x += this.speed * dt * this.moving;
+      this.x += this.speed * dt * this.moving * this.gemSpeed;
     }
   }
 
@@ -1419,6 +1421,7 @@ Player.prototype.pickUp = function( power ) {
 Player.prototype.gemEnemy = function() {
   this.points += 50;
   this.enemySpeedTime = 5;
+  this.gemSpeed = 1.5;
   var numEnemies = allEnemies.length,
     numFloats = allFloats.length;
   for ( var i = 0; i < numEnemies; i++ ) {
@@ -1458,10 +1461,11 @@ Player.prototype.gemPoints = function() {
 
 Player.prototype.gemSlow = function() {
   this.enemySpeedTime = 5;
+  this.gemSpeed = 0.5;
   var numEnemies = allEnemies.length,
     numFloats = allFloats.length;
   for ( var i = 0; i < numEnemies; i++ ) {
-    allEnemies[ i ].gemSpeed *= 0.5;
+    allEnemies[ i ].gemSpeed = 0.5;
   }
   for ( i = 0; i < numFloats; i++ ) {
     allFloats[ i ].gemSpeed = 0.5;
