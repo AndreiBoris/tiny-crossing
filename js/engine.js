@@ -257,7 +257,10 @@ var Engine = ( function( global ) {
     'images/cloud1',
     'images/cloud2',
     'images/cloud3',
-    'images/cloud4'
+    'images/cloud4',
+    'images/cloud5',
+    'images/cloud6',
+    'images/cloud7'
   ];
 
   var sizer = function( size ) {

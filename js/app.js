@@ -30,7 +30,10 @@ var Map = function() {
     'images/cloud1-50.png',
     'images/cloud2-50.png',
     'images/cloud3-50.png',
-    'images/cloud4-50.png'
+    'images/cloud4-50.png',
+    'images/cloud5-50.png',
+    'images/cloud6-50.png',
+    'images/cloud7-50.png'
   ];
   this.variousImages = [
     'images/Selector',
@@ -293,7 +296,7 @@ Map.prototype.keysCollected = function() {
 var Cloud = function() {
   this.x = -400 - Math.random() * 450;
   this.y = Math.random() * map.totalHeight;
-  this.sprite = map.clouds[ Math.floor( Math.random() * 4 ) ];
+  this.sprite = map.clouds[ Math.floor( Math.random() * 7 ) ];
   this.moving = 1;
   this.speed = 20 + Math.random() * 80;
 };
@@ -303,7 +306,7 @@ Cloud.prototype.update = function( dt ) {
   if ( this.x > map.totalWidth + 410 ) {
     this.x = -410;
     this.y = Math.random() * map.totalHeight;
-    this.sprite = map.clouds[ Math.floor( Math.random() * 4 ) ];
+    this.sprite = map.clouds[ Math.floor( Math.random() * 7 ) ];
     this.speed = 20 + Math.random() * 80;
   }
 };
@@ -689,10 +692,10 @@ Enemy.prototype.update = function( dt ) {
     this.alterDirection( this.zigzag );
   }
   if ( this.y <= map.yValues[ 10 ] && this.y > map.yValues[ 9 ] && this.ySpeed < 0 ) {
-    this.alterDirection( this.zigzag );
+    this.alterDirectionSide( );
   }
   if ( this.y >= map.yValues[ 8 ] && this.y < map.yValues[ 9 ] && this.ySpeed > 0 ) {
-    this.alterDirection( this.zigzag );
+    this.alterDirectionSide( );
   }
   if ( this.xSpeed > 0 ) {
     this.sprite = map.enemySprites[ 0 ];
@@ -730,10 +733,23 @@ Enemy.prototype.activateZigzag = function() {
   }
 };
 
+Enemy.prototype.alterDirectionSide = function(){
+  var options = [ 'left', 'right' ];
+  var speed = Math.abs( this.ySpeed );
+  this.ySpeed = 0;
+  var choice = options[ Math.floor( Math.random() * 2 ) ];
+
+  if ( choice === 'left' ) {
+    this.xSpeed = -1 * speed;
+  } else if ( choice === 'right' ) {
+    this.xSpeed = speed;
+  }
+};
+
 Enemy.prototype.alterDirection = function( bool ) {
   if ( bool ) {
     this.alterDirCount = 2 + Math.random() * 12;
-    options = [ 'left', 'up', 'down', 'right' ];
+    var options = [ 'left', 'up', 'down', 'right' ];
     var speed;
     if ( this.xSpeed === 0 ) {
       speed = Math.abs( this.ySpeed );
@@ -1621,7 +1637,7 @@ Player.prototype.handleInput = function( input ) {
         map.makeKeys();
         // More enemies each rounch
         if ( allEnemies.length <= 40 ) {
-          addEnemies( 2 );
+          addEnemies( 1 );
         }
         if ( map.round === 2 ) {
           // Extra add in for round 2:
@@ -1716,7 +1732,6 @@ function setEnemies( count ) {
 }
 // Pick a number of enemies:
 addEnemies( 8 );
-allEnemies.push(new Enemy('burrow2'));
 
 // Generate floats:
 addFloats();
@@ -1754,4 +1769,5 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Add feedback to the enemy gem
 
 // TODO: Fix time bug?
-// TODO: Add 4 more cloud types
+// TODO: Nerf zigzag
+// TODO: Make sure zig zag doesn't remove enemies from the playing field
