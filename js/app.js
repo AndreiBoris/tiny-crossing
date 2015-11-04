@@ -68,7 +68,7 @@ var Map = function() {
     'images/char-horn-girl-shield',
     'images/char-pink-girl-shield',
     'images/char-princess-girl-shield'
-  ]
+  ];
   this.mapTiles = [
     'images/white-block',
     'images/water-block',
@@ -831,6 +831,21 @@ Player.prototype.render = function() {
     this.displayPoints();
     this.displayHearts();
   }
+
+  if (this.shield > 0){
+    ctx.font = '30px Impact';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'green';
+    ctx.fillText('Shield: ' + Math.ceil(this.shield), map.totalWidth/2.1, map.tileHeight);
+  }
+
+  if (this.freeze > 0){
+    ctx.font = '30px Impact';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'blue';
+    ctx.fillText('Freeze: ' + Math.ceil(this.freeze), map.totalWidth/2.1, map.tileHeight*2);
+  }
+
   if ( this.victory === true ) {
     // Show appropriate messages for victory
     Player.prototype.victory();
@@ -848,6 +863,8 @@ Player.prototype.render = function() {
     this.deadMessage();
   }
 };
+
+
 
 Player.prototype.victory = function() {
   Player.prototype.victoryMessage();
@@ -980,14 +997,14 @@ Player.prototype.gemEnemy = function (){
   var numEnemies = allEnemies.length,
   numFloats = allFloats.length;
   for (var i=0;i<numEnemies;i++){
-    allEnemies[i].speed *= 1.1;
-    allEnemies[i].boost += 0.1;
+    allEnemies[i].speed *= 1.3;
+    allEnemies[i].boost += 0.15;
   }
   for (i=0;i<numFloats;i++){
-    allFloats[i].speed *= 1.05;
-    map.slowFloaters *= 1.05;
-    map.medFloaters *= 1.05;
-    map.fastFloaters *= 1.05;
+    allFloats[i].speed *= 1.075;
+    map.slowFloaters *= 1.075;
+    map.medFloaters *= 1.075;
+    map.fastFloaters *= 1.075;
   }
 };
 

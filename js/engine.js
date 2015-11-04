@@ -179,7 +179,6 @@ var Engine = ( function( global ) {
     allPowerUps.forEach( function( power ) {
       power.render();
     });
-
     player.render();
   }
 
