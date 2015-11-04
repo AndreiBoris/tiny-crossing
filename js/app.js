@@ -115,9 +115,6 @@ var Map = function() {
 };
 
 Map.prototype.update = function( dt ) {
-  //if ( allPowerUps[0] ){
-  //  console.log(allPowerUps[0].x);
-  //}
   if ( this.powerUpCount === 0 ) {
     // Clean up array
     allPowerUps.length = 0;
@@ -582,25 +579,20 @@ Enemy.prototype.startY = function( burrow ) {
 Enemy.prototype.unburrow = function() {
   this.unburrowed = 3;
   if ( this.lastBurrow === 5 ) {
-    console.log( 'number 1' );
     this.lastBurrow = 1;
     this.x = map.xValues[ 3 ];
     this.y = map.yValues[ 5 ];
   } else {
     if ( this.lastBurrow === 1 ) {
-      console.log( 'number 2' );
       this.x = map.xValues[ 7 ];
       this.y = map.yValues[ 5 ];
     } else if ( this.lastBurrow === 2 ) {
-      console.log( 'number 3' );
       this.x = map.xValues[ 1 ];
       this.y = map.yValues[ 9 ];
     } else if ( this.lastBurrow === 3 ) {
-      console.log( 'number 4' );
       this.x = map.xValues[ 5 ];
       this.y = map.yValues[ 9 ];
     } else if ( this.lastBurrow === 4 ) {
-      console.log( 'number 5' );
       this.x = map.xValues[ 9 ];
       this.y = map.yValues[ 9 ];
     }
@@ -1752,10 +1744,6 @@ document.addEventListener( 'keyup', function( e ) {
 // Item
 // TODO: Explain controls
 
-// TODO: Add good level scaling
-// TODO: Z-pattern enemies
-// TODO: clouds
-
 // TODO: Level editor to move rocks
 
 // TODO: Add switch directions power-up (red)
@@ -1765,4 +1753,3 @@ document.addEventListener( 'keyup', function( e ) {
 
 // TODO: Fix time bug?
 // TODO: Add 4 more cloud types
-// TODO: Add new burrower at the bottom row (random) starting at round 5
