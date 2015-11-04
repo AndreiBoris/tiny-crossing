@@ -855,7 +855,7 @@ var Player = function() {
   // enemies whose position values are already generated when the selection
   // screen comes up.
   this.selectX = map.totalWidth / 2 - 260;
-  this.selectY = ( map.totalHeight / 2 ) + 50;
+  this.selectY = map.tileHeight * 9;
   // This selects which value from the above three arrays is used by handleInput
   this.selection = 0;
   // The following three arrays all get used through
@@ -892,23 +892,24 @@ Player.prototype.character = function() {
   ctx.fillText( 'Collect the keys.', map.totalWidth / 2, map.tileHeight );
   ctx.fillText( 'Beat the time for bonus points.', map.totalWidth / 2, map.tileHeight * 1.75 );
   ctx.fillText( 'Collect gems for more points and effects.', map.totalWidth / 2, map.tileHeight * 2.5 );
+  ctx.fillStyle = 'white';
   ctx.fillText( 'Use the arrow or \'wasd\' keys to move around.', map.totalWidth / 2, map.tileHeight * 4.5 );
-  ctx.fillText( 'You can press \'p\' to pause.', map.totalWidth / 2, map.tileHeight * 5.5 );
-  ctx.fillText( 'Complete levels for a harder experience.', map.totalWidth / 2, map.tileHeight * 6.5 );
+  ctx.fillText( 'Complete levels for a harder experience.', map.totalWidth / 2, map.tileHeight * 5.5 );
+  ctx.fillText( 'You can press \'p\' to pause.', map.totalWidth / 2, map.tileHeight * 6.5 );
   this.bwMsgStyle();
-  ctx.fillText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
-  ctx.strokeText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
-  ctx.fillText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 185 );
-  ctx.strokeText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 185 );
+  ctx.fillText( 'Select a character', map.totalWidth / 2, map.tileHeight * 8.6 );
+  ctx.strokeText( 'Select a character', map.totalWidth / 2, map.tileHeight * 8.6 );
+  ctx.fillText( 'Press enter to choose', map.totalWidth / 2, map.tileHeight * 13.2 );
+  ctx.strokeText( 'Press enter to choose', map.totalWidth / 2, map.tileHeight * 13.2 );
   // Box to contain the characters
   ctx.fillStyle = 'silver';
-  ctx.fillRect( 0, map.totalHeight / 2, map.totalWidth, 140 );
-  ctx.strokeRect( 0, map.totalHeight / 2, map.totalWidth, 140 );
+  ctx.fillRect( 0, map.tileHeight * 8.6, map.totalWidth, 140 );
+  ctx.strokeRect( 0, map.tileHeight * 8.6, map.totalWidth, 140 );
   // Box to indicate which character is being selected
   ctx.drawImage( Resources.get( map.variousImages[ 0 ] ), this.selectX, this.selectY );
   // Draw all of the characters so user can see which one is being selected
   for ( var i = 0; i < length; i++ ) {
-    ctx.drawImage( Resources.get( this.charOptions[ i ] ), position, map.totalHeight / 2 );
+    ctx.drawImage( Resources.get( this.charOptions[ i ] ), position, map.tileHeight * 9 );
     // spread the characters out evenly
     position = position + 112;
   }
