@@ -1015,6 +1015,7 @@ Player.prototype.deadMessage = function() {
 Player.prototype.togglePause = function() {
   var numEnemies = allEnemies.length,
     numFloats = allFloats.length,
+    numKeys = allKeys.length,
     numPowerUps = allPowerUps.length;
   // Pause all enemies:
   for ( var i = 0; i < numEnemies; i++ ) {
@@ -1022,6 +1023,9 @@ Player.prototype.togglePause = function() {
   }
   for ( i = 0; i < numFloats; i++ ) {
     allFloats[ i ].togglePause();
+  }
+  for ( i = 0; i < numKeys; i++ ) {
+    allKeys[ i ].togglePause();
   }
   for ( i = 0; i < numPowerUps; i++ ) {
     allPowerUps[ i ].togglePause();
@@ -1037,6 +1041,7 @@ Player.prototype.togglePause = function() {
 Player.prototype.blurPause = function() {
   var numEnemies = allEnemies.length,
     numFloats = allFloats.length,
+    numKeys = allKeys.length,
     numPowerUps = allPowerUps.length;
   // Pause all enemies:
   for ( var i = 0; i < numEnemies; i++ ) {
@@ -1044,6 +1049,9 @@ Player.prototype.blurPause = function() {
   }
   for ( i = 0; i < numFloats; i++ ) {
     allFloats[ i ].blurPause();
+  }
+  for ( i = 0; i < numKeys; i++ ) {
+    allKeys[ i ].blurPause();
   }
   for ( i = 0; i < numPowerUps; i++ ) {
     allPowerUps[ i ].blurPause();
