@@ -103,7 +103,7 @@ var Map = function() {
 
   this.powerUpCount = 0;
   this.powerUpDelay = 400;
-  this.powerUpsLeft = 5;
+  this.powerUpsLeft = 15;
 
   this.round = 1;
 };
@@ -116,11 +116,11 @@ Map.prototype.update = function( dt ) {
     // Clean up array
     allPowerUps.length = 0;
   }
-  if ( this.powerUpCount < 3 && this.powerUpsLeft > 0 ) {
+  if ( this.powerUpCount < 15 && this.powerUpsLeft > 0 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
     } else if ( this.powerUpDelay <= 0 && !player.paused ) {
-      this.powerUpDelay = 500;
+      this.powerUpDelay = 100;
       this.powerUpCount++;
       allPowerUps.push( new Item( 'power' ) );
       this.powerUpsLeft--;
@@ -887,7 +887,7 @@ Player.prototype.update = function( dt ) {
     this.timeLeft = Math.round( this.timeKeeper );
   }
   var numEnemies = allEnemies.length;
-  if ( this.freeze > 0 && this.counting === true ) {
+  if ( this.freeze > 0 && this.counting === true && !this.victory ) {
     // freeze all enemies
     this.freeze -= dt;
     for ( var t = 0; t < numEnemies; t++ ) {
@@ -1644,3 +1644,5 @@ document.addEventListener( 'keyup', function( e ) {
 
 // TODO: Add switch directions power-up
 // TODO: Add enemy slow down power up
+
+// TODO: Fix time bug
