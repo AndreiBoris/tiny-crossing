@@ -601,7 +601,7 @@ Enemy.prototype.unburrow = function() {
 };
 
 Enemy.prototype.unburrow2 = function() {
-  this.unburrowed = 2 + 2 * Math.random();
+  this.unburrowed = 1 + 4 * Math.random();
   this.y = map.yValues[ 13 ];
   this.x = map.xValues[ Math.floor( Math.random() * map.numColumns ) ];
 };
@@ -658,7 +658,7 @@ Enemy.prototype.update = function( dt ) {
       this.unburrowed -= dt * this.moving;
     }
     if ( this.unburrowed <= 0 && this.burrowWait <= 0 ) {
-      this.hide( 2 + 2 * Math.random() );
+      this.hide( 1 + 4 * Math.random() );
     }
   }
   // You should multiply any movement by the dt parameter
@@ -1716,6 +1716,7 @@ function setEnemies( count ) {
 }
 // Pick a number of enemies:
 addEnemies( 8 );
+allEnemies.push(new Enemy('burrow2'));
 
 // Generate floats:
 addFloats();

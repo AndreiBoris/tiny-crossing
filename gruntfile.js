@@ -18,7 +18,7 @@ module.exports = function( grunt ) {
         },
         files: [ {
           expand: true,
-          src: [ 'cloud?.{gif,jpg,png}' ],
+          src: [ '*.{gif,jpg,png}' ],
           cwd: 'images_src/',
           dest: 'images/'
         } ]
