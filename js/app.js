@@ -489,7 +489,8 @@ var Enemy = function() {
   this.xSpeed = 0;
   this.boost = 1.0;
   this.ySpeed = 0;
-  this.zigzag = 0;
+  this.zigzag = false;
+  this.alterDirCount = 2 + Math.random() * 12;
   // If 1, the enemies are moving, if 0, they are not,
   // see Enemy.prototype.togglePause() This function allows the pause to work.
   this.moving = 1;
@@ -515,6 +516,7 @@ Enemy.prototype.update = function( dt ) {
   // which will ensure the game runs at the same speed for
   // all computers. this.moving is changed to 0 when the game is paused.
   this.x = this.x + this.xSpeed * dt * this.moving;
+  this.y = this.y + this.ySpeed * dt * this.moving;
   // Reset enemies to the left side of the screen when they are offscreen right.
   if ( this.xSpeed === 0 && this.ySpeed === 0 ) {
     if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 7 ] ) {
@@ -525,7 +527,24 @@ Enemy.prototype.update = function( dt ) {
       //this.sprite = map.enemySprites[ 0 ];
     }
   }
-
+  if ( this.moving === 1 ) {
+    this.alterDirCount -= dt;
+  }
+  if ( this.alterDirCount <= 0 ) {
+    this.alterDirection( this.zigzag );
+  }
+  if ( this.y <= map.yValues[ 6 ] && this.ySpeed < 0 ) {
+    this.alterDirection( this.zigzag );
+  }
+  if ( this.y >= map.yValues[ 12 ] && this.ySpeed > 0 ) {
+    this.alterDirection( this.zigzag );
+  }
+  if ( this.y <= map.yValues[ 10 ] && this.y > map.yValues[ 9 ] && this.ySpeed < 0 ) {
+    this.alterDirection( this.zigzag );
+  }
+  if ( this.y >= map.yValues[ 8 ] && this.y < map.yValues[ 9 ] && this.ySpeed > 0 ) {
+    this.alterDirection( this.zigzag );
+  }
   if ( this.xSpeed > 0 ) {
     this.sprite = map.enemySprites[ 0 ];
   }
@@ -555,28 +574,38 @@ Enemy.prototype.update = function( dt ) {
   }
 };
 
-Enemy.prototype.alterDirection = function() {
-  options = [ 'left', 'up', 'down', 'right' ];
-  var speed;
-  if ( this.xSpeed === 0 ) {
-    speed = Math.abs( this.ySpeed );
-  } else {
-    speed = Math.abs( this.xSpeed );
+Enemy.prototype.activateZigzag = function() {
+  var numEnemies = allEnemies.length;
+  for ( var i = 0; i < numEnemies; i++ ){
+    allEnemies[i].zigzag = true;
   }
+};
 
-  this.xSpeed = 0;
-  this.ySpeed = 0;
+Enemy.prototype.alterDirection = function( bool ) {
+  if ( bool ) {
+    this.alterDirCount = 2 + Math.random() * 12;
+    options = [ 'left', 'up', 'down', 'right' ];
+    var speed;
+    if ( this.xSpeed === 0 ) {
+      speed = Math.abs( this.ySpeed );
+    } else {
+      speed = Math.abs( this.xSpeed );
+    }
 
-  var choice = options[ Math.floor( Math.random() * 4 ) ];
+    this.xSpeed = 0;
+    this.ySpeed = 0;
 
-  if ( choice === 'left' ) {
-    this.xSpeed = -1 * speed;
-  } else if ( choice === 'right' ) {
-    this.xSpeed = speed;
-  } else if ( choice === 'up' ) {
-    this.ySpeed = -1 * speed;
-  } else if ( choice === 'down' ) {
-    this.ySpeed = speed;
+    var choice = options[ Math.floor( Math.random() * 4 ) ];
+
+    if ( choice === 'left' ) {
+      this.xSpeed = -1 * speed;
+    } else if ( choice === 'right' ) {
+      this.xSpeed = speed;
+    } else if ( choice === 'up' ) {
+      this.ySpeed = -1 * speed;
+    } else if ( choice === 'down' ) {
+      this.ySpeed = speed;
+    }
   }
 };
 
@@ -1172,7 +1201,8 @@ Player.prototype.gemEnemy = function() {
   var numEnemies = allEnemies.length,
     numFloats = allFloats.length;
   for ( var i = 0; i < numEnemies; i++ ) {
-    allEnemies[ i ].speed *= 1.4;
+    allEnemies[ i ].xSpeed *= 1.4;
+    allEnemies[ i ].ySpeed *= 1.4;
     allEnemies[ i ].boost += 0.15;
   }
   for ( i = 0; i < numFloats; i++ ) {
@@ -1196,7 +1226,7 @@ Player.prototype.gemShield = function() {
 };
 
 Player.prototype.gemWater = function() {
-  this.water = 5;
+  this.water = 4;
 };
 
 Player.prototype.gemLasso = function() {
@@ -1428,6 +1458,8 @@ Player.prototype.handleInput = function( input ) {
         this.victory = false;
         map.makeKeys();
         addEnemies( 3 );
+        // Enemies will zig zag after the first round
+        Enemy.prototype.activateZigzag();
         map.powerUpsLeft = 5;
         this.blurPause();
       }
@@ -1521,3 +1553,6 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: clouds
 
 // TODO: Level editor to move rocks
+
+// TODO: Add switch directions power-up
+// TODO: Add enemy slow down power up
