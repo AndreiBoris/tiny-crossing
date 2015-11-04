@@ -686,7 +686,7 @@ Player.prototype.update = function( dt ) {
   // Player with water gem buff ignores floating:
   if ( this.lasso > 0 ) {
     this.lasso -= dt;
-    if ( this.lasso > 0.1 ) {
+    if ( this.lasso > 0.1 && !this.ouch ) {
       if ( this.shield <= 0.09 && this.water <= 0.09 ) {
         this.sprite = this.charLasso[ this.selection ];
       }
@@ -703,7 +703,7 @@ Player.prototype.update = function( dt ) {
   if ( this.water > 0 ) {
     this.water -= dt;
     this.floating = false;
-    if ( this.water > 0.1 && this.shield <= 0.09 ) {
+    if ( this.water > 0.1 && this.shield <= 0.09 && !this.ouch ) {
       this.sprite = this.charWater[ this.selection ];
     } else if ( this.water < 0.09 && this.shield <= 0.09 ) {
       this.sprite = this.charOptions[ this.selection ];
@@ -712,7 +712,7 @@ Player.prototype.update = function( dt ) {
 
   if ( this.shield > 0 ) {
     this.shield -= dt;
-    if ( this.shield > 0.1 ) {
+    if ( this.shield > 0.1 && !this.ouch ) {
       this.sprite = this.charShield[ this.selection ];
     } else if ( this.shield < 0.09 ) {
       this.sprite = this.charOptions[ this.selection ];
