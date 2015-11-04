@@ -1821,3 +1821,6 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Nerf zigzag
 // TODO: Make sure zig zag doesn't remove enemies from the playing field
 // TODO: Make sure speed and slow are finite
+
+// TODO: Points Display
+// TODO: Sound effects?
