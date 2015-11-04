@@ -552,7 +552,7 @@ var Enemy = function( burrow ) {
   this.gemSpeed = 1.0;
   this.ySpeed = 0;
   this.zigzag = false;
-  this.alterDirCount = 2 + Math.random() * 12;
+  this.alterDirCount = 2 + Math.random() * 15;
   this.burrow = ( function isBurrower( burrow ) {
     if ( burrow === 'burrow' ) {
       return true;
@@ -765,7 +765,7 @@ Enemy.prototype.alterDirectionSide = function() {
 
 Enemy.prototype.alterDirection = function( bool ) {
   if ( bool ) {
-    this.alterDirCount = 2 + Math.random() * 12;
+    this.alterDirCount = 2 + Math.random() * 15;
     var options = [ 'left', 'up', 'down', 'right' ];
     var speed;
     if ( this.xSpeed === 0 ) {
@@ -1831,14 +1831,10 @@ document.addEventListener( 'keyup', function( e ) {
 
 // TODO: menu
 // TODO: Refactor everything, particularly methods belonging to Float, Enemy and
-// Item
-// TODO: Explain controls
+// Item, Cloud
 
 // TODO: Level editor to move rocks
 
-// TODO: Nerf zigzag
-// TODO: Make sure zig zag doesn't remove enemies from the playing field
-// TODO: Make sure speed and slow are finite
-
 // TODO: Points Display
+// TODO: Diplay information off of the canvas (like the timers);
 // TODO: Sound effects?
