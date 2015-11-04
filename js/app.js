@@ -601,7 +601,7 @@ Enemy.prototype.unburrow = function() {
 };
 
 Enemy.prototype.unburrow2 = function() {
-  this.unburrowed = 3;
+  this.unburrowed = 2 + 2 * Math.random();
   this.y = map.yValues[ 13 ];
   this.x = map.xValues[ Math.floor( Math.random() * map.numColumns ) ];
 };
@@ -658,7 +658,7 @@ Enemy.prototype.update = function( dt ) {
       this.unburrowed -= dt * this.moving;
     }
     if ( this.unburrowed <= 0 && this.burrowWait <= 0 ) {
-      this.hide( 3 );
+      this.hide( 2 + 2 * Math.random() );
     }
   }
   // You should multiply any movement by the dt parameter
@@ -1614,6 +1614,7 @@ Player.prototype.handleInput = function( input ) {
         // Pause the enemies only, so that the new ones generated don't begin
         // the next game paused:
         this.blurPause();
+        alert('You got ' + map.points + 'points.');
       } else if ( this.victory === true ) {
         this.victory = false;
         map.round++;
