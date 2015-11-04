@@ -205,6 +205,8 @@ var Engine = ( function( global ) {
     'images/enemy-bug-left',
     'images/enemy-bug-up',
     'images/enemy-bug-down',
+    'images/enemy-bug-burrow-1',
+    'images/enemy-bug-burrow-2',
     'images/char-boy',
     'images/char-cat-girl',
     'images/char-horn-girl',

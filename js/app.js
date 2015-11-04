@@ -43,7 +43,9 @@ var Map = function() {
     'images/enemy-bug-right',
     'images/enemy-bug-left',
     'images/enemy-bug-up',
-    'images/enemy-bug-down'
+    'images/enemy-bug-down',
+    'images/enemy-bug-burrow-1',
+    'images/enemy-bug-burrow-2'
   ];
   this.playerChars = [
     'images/char-boy',
@@ -102,6 +104,8 @@ var Map = function() {
   this.powerUpCount = 0;
   this.powerUpDelay = 400;
   this.powerUpsLeft = 5;
+
+  this.round = 1;
 };
 
 Map.prototype.update = function( dt ) {
@@ -477,48 +481,122 @@ Item.prototype.blurPause = function() {
 };
 
 // Enemies the player must avoid
-var Enemy = function() {
+var Enemy = function( burrow ) {
 
   // The image/sprite for our enemies, this uses
   // a helper we've provided to easily load images
   this.sprite = '';
   // Random value for the start of any given enemy
-  this.x = this.startX();
+  this.x = this.startX( burrow );
   // Random column
-  this.y = this.startY();
+  this.y = this.startY( burrow );
   this.xSpeed = 0;
   this.boost = 1.0;
   this.ySpeed = 0;
   this.zigzag = false;
   this.alterDirCount = 2 + Math.random() * 12;
+  this.burrow = ( function isBurrower( burrow ) {
+    if ( burrow === 'burrow' ) {
+      return true;
+    } else {
+      return false;
+    }
+  } )( burrow );
+  this.lastBurrow = 5;
+  this.burrowWait = 5;
+  this.unburrowed = 0;
   // If 1, the enemies are moving, if 0, they are not,
   // see Enemy.prototype.togglePause() This function allows the pause to work.
   this.moving = 1;
 };
 
 // Generate a start position for each enemy
-Enemy.prototype.startX = function() {
-  return Math.random() * map.totalWidth * 1.0;
+Enemy.prototype.startX = function( burrow ) {
+  if ( burrow === 'burrow' ) {
+    return -100;
+  } else {
+    return Math.random() * map.totalWidth * 1.0;
+  }
 };
 
 // Random value from array courtesy of:
 // http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
-Enemy.prototype.startY = function() {
-  // Picks one of the rows which enemies can use.
-  var result = map.yValues[ map.enemyRows[ Math.floor( Math.random() * map.enemyRows.length ) ] ];
-  return result;
+Enemy.prototype.startY = function( burrow ) {
+  if ( burrow === 'burrow' ) {
+    return -100;
+  } else {
+    // Picks one of the rows which enemies can use.
+    var result = map.yValues[ map.enemyRows[ Math.floor( Math.random() * map.enemyRows.length ) ] ];
+    return result;
+  }
+};
+
+Enemy.prototype.unburrow = function() {
+  this.unburrowed = 3;
+  if ( this.lastBurrow === 5 ) {
+    console.log('number 1');
+    this.lastBurrow = 1;
+    this.x = map.xValues[ 3 ];
+    this.y = map.yValues[ 5 ];
+  } else {
+    if ( this.lastBurrow === 1 ) {
+      console.log('number 2');
+      this.x = map.xValues[ 7 ];
+      this.y = map.yValues[ 5 ];
+    } else if ( this.lastBurrow === 2 ) {
+      console.log('number 3');
+      this.x = map.xValues[ 1 ];
+      this.y = map.yValues[ 9 ];
+    } else if ( this.lastBurrow === 3 ) {
+      console.log('number 4');
+      this.x = map.xValues[ 5 ];
+      this.y = map.yValues[ 9 ];
+    } else if ( this.lastBurrow === 4 ) {
+      console.log('number 5');
+      this.x = map.xValues[ 9 ];
+      this.y = map.yValues[ 9 ];
+    }
+    this.lastBurrow++;
+  }
+};
+
+Enemy.prototype.hide = function() {
+  this.x = -100;
+  this.y = -100;
+  this.burrowWait = 5;
 };
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function( dt ) {
+  if ( this.burrow === true ) {
+    if ( this.burrowWait >= 0 ) {
+      this.burrowWait -= dt * this.moving;
+    }
+    if ( this.unburrowed <= 1 || this.unburrowed >= 3 ) {
+      this.sprite = map.enemySprites[ 4 ];
+    } else {
+      this.sprite = map.enemySprites[ 5 ];
+    }
+    if ( this.burrowWait <= 0 && this.unburrowed <= 0 ) {
+      this.unburrow();
+    }
+    if (this.unburrowed > 0){
+      this.unburrowed -= dt * this.moving;
+    }
+    if (this.unburrowed <= 0 && this.burrowWait <= 0){
+      this.hide();
+    }
+    console.log( this.x );
+    console.log( this.y );
+  }
   // You should multiply any movement by the dt parameter
   // which will ensure the game runs at the same speed for
   // all computers. this.moving is changed to 0 when the game is paused.
   this.x = this.x + this.xSpeed * dt * this.moving;
   this.y = this.y + this.ySpeed * dt * this.moving;
   // Reset enemies to the left side of the screen when they are offscreen right.
-  if ( this.xSpeed === 0 && this.ySpeed === 0 ) {
+  if ( this.xSpeed === 0 && this.ySpeed === 0 && !this.burrow ) {
     if ( this.y === map.yValues[ 10 ] || this.y === map.yValues[ 7 ] ) {
       this.xSpeed = this.newSpeed( 'left' );
       //this.sprite = map.enemySprites[ 1 ];
@@ -576,8 +654,8 @@ Enemy.prototype.update = function( dt ) {
 
 Enemy.prototype.activateZigzag = function() {
   var numEnemies = allEnemies.length;
-  for ( var i = 0; i < numEnemies; i++ ){
-    allEnemies[i].zigzag = true;
+  for ( var i = 0; i < numEnemies; i++ ) {
+    allEnemies[ i ].zigzag = true;
   }
 };
 
@@ -1450,16 +1528,26 @@ Player.prototype.handleInput = function( input ) {
         map.powerUpsLeft = 5;
         allPowerUps.length = 0;
         map.makeKeys();
+        // Back to round 1.
+        map.round = 1;
         setEnemies( 15 );
         // Pause the enemies only, so that the new ones generated don't begin
         // the next game paused:
         this.blurPause();
       } else if ( this.victory === true ) {
         this.victory = false;
+        map.round++;
         map.makeKeys();
+        // More enemies each rounch
         addEnemies( 3 );
-        // Enemies will zig zag after the first round
-        Enemy.prototype.activateZigzag();
+        // Add a burrower starting on the second round:
+        if ( map.round === 2 ) {
+          allEnemies.push( new Enemy( 'burrow' ) );
+        }
+        // Enemies will zig zag starting on the second round:
+        if ( map.round >= 3 ) {
+          Enemy.prototype.activateZigzag();
+        }
         map.powerUpsLeft = 5;
         this.blurPause();
       }
