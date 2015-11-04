@@ -585,11 +585,17 @@ Player.prototype.character = function() {
   var length = this.charOptions.length,
     position = map.totalWidth / 2 - 260;
   // Change stroke and fillStyles
+  ctx.fillStyle = 'black';
+  ctx.textAlign = 'center';
+  ctx.font = '30px Impact';
+  ctx.fillText( 'Collect the keys.', map.totalWidth / 2, map.tileHeight );
+  ctx.fillText( 'Beat the time for bonus points.', map.totalWidth / 2, map.tileHeight*1.75 );
+  ctx.fillText( 'Collect gems for more points and effects.', map.totalWidth / 2, map.tileHeight*2.5 );
   this.bwMsgStyle();
   ctx.fillText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
   ctx.strokeText( 'Select a character', map.totalWidth / 2, map.totalHeight / 2 );
-  ctx.fillText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 190 );
-  ctx.strokeText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 190 );
+  ctx.fillText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 185 );
+  ctx.strokeText( 'Press enter to choose', map.totalWidth / 2, ( map.totalHeight / 2 ) + 185 );
   // Box to contain the characters
   ctx.fillStyle = 'silver';
   ctx.fillRect( 0, map.totalHeight / 2, map.totalWidth, 140 );
@@ -997,14 +1003,11 @@ Player.prototype.gemEnemy = function (){
   var numEnemies = allEnemies.length,
   numFloats = allFloats.length;
   for (var i=0;i<numEnemies;i++){
-    allEnemies[i].speed *= 1.3;
+    allEnemies[i].speed *= 1.4;
     allEnemies[i].boost += 0.15;
   }
   for (i=0;i<numFloats;i++){
     allFloats[i].speed *= 1.075;
-    map.slowFloaters *= 1.075;
-    map.medFloaters *= 1.075;
-    map.fastFloaters *= 1.075;
   }
 };
 
@@ -1352,7 +1355,6 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Explain controls
 // TODO: Pause key when it is flying?
 
-// TODO: Countdown timer for powerups time and shield: signifier for enemy gem
+// TODO: Signifier for enemy gem
 // TODO: Specify timer is for bonus points only
-// TODO: Buff the orange gems
 // TODO: Give instructions to player
