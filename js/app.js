@@ -46,7 +46,10 @@ var Map = function() {
     'images/Green',
     'images/Orange',
     'images/Purple',
-    'images/Yellow'
+    'images/Yellow',
+    'images/Black',
+    'images/White',
+    'images/Red'
   ];
   this.enemySprites = [
     'images/enemy-bug-right',
@@ -354,6 +357,13 @@ Float.prototype.update = function( dt ) {
     }
   }*/
   // Reset floats when they go offscreen:
+  if (this.x > map.totalWidth + ( 2.5 * map.tileWidth )){
+    this.x = -2.0 * map.tileWidth;
+  }
+  if (this.x < -2.5 * map.tileWidth){
+    this.x = map.totalWidth + 2.0 * map.tileWidth;
+  }
+  /*
   if ( this.x > map.totalWidth + ( 2.5 * map.tileWidth ) ||
     this.x < -( 2.5 * map.tileWidth ) ) {
     if ( this.y === map.yValues[ 2 ] || this.y === map.yValues[ 4 ] ) {
@@ -361,7 +371,7 @@ Float.prototype.update = function( dt ) {
     } else {
       this.x = map.totalWidth + ( 2.25 * map.tileWidth );
     }
-  }
+  }*/
 };
 
 Float.prototype.render = function() {
@@ -406,7 +416,7 @@ var Item = function( type, pos ) {
   } )( type );
   this.choice = ( function choiceMaker( type ) {
     if ( type === 'power' ) {
-      var options = [ 6, 7, 8, 9, 10 ];
+      var options = [ 6, 7, 8, 9, 10, 11, 12, 13 ];
       // Choose a random gem:
       var choice = options[ Math.floor( Math.random() * options.length ) ];
       return choice;
@@ -453,6 +463,12 @@ Item.prototype.choose = function() {
       this.gem = 'water';
     } else if ( this.choice === 10 ) {
       this.gem = 'lasso';
+    } else if ( this.choice === 11 ) {
+      this.gem = 'points';
+    } else if ( this.choice === 12 ) {
+      this.gem = 'slow';
+    } else if ( this.choice === 13 ) {
+      this.gem = 'reverse';
     }
   } else if ( this.type === 'enemy' ) {
     this.gem = 'enemy';
@@ -1361,6 +1377,12 @@ Player.prototype.pickUp = function( power ) {
     this.gemWater();
   } else if ( power.gem === 'lasso' ) {
     this.gemLasso();
+  } else if ( power.gem === 'points' ) {
+    this.gemPoints();
+  } else if ( power.gem === 'slow' ) {
+    this.gemSlow();
+  } else if ( power.gem === 'reverse' ) {
+    this.gemReverse();
   }
   this.points += 100;
   map.powerUpCount--;
@@ -1404,6 +1426,25 @@ Player.prototype.gemWater = function() {
 
 Player.prototype.gemLasso = function() {
   this.lasso = 8;
+};
+
+Player.prototype.gemPoints = function() {
+  this.points += 200;
+};
+
+Player.prototype.gemSlow = function() {
+  var numEnemies = allEnemies.length;
+  for ( var i = 0; i < numEnemies; i++ ) {
+    allEnemies[ i ].xSpeed *= 0.5;
+    allEnemies[ i ].ySpeed *= 0.5;
+  }
+};
+
+Player.prototype.gemReverse = function() {
+  var numFloats = allFloats.length;
+  for ( i = 0; i < numFloats; i++ ) {
+  allFloats[ i ].speed *= -1;
+  }
 };
 
 Player.prototype.hit = function() {

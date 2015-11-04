@@ -12,7 +12,7 @@ module.exports = function( grunt ) {
             width: 65,
             quality: 100
           }, {
-            width: 50,
+            width: 85,
             quality: 100
           } ]
         },
