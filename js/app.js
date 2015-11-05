@@ -120,24 +120,73 @@ var Map = function() {
   this.round = 1;
 
   this.audio = {
-        // Sound on/off
-        'muted': false,
-        // Load audio files
-        'gem': new Audio('audio/genericGem.wav')
-    };
+    // See credit.txt in audio/ for credits!
+    // Sound on/off
+    'muted': false,
+    // Load audio files
+    chime: new Audio( 'audio/chime.wav' ),
+    chaching: new Audio( 'audio/chaching.wav' ),
+    gong: new Audio( 'audio/gong.wav' ),
+    key: new Audio( 'audio/key.wav' ),
+    powerdown: new Audio( 'audio/powerdown.wav' ),
+    run: new Audio( 'audio/run.wav' ),
+    shield: new Audio( 'audio/shield.wav' ),
+    splash: new Audio( 'audio/splash.wav' ),
+    switch: new Audio( 'audio/switch.wav' ),
+    thud: new Audio( 'audio/thud.wav' ),
+    time: new Audio( 'audio/time.wav' ),
+    trumpet: new Audio( 'audio/trumpet.wav' ),
+    yeehaw: new Audio( 'audio/yeehaw.wav' )
+  };
 };
 
 // Play game sound effects
 // Credit to d3moid
 // https://github.com/d3moid
-Map.prototype.playSFX = function(SFX){
-    if (!this.audio.muted) {
-        switch(SFX){
-            case 'coin':
-                this.audio.gem.play();
-                break;
-        }
+Map.prototype.playSFX = function( SFX ) {
+  if ( !this.audio.muted ) {
+    switch ( SFX ) {
+      case 'chime':
+        this.audio.chime.play();
+        break;
+      case 'chaching':
+        this.audio.chaching.play();
+        break;
+      case 'gong':
+        this.audio.gong.play();
+        break;
+      case 'key':
+        this.audio.key.play();
+        break;
+      case 'powerdown':
+        this.audio.powerdown.play();
+        break;
+      case 'run':
+        this.audio.run.play();
+        break;
+      case 'shield':
+        this.audio.shield.play();
+        break;
+      case 'splash':
+        this.audio.splash.play();
+        break;
+      case 'switch':
+        this.audio.switch.play();
+        break;
+      case 'thud':
+        this.audio.thud.play();
+        break;
+      case 'time':
+        this.audio.time.play();
+        break;
+      case 'trumpet':
+        this.audio.trumpet.play();
+        break;
+      case 'yeehaw':
+        this.audio.yeehaw.play();
+        break;
     }
+  }
 };
 
 Map.prototype.update = function( dt ) {
@@ -655,9 +704,9 @@ Enemy.prototype.hide = function( time ) {
 Enemy.prototype.resetBurrow = function() {
   var numEnemies = allEnemies.length;
   for ( var i = 0; i < numEnemies; i++ ) {
-    allEnemies[i].burrowWait = 5;
-    if (allEnemies[i].burrow2) {
-      allEnemies[i].x = -100;
+    allEnemies[ i ].burrowWait = 5;
+    if ( allEnemies[ i ].burrow2 ) {
+      allEnemies[ i ].x = -100;
     }
   }
 };
@@ -950,20 +999,21 @@ Player.prototype.update = function( dt ) {
 
   // Victory conditions:
   if ( map.keysCollected() && allKeys.length === 3 && !this.victory ) {
+    map.playSFX( 'trumpet' );
     this.victory = true;
     this.victorySpot = this.y;
     this.sprite = this.charHappy[ this.selection ];
 
     // Check if the countdown timer is still a number and not a string:
     if ( parseInt( Number( this.timeLeft ) ) === this.timeLeft ) {
-      this.winPoints( 100 + ( this.timeLeft * 10 ), 'victory');
+      this.winPoints( 100 + ( this.timeLeft * 10 ), 'victory' );
     } else {
-      this.winPoints(100, 'victory');
+      this.winPoints( 100, 'victory' );
     }
     this.blurPause();
   }
 
-  if ( this.pointsY > -200 ){
+  if ( this.pointsY > -200 ) {
     this.pointsY -= 150 * dt;
   }
 
@@ -1126,7 +1176,8 @@ Player.prototype.update = function( dt ) {
         this.y + map.tileHeight / 8 > keySpots[ p ][ 1 ] ) ) {
       // Key picked up:
       if ( allKeys[ p ].flying === false ) {
-        this.winPoints(50);
+        map.playSFX( 'key' );
+        this.winPoints( 50 );
       }
       allKeys[ p ].flying = true;
     }
@@ -1223,7 +1274,7 @@ Player.prototype.resetStart = function() {
 Player.prototype.render = function() {
   // Show character selection at start of game
 
-  this.announcePoints(this.latestPoints);
+  this.announcePoints( this.latestPoints );
 
   if ( this.charSelected === false ) {
     this.character();
@@ -1292,21 +1343,21 @@ Player.prototype.render = function() {
   }
 };
 
-Player.prototype.winPoints = function(points, lastKey){
+Player.prototype.winPoints = function( points, lastKey ) {
   this.points += points;
   this.pointsY = map.tileHeight * 5;
   this.latestPoints = points;
-  if (lastKey){
+  if ( lastKey ) {
     this.latestPoints = points + 50;
   }
 };
 
-Player.prototype.announcePoints = function(points){
+Player.prototype.announcePoints = function( points ) {
   ctx.fillStyle = 'orange';
   ctx.strokeStyle = 'black';
   ctx.font = '56px Impact';
-  ctx.fillText('+' + points, map.totalWidth - map.tileWidth * 1.5, this.pointsY);
-  ctx.strokeText('+' + points, map.totalWidth - map.tileWidth * 1.5, this.pointsY);
+  ctx.fillText( '+' + points, map.totalWidth - map.tileWidth * 1.5, this.pointsY );
+  ctx.strokeText( '+' + points, map.totalWidth - map.tileWidth * 1.5, this.pointsY );
 };
 
 Player.prototype.victory = function() {
@@ -1465,7 +1516,8 @@ Player.prototype.pickUp = function( power ) {
 };
 
 Player.prototype.gemEnemy = function() {
-  this.winPoints(150);
+  map.playSFX( 'run' );
+  this.winPoints( 150 );
   this.enemySpeedTime = 5;
   this.gemSpeed = 1.5;
   var numEnemies = allEnemies.length,
@@ -1479,7 +1531,8 @@ Player.prototype.gemEnemy = function() {
 };
 
 Player.prototype.gemTime = function() {
-  this.winPoints(100);
+  map.playSFX( 'time' );
+  this.winPoints( 100 );
   if ( this.timeLeft === "No bonus!" ) {
     this.timeLeft = 10;
     this.timeKeeper = 10;
@@ -1491,26 +1544,31 @@ Player.prototype.gemTime = function() {
 };
 
 Player.prototype.gemShield = function() {
-  this.winPoints(100);
+  map.playSFX( 'shield' );
+  this.winPoints( 100 );
   this.shield = 5;
 };
 
 Player.prototype.gemWater = function() {
-  this.winPoints(100);
+  map.playSFX( 'chime' );
+  this.winPoints( 100 );
   this.water = 4;
 };
 
 Player.prototype.gemLasso = function() {
-  this.winPoints(100);
+  map.playSFX( 'yeehaw' );
+  this.winPoints( 100 );
   this.lasso = 8;
 };
 
 Player.prototype.gemPoints = function() {
-  this.winPoints(300);
+  map.playSFX( 'chaching' );
+  this.winPoints( 300 );
 };
 
 Player.prototype.gemSlow = function() {
-  this.winPoints(100);
+  map.playSFX( 'powerdown' );
+  this.winPoints( 100 );
   this.enemySpeedTime = 5;
   this.gemSpeed = 0.5;
   var numEnemies = allEnemies.length,
@@ -1524,7 +1582,8 @@ Player.prototype.gemSlow = function() {
 };
 
 Player.prototype.gemReverse = function() {
-  this.winPoints(100);
+  map.playSFX( 'switch' );
+  this.winPoints( 100 );
   var numFloats = allFloats.length;
   for ( i = 0; i < numFloats; i++ ) {
     allFloats[ i ].speed *= -1;
@@ -1533,6 +1592,7 @@ Player.prototype.gemReverse = function() {
 
 Player.prototype.hit = function() {
   if ( this.paused === false && this.shield <= 0 ) {
+    map.playSFX( 'thud' );
     this.freeze = 0;
     this.blurPause();
     // Allows user to reset game using enter button through this.handleInput
@@ -1542,6 +1602,7 @@ Player.prototype.hit = function() {
     // Reduce lives:
     this.livesLeft--;
     if ( this.livesLeft < 1 ) {
+      map.playSFX( 'gong' );
       this.isDead = true;
       this.ouch = false;
     }
@@ -1550,6 +1611,7 @@ Player.prototype.hit = function() {
 
 Player.prototype.drown = function() {
   if ( this.paused === false && this.water <= 0 ) {
+    map.playSFX( 'splash' );
     this.freeze = 0;
     this.blurPause();
     this.drowned = true;
@@ -1560,6 +1622,7 @@ Player.prototype.drown = function() {
     // Reduce lives:
     this.livesLeft--;
     if ( this.livesLeft < 1 ) {
+      map.playSFX( 'gong' );
       this.isDead = true;
       this.ouch = false;
     }
@@ -1893,3 +1956,6 @@ document.addEventListener( 'keyup', function( e ) {
 
 // TODO: Diplay information off of the canvas (like the timers);
 // TODO: Sound effects?
+
+// TODO: Reset enemy slow and speed on victory
+// TODO: display Enemy slow/speed
