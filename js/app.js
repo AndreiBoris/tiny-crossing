@@ -138,11 +138,13 @@ var Map = function() {
     this.powerUpCount = 0;
     // This is the maximum number of powerups on the map:
     this.powerUpMax = 3;
+    // Wait time between release of powerups:
     this.powerUpDelay = 400;
+    // Number of powerups per round:
     this.powerUpsLeft = 5;
-
+    // Current round (game scales in difficulty with higher rounds):
     this.round = 1;
-
+    // Storage of game sounds:
     this.audio = {
         // See credit.txt in audio/ for credits!
         // Sound on/off
@@ -156,7 +158,7 @@ var Map = function() {
         run: new Audio('audio/run.mp3'),
         shield: new Audio('audio/shield.mp3'),
         splash: new Audio('audio/splash.mp3'),
-        switch: new Audio('audio/switch.mp3'),
+        flip: new Audio('audio/switch.mp3'),
         thud: new Audio('audio/thud.mp3'),
         time: new Audio('audio/time.mp3'),
         trumpet: new Audio('audio/trumpet.mp3'),
@@ -168,6 +170,7 @@ var Map = function() {
 // Credit to d3moid
 // https://github.com/d3moid
 Map.prototype.playSFX = function(SFX) {
+    // Player can mute sounds by pressing 'm':
     if (!this.audio.muted) {
         switch (SFX) {
             case 'chime':
@@ -194,8 +197,8 @@ Map.prototype.playSFX = function(SFX) {
             case 'splash':
                 this.audio.splash.play();
                 break;
-            case 'switch':
-                this.audio.switch.play();
+            case 'flip':
+                this.audio.flip.play();
                 break;
             case 'thud':
                 this.audio.thud.play();
@@ -213,6 +216,7 @@ Map.prototype.playSFX = function(SFX) {
     }
 };
 
+// Handles the power ups:
 Map.prototype.update = function(dt) {
     if (this.powerUpCount < this.powerUpMax && this.powerUpsLeft > 0) {
         if (this.powerUpDelay > 0 && !player.paused && player.charSelected) {
@@ -1517,7 +1521,7 @@ Player.prototype.gemSlow = function() {
 };
 
 Player.prototype.gemReverse = function() {
-    map.playSFX('switch');
+    map.playSFX('flip');
     this.winPoints(100);
     var numFloats = allFloats.length;
     for (i = 0; i < numFloats; i++) {
@@ -1866,12 +1870,16 @@ document.addEventListener('keyup', function(e) {
     var allowedKeys = {
         37: 'left',
         65: 'left',
+        72: 'left',
         38: 'up',
         87: 'up',
+        75: 'up',
         39: 'right',
         68: 'right',
+        76: 'right',
         40: 'down',
         83: 'down',
+        74: 'down',
         13: 'enter',
         32: 'enter',
         80: 'pause',
