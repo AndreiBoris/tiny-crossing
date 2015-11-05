@@ -139,7 +139,7 @@ var Map = function() {
     // This is the maximum number of powerups on the map:
     this.powerUpMax = 3;
     // Wait time between release of powerups:
-    this.powerUpDelay = 400;
+    this.powerUpDelay = 4;
     // Number of powerups per round:
     this.powerUpsLeft = 5;
     // Current round (game scales in difficulty with higher rounds):
@@ -218,14 +218,20 @@ Map.prototype.playSFX = function(SFX) {
 
 // Handles the power ups:
 Map.prototype.update = function(dt) {
+    // Power ups won't spawn if too many have already or too many are currently
+    // on the map:
     if (this.powerUpCount < this.powerUpMax && this.powerUpsLeft > 0) {
+        // Timer will count down as long as the game is being played:
         if (this.powerUpDelay > 0 && !player.paused && player.charSelected) {
-            this.powerUpDelay -= dt * 100;
+            this.powerUpDelay -= dt;
+        // Once timer reaches 0 a power up is released:
         } else if (this.powerUpDelay <= 0 && !player.paused) {
-            this.powerUpDelay = 500;
-            this.powerUpCount++;
-            allPowerUps.push(new Item('power'));
+            // Reset timer:
+            this.powerUpDelay = 5;
             this.powerUpsLeft--;
+            this.powerUpCount++;
+            // Create a new power up:
+            allPowerUps.push(new Item('power'));
             for (var i = 0; i < allPowerUps.length; i++) {
                 // the starting sprite is a key, if the sprite is a key, it should be
                 // changed
@@ -1910,3 +1916,4 @@ document.addEventListener('keyup', function(e) {
 // TODO: 2 lane monster
 // TODO: Slow down regular enemies and add FAST one
 // TODO: Add a water enemy
+// TODO: Create a powerup class that inherits from Item
