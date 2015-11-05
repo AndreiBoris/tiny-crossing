@@ -5,7 +5,7 @@ module.exports = function( grunt ) {
       dev: {
         options: {
           engine: 'im',
-          sizes: [ {
+          sizes: [ /*{
             width: 50,
             quality: 100
           }, {
@@ -14,13 +14,13 @@ module.exports = function( grunt ) {
           }, {
             width: 85,
             quality: 100
-          } ]
+          } */]
         },
         files: [ {
           expand: true,
           src: [ '*.{gif,jpg,png}' ],
           cwd: 'images_src/',
-          dest: 'images/'
+          dest: 'images_made/'
         } ]
       }
     },

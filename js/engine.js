@@ -202,92 +202,69 @@ var Engine = ( function( global ) {
    */
 
   var loadMe = [
-    'images/white-block',
-    'images/stone-block',
-    'images/water-block',
-    'images/water-block2',
-    'images/grass-block',
-    'images/enemy-bug-right',
-    'images/enemy-bug-left',
-    'images/enemy-bug-up',
-    'images/enemy-bug-down',
-    'images/enemy-bug-burrow-1',
-    'images/enemy-bug-burrow-2',
-    'images/char-boy',
-    'images/char-cat-girl',
-    'images/char-horn-girl',
-    'images/char-pink-girl',
-    'images/char-princess-girl',
-    'images/char-boy-hurt',
-    'images/char-cat-girl-hurt',
-    'images/char-horn-girl-hurt',
-    'images/char-pink-girl-hurt',
-    'images/char-princess-girl-hurt',
-    'images/char-boy-happy',
-    'images/char-cat-girl-happy',
-    'images/char-horn-girl-happy',
-    'images/char-pink-girl-happy',
-    'images/char-princess-girl-happy',
-    'images/char-boy-shield',
-    'images/char-cat-girl-shield',
-    'images/char-horn-girl-shield',
-    'images/char-pink-girl-shield',
-    'images/char-princess-girl-shield',
-    'images/char-boy-lasso',
-    'images/char-cat-girl-lasso',
-    'images/char-horn-girl-lasso',
-    'images/char-pink-girl-lasso',
-    'images/char-princess-girl-lasso',
-    'images/char-boy-water',
-    'images/char-cat-girl-water',
-    'images/char-horn-girl-water',
-    'images/char-pink-girl-water',
-    'images/char-princess-girl-water',
-    'images/Selector',
-    'images/Star',
-    'images/Rock',
-    'images/Key',
-    'images/Heart',
-    'images/corn',
-    'images/Green',
-    'images/Blue',
-    'images/Orange',
-    'images/Purple',
-    'images/Yellow',
-    'images/Black',
-    'images/White',
-    'images/Red',
-    'images/cloud1',
-    'images/cloud2',
-    'images/cloud3',
-    'images/cloud4',
-    'images/cloud5',
-    'images/cloud6',
-    'images/cloud7'
+    'images/white-block.png',
+    'images/stone-block.png',
+    'images/water-block.png',
+    'images/water-block2.png',
+    'images/grass-block.png',
+    'images/enemy-bug-right.png',
+    'images/enemy-bug-left.png',
+    'images/enemy-bug-up.png',
+    'images/enemy-bug-down.png',
+    'images/enemy-bug-burrow-1.png',
+    'images/enemy-bug-burrow-2.png',
+    'images/char-boy.png',
+    'images/char-cat-girl.png',
+    'images/char-horn-girl.png',
+    'images/char-pink-girl.png',
+    'images/char-princess-girl.png',
+    'images/char-boy-hurt.png',
+    'images/char-cat-girl-hurt.png',
+    'images/char-horn-girl-hurt.png',
+    'images/char-pink-girl-hurt.png',
+    'images/char-princess-girl-hurt.png',
+    'images/char-boy-happy.png',
+    'images/char-cat-girl-happy.png',
+    'images/char-horn-girl-happy.png',
+    'images/char-pink-girl-happy.png',
+    'images/char-princess-girl-happy.png',
+    'images/char-boy-shield.png',
+    'images/char-cat-girl-shield.png',
+    'images/char-horn-girl-shield.png',
+    'images/char-pink-girl-shield.png',
+    'images/char-princess-girl-shield.png',
+    'images/char-boy-lasso.png',
+    'images/char-cat-girl-lasso.png',
+    'images/char-horn-girl-lasso.png',
+    'images/char-pink-girl-lasso.png',
+    'images/char-princess-girl-lasso.png',
+    'images/char-boy-water.png',
+    'images/char-cat-girl-water.png',
+    'images/char-horn-girl-water.png',
+    'images/char-pink-girl-water.png',
+    'images/char-princess-girl-water.png',
+    'images/Selector.png',
+    'images/Star.png',
+    'images/Rock.png',
+    'images/Key.png',
+    'images/Heart.png',
+    'images/corn.png',
+    'images/Green.png',
+    'images/Blue.png',
+    'images/Orange.png',
+    'images/Purple.png',
+    'images/Yellow.png',
+    'images/Black.png',
+    'images/White.png',
+    'images/Red.png',
+    'images/cloud1.png',
+    'images/cloud2.png',
+    'images/cloud3.png',
+    'images/cloud4.png',
+    'images/cloud5.png',
+    'images/cloud6.png',
+    'images/cloud7.png'
   ];
-
-  var sizer = function( size ) {
-    var length = loadMe.length;
-    if ( size === 'large' ) {
-      for ( i = 0; i < length; i++ ) {
-        loadMe[ i ] = loadMe[ i ] + '.png';
-      }
-    } else if ( size === 'medium' ) {
-      for ( i = 0; i < length; i++ ) {
-        loadMe[ i ] = loadMe[ i ] + '-85.png';
-      }
-    } else if ( size === 'small' ) {
-      for ( i = 0; i < length; i++ ) {
-        loadMe[ i ] = loadMe[ i ] + '-65.png';
-      }
-    } else if ( size === 'tiny' ) {
-      for ( i = 0; i < length; i++ ) {
-        loadMe[ i ] = loadMe[ i ] + '-50.png';
-      }
-    }
-  };
-
-  sizer( map.size );
 
   Resources.load( loadMe );
   Resources.onReady( init );

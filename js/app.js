@@ -4,7 +4,7 @@ var Map = function() {
   this.size = 'tiny';
   // These values are used to determine many other distances in the script, but
   // they should not be changed unless the Map.rowImages .pngs are changed too
-  this.tileWidth = 101;
+  this.tileWidth = 50;
   this.tileHeight = this.tileWidth * 0.821782178;
   // The number of columns can be changed
   this.numColumns = 11;
@@ -17,7 +17,7 @@ var Map = function() {
   this.totalWidth = this.tileWidth * this.numColumns;
   this.totalHeight = this.tileHeight * ( this.numRows + 1 );
   // Offset value due to white space at the top of water tiles
-  this.buffer = 50;
+  this.buffer = 24.75;
   // xValues and yValues get generated at the bottom of app.js using
   // Map.makeCoordinates. This allows for different numbers of rows and columns
   // to work.
@@ -36,77 +36,77 @@ var Map = function() {
     'images/cloud7-50.png'
   ];
   this.variousImages = [
-    'images/Selector',
-    'images/Star',
-    'images/Rock',
-    'images/Key',
-    'images/Heart',
-    'images/corn',
-    'images/Blue',
-    'images/Green',
-    'images/Orange',
-    'images/Purple',
-    'images/Yellow',
-    'images/Black',
-    'images/White',
-    'images/Red'
+    'images/Selector.png',
+    'images/Star.png',
+    'images/Rock.png',
+    'images/Key.png',
+    'images/Heart.png',
+    'images/corn.png',
+    'images/Blue.png',
+    'images/Green.png',
+    'images/Orange.png',
+    'images/Purple.png',
+    'images/Yellow.png',
+    'images/Black.png',
+    'images/White.png',
+    'images/Red.png'
   ];
   this.enemySprites = [
-    'images/enemy-bug-right',
-    'images/enemy-bug-left',
-    'images/enemy-bug-up',
-    'images/enemy-bug-down',
-    'images/enemy-bug-burrow-1',
-    'images/enemy-bug-burrow-2'
+    'images/enemy-bug-right.png',
+    'images/enemy-bug-left.png',
+    'images/enemy-bug-up.png',
+    'images/enemy-bug-down.png',
+    'images/enemy-bug-burrow-1.png',
+    'images/enemy-bug-burrow-2.png'
   ];
   this.playerChars = [
-    'images/char-boy',
-    'images/char-cat-girl',
-    'images/char-horn-girl',
-    'images/char-pink-girl',
-    'images/char-princess-girl'
+    'images/char-boy.png',
+    'images/char-cat-girl.png',
+    'images/char-horn-girl.png',
+    'images/char-pink-girl.png',
+    'images/char-princess-girl.png'
   ];
   this.playerCharsHurt = [
-    'images/char-boy-hurt',
-    'images/char-cat-girl-hurt',
-    'images/char-horn-girl-hurt',
-    'images/char-pink-girl-hurt',
-    'images/char-princess-girl-hurt'
+    'images/char-boy-hurt.png',
+    'images/char-cat-girl-hurt.png',
+    'images/char-horn-girl-hurt.png',
+    'images/char-pink-girl-hurt.png',
+    'images/char-princess-girl-hurt.png'
   ];
   this.playerCharsHappy = [
-    'images/char-boy-happy',
-    'images/char-cat-girl-happy',
-    'images/char-horn-girl-happy',
-    'images/char-pink-girl-happy',
-    'images/char-princess-girl-happy'
+    'images/char-boy-happy.png',
+    'images/char-cat-girl-happy.png',
+    'images/char-horn-girl-happy.png',
+    'images/char-pink-girl-happy.png',
+    'images/char-princess-girl-happy.png'
   ];
   this.playerCharsShield = [
-    'images/char-boy-shield',
-    'images/char-cat-girl-shield',
-    'images/char-horn-girl-shield',
-    'images/char-pink-girl-shield',
-    'images/char-princess-girl-shield'
+    'images/char-boy-shield.png',
+    'images/char-cat-girl-shield.png',
+    'images/char-horn-girl-shield.png',
+    'images/char-pink-girl-shield.png',
+    'images/char-princess-girl-shield.png'
   ];
   this.playerCharsLasso = [
-    'images/char-boy-lasso',
-    'images/char-cat-girl-lasso',
-    'images/char-horn-girl-lasso',
-    'images/char-pink-girl-lasso',
-    'images/char-princess-girl-lasso'
+    'images/char-boy-lasso.png',
+    'images/char-cat-girl-lasso.png',
+    'images/char-horn-girl-lasso.png',
+    'images/char-pink-girl-lasso.png',
+    'images/char-princess-girl-lasso.png'
   ];
   this.playerCharsWater = [
-    'images/char-boy-water',
-    'images/char-cat-girl-water',
-    'images/char-horn-girl-water',
-    'images/char-pink-girl-water',
-    'images/char-princess-girl-water',
+    'images/char-boy-water.png',
+    'images/char-cat-girl-water.png',
+    'images/char-horn-girl-water.png',
+    'images/char-pink-girl-water.png',
+    'images/char-princess-girl-water.png',
   ];
   this.mapTiles = [
-    'images/white-block',
-    'images/water-block',
-    'images/stone-block',
-    'images/grass-block',
-    'images/water-block2',
+    'images/white-block.png',
+    'images/water-block.png',
+    'images/stone-block.png',
+    'images/grass-block.png',
+    'images/water-block2.png',
   ];
 
   this.slowFloaters = 70;
@@ -246,96 +246,6 @@ Map.prototype.makeRows = function( numRows ) {
     }
   }
   this.rowImages.push( map.mapTiles[ 3 ] );
-};
-
-Map.prototype.findImages = function() {
-  var lengthChars = this.playerChars.length,
-    lengthTiles = this.mapTiles.length,
-    lengthOthers = this.variousImages.length,
-    lengthEnemies = this.enemySprites.length;
-  if ( this.size === 'large' ) {
-    for ( var i = 0; i < lengthChars; i++ ) {
-      this.playerChars[ i ] += '.png';
-      this.playerCharsHurt[ i ] += '.png';
-      this.playerCharsHappy[ i ] += '.png';
-      this.playerCharsShield[ i ] += '.png';
-      this.playerCharsLasso[ i ] += '.png';
-      this.playerCharsWater[ i ] += '.png';
-    }
-    for ( i = 0; i < lengthEnemies; i++ ) {
-      this.enemySprites[ i ] += '.png';
-    }
-    for ( i = 0; i < lengthTiles; i++ ) {
-      this.mapTiles[ i ] += '.png';
-    }
-    for ( i = 0; i < lengthOthers; i++ ) {
-      this.variousImages[ i ] += '.png';
-    }
-  } else if ( this.size === 'medium' ) {
-    this.tileWidth = 85;
-    this.buffer = 42.08;
-    for ( var j = 0; j < lengthChars; j++ ) {
-      this.playerChars[ j ] += '-85.png';
-      this.playerCharsHurt[ j ] += '-85.png';
-      this.playerCharsHappy[ j ] += '-85.png';
-      this.playerCharsShield[ j ] += '-85.png';
-      this.playerCharsLasso[ j ] += '-85.png';
-      this.playerCharsWater[ j ] += '-85.png';
-    }
-    for ( j = 0; j < lengthEnemies; j++ ) {
-      this.enemySprites[ j ] += '-85.png';
-    }
-    for ( j = 0; j < lengthTiles; j++ ) {
-      this.mapTiles[ j ] += '-85.png';
-    }
-    for ( j = 0; j < lengthOthers; j++ ) {
-      this.variousImages[ j ] += '-85.png';
-    }
-  } else if ( this.size === 'small' ) {
-    this.tileWidth = 65;
-    this.buffer = 32.18;
-    for ( k = 0; k < lengthChars; k++ ) {
-      this.playerChars[ k ] += '-65.png';
-      this.playerCharsHurt[ k ] += '-65.png';
-      this.playerCharsHappy[ k ] += '-65.png';
-      this.playerCharsShield[ k ] += '-65.png';
-      this.playerCharsLasso[ k ] += '-65.png';
-      this.playerCharsWater[ k ] += '-65.png';
-    }
-    for ( k = 0; k < lengthEnemies; k++ ) {
-      this.enemySprites[ k ] += '-65.png';
-    }
-    for ( k = 0; k < lengthTiles; k++ ) {
-      this.mapTiles[ k ] += '-65.png';
-    }
-    for ( k = 0; k < lengthOthers; k++ ) {
-      this.variousImages[ k ] += '-65.png';
-    }
-  } else if ( this.size === 'tiny' ) {
-    this.tileWidth = 50;
-    this.buffer = 24.75;
-    for ( m = 0; m < lengthChars; m++ ) {
-      this.playerChars[ m ] += '-50.png';
-      this.playerCharsHurt[ m ] += '-50.png';
-      this.playerCharsHappy[ m ] += '-50.png';
-      this.playerCharsShield[ m ] += '-50.png';
-      this.playerCharsLasso[ m ] += '-50.png';
-      this.playerCharsWater[ m ] += '-50.png';
-    }
-    for ( m = 0; m < lengthEnemies; m++ ) {
-      this.enemySprites[ m ] += '-50.png';
-    }
-    for ( m = 0; m < lengthTiles; m++ ) {
-      this.mapTiles[ m ] += '-50.png';
-    }
-    for ( m = 0; m < lengthOthers; m++ ) {
-      this.variousImages[ m ] += '-50.png';
-    }
-  }
-  this.tileHeight = this.tileWidth * 0.821782178;
-  this.rowImages = [];
-  this.totalWidth = this.tileWidth * this.numColumns;
-  this.totalHeight = this.tileHeight * ( this.numRows + 1 );
 };
 
 Map.prototype.canGo = function( newX, newY ) {
@@ -1896,8 +1806,6 @@ Player.prototype.handleInput = function( input ) {
 // Instantiation of all objects:
 
 var map = new Map();
-// Determine which sprites and tile sizes to use:
-map.findImages();
 // Load correct tile images for each row:
 map.makeRows( map.numRows );
 // Generate coordinate system for Player.prototyle.handleInput() to use:
@@ -1982,3 +1890,6 @@ document.addEventListener( 'keyup', function( e ) {
 
 // TODO: display Enemy slow/speed
 // TODO: unburrow sound
+// TODO: 2 lane monster
+// TODO: Slow down regular enemies and add FAST one
+// TODO: Add a water enemy
