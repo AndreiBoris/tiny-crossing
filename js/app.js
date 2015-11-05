@@ -1,11 +1,6 @@
 var Map = function() {
-  // Determine map size
-  // 'large', 'medium', 'small', 'tiny'
-  this.size = 'tiny';
-  // These values are used to determine many other distances in the script, but
-  // they should not be changed unless the Map.rowImages .pngs are changed too
   this.tileWidth = 50;
-  this.tileHeight = this.tileWidth * 0.821782178;
+  this.tileHeight = 41;
   // The number of columns can be changed
   this.numColumns = 11;
   // The number of columns can be changed, more enemy rows will be generated
@@ -1623,6 +1618,9 @@ Player.prototype.victoryBounce = function( startingY, dt ) {
 };
 
 Player.prototype.handleInput = function( input ) {
+  if ( input === 'mute' ){
+    map.audio.muted = !map.audio.muted;
+  }
   // Character-selection screen controls
   if ( this.charSelected === false ) {
     if ( input === 'left' ) {
@@ -1866,7 +1864,8 @@ document.addEventListener( 'keyup', function( e ) {
     13: 'enter',
     32: 'enter',
     80: 'pause',
-    19: 'pause'
+    19: 'pause',
+    77: 'mute'
   };
 
   player.handleInput( allowedKeys[ e.keyCode ] );
@@ -1882,7 +1881,9 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Level editor to move rocks
 
 // TODO: Diplay information off of the canvas (like the timers);
-// TODO: Sound effects?
+// TODO: Mention mute controls
+// TODO: Include muted symbol bottom lefthand corner
+// TODO: Edit intro with Sarah's suggestions
 
 // TODO: display Enemy slow/speed
 // TODO: unburrow sound
