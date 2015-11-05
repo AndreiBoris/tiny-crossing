@@ -27,13 +27,13 @@ var Map = function() {
   // enemies can use. This is used by Enemy.startY()
   this.enemyRows = [ 6, 7, 8, 10, 11, 12 ];
   this.clouds = [
-    'images/cloud1-50.png',
-    'images/cloud2-50.png',
-    'images/cloud3-50.png',
-    'images/cloud4-50.png',
-    'images/cloud5-50.png',
-    'images/cloud6-50.png',
-    'images/cloud7-50.png'
+    'images/cloud1.png',
+    'images/cloud2.png',
+    'images/cloud3.png',
+    'images/cloud4.png',
+    'images/cloud5.png',
+    'images/cloud6.png',
+    'images/cloud7.png'
   ];
   this.variousImages = [
     'images/Selector.png',
@@ -190,10 +190,6 @@ Map.prototype.playSFX = function( SFX ) {
 };
 
 Map.prototype.update = function( dt ) {
-  if ( this.powerUpCount === 0 ) {
-    // Clean up array
-    allPowerUps.length = 0;
-  }
   if ( this.powerUpCount < 3 && this.powerUpsLeft > 0 ) {
     if ( this.powerUpDelay > 0 && !player.paused && player.charSelected ) {
       this.powerUpDelay -= dt * 100;
@@ -1890,6 +1886,7 @@ document.addEventListener( 'keyup', function( e ) {
 
 // TODO: display Enemy slow/speed
 // TODO: unburrow sound
+// TODO: move sound
 // TODO: 2 lane monster
 // TODO: Slow down regular enemies and add FAST one
 // TODO: Add a water enemy
