@@ -124,19 +124,19 @@ var Map = function() {
     // Sound on/off
     'muted': false,
     // Load audio files
-    chime: new Audio( 'audio/chime.wav' ),
-    chaching: new Audio( 'audio/chaching.wav' ),
-    gong: new Audio( 'audio/gong.wav' ),
-    key: new Audio( 'audio/key.wav' ),
-    powerdown: new Audio( 'audio/powerdown.wav' ),
-    run: new Audio( 'audio/run.wav' ),
-    shield: new Audio( 'audio/shield.wav' ),
-    splash: new Audio( 'audio/splash.wav' ),
-    switch: new Audio( 'audio/switch.wav' ),
-    thud: new Audio( 'audio/thud.wav' ),
-    time: new Audio( 'audio/time.wav' ),
-    trumpet: new Audio( 'audio/trumpet.wav' ),
-    yeehaw: new Audio( 'audio/yeehaw.wav' )
+    chime: new Audio( 'audio/chime.mp3' ),
+    chaching: new Audio( 'audio/chaching.mp3' ),
+    gong: new Audio( 'audio/gong.mp3' ),
+    key: new Audio( 'audio/key.mp3' ),
+    powerdown: new Audio( 'audio/powerdown.mp3' ),
+    run: new Audio( 'audio/run.mp3' ),
+    shield: new Audio( 'audio/shield.mp3' ),
+    splash: new Audio( 'audio/splash.mp3' ),
+    switch: new Audio( 'audio/switch.mp3' ),
+    thud: new Audio( 'audio/thud.mp3' ),
+    time: new Audio( 'audio/time.mp3' ),
+    trumpet: new Audio( 'audio/trumpet.mp3' ),
+    yeehaw: new Audio( 'audio/yeehaw.mp3' )
   };
 };
 
@@ -1981,4 +1981,4 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Sound effects?
 
 // TODO: display Enemy slow/speed
-// TODO: Display messages OVER clouds
+// TODO: unburrow sound
