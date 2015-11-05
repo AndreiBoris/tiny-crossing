@@ -1,11 +1,13 @@
+var imageminOptipng = require( 'imagemin-optipng' );
+
 module.exports = function( grunt ) {
   grunt.initConfig( {
     pkg: grunt.file.readJSON( 'package.json' ),
-    responsive_images: {
+    /*responsive_images: {
       dev: {
         options: {
           engine: 'im',
-          sizes: [ /*{
+          sizes: [ {
             width: 50,
             quality: 100
           }, {
@@ -14,13 +16,30 @@ module.exports = function( grunt ) {
           }, {
             width: 85,
             quality: 100
-          } */]
+          } ]
         },
         files: [ {
           expand: true,
           src: [ '*.{gif,jpg,png}' ],
           cwd: 'images_src/',
           dest: 'images_made/'
+        } ]
+      }
+    },*/
+    imagemin: { // Task
+      dynamic: {
+        options: { // Target options
+          optimizationLevel: 6,
+          svgoPlugins: [ {
+            removeViewBox: false
+          } ],
+          use: [ imageminOptipng() ]
+        },
+        files: [ {
+          expand: true, // Enable dynamic expansion
+          cwd: 'images/', // Src matches are relative to this path
+          src: [ '*.{png,jpg,gif}' ], // Actual patterns to match
+          dest: 'images_min/' // Destination path prefix
         } ]
       }
     },
@@ -38,8 +57,10 @@ module.exports = function( grunt ) {
 
   grunt.loadNpmTasks( 'grunt-contrib-watch' );
   grunt.loadNpmTasks( 'grunt-contrib-jshint' );
-  grunt.loadNpmTasks( 'grunt-responsive-images' );
+  grunt.loadNpmTasks( 'grunt-contrib-imagemin' );
+  //grunt.loadNpmTasks( 'grunt-responsive-images' );
 
   grunt.registerTask( 'default', [ 'jshint', 'watch' ] );
-  grunt.registerTask( 'newpics', [ 'responsive_images' ] );
+  grunt.registerTask( 'mini', [ 'imagemin' ] );
+  //grunt.registerTask( 'newpics', [ 'responsive_images' ] );
 };
