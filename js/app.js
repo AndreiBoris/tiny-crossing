@@ -118,6 +118,26 @@ var Map = function() {
   this.powerUpsLeft = 5;
 
   this.round = 1;
+
+  this.audio = {
+        // Sound on/off
+        'muted': false,
+        // Load audio files
+        'gem': new Audio('audio/genericGem.wav')
+    };
+};
+
+// Play game sound effects
+// Credit to d3moid
+// https://github.com/d3moid
+Map.prototype.playSFX = function(SFX){
+    if (!this.audio.muted) {
+        switch(SFX){
+            case 'coin':
+                this.audio.gem.play();
+                break;
+        }
+    }
 };
 
 Map.prototype.update = function( dt ) {
@@ -1868,6 +1888,5 @@ document.addEventListener( 'keyup', function( e ) {
 
 // TODO: Level editor to move rocks
 
-// TODO: Points Display
 // TODO: Diplay information off of the canvas (like the timers);
 // TODO: Sound effects?
