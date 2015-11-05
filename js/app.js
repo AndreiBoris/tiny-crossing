@@ -371,6 +371,21 @@ var Cloud = function() {
   this.sprite = map.clouds[ Math.floor( Math.random() * 7 ) ];
   this.moving = 1;
   this.speed = 20 + Math.random() * 80;
+  this.display = true;
+};
+
+Cloud.prototype.displayAll = function(){
+  var length = allClouds.length;
+  for (var i = 0; i<length;i++){
+    allClouds[i].display = true;
+  }
+};
+
+Cloud.prototype.hideAll = function(){
+  var length = allClouds.length;
+  for (var i = 0; i<length;i++){
+    allClouds[i].display = false;
+  }
 };
 
 Cloud.prototype.update = function( dt ) {
@@ -384,7 +399,9 @@ Cloud.prototype.update = function( dt ) {
 };
 
 Cloud.prototype.render = function() {
-  ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
+  if ( this.display ) {
+    ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
+  }
 };
 
 Cloud.prototype.togglePause = function() {
@@ -1332,11 +1349,14 @@ Player.prototype.render = function() {
     // If the game is paused due to pressing pause button, show pause message
     Player.prototype.pauseMessage();
   } else if ( this.drowned === true ) {
+    Cloud.prototype.hideAll();
     this.drownMessage();
   } else if ( this.ouch === true ) {
+    Cloud.prototype.hideAll();
     this.hitMessage();
     this.hitOverlay();
   } else if ( this.isDead === true ) {
+    Cloud.prototype.hideAll();
     this.deadOverlay();
     this.deadMessage();
     this.playAgainMessage();
@@ -1361,6 +1381,7 @@ Player.prototype.announcePoints = function( points ) {
 };
 
 Player.prototype.victory = function() {
+  Cloud.prototype.hideAll();
   Player.prototype.victoryMessage();
   Player.prototype.continueMessage();
 };
@@ -1856,6 +1877,7 @@ Player.prototype.handleInput = function( input ) {
         Enemy.prototype.resetBurrow();
         this.blurPause();
       }
+      Cloud.prototype.displayAll();
       this.freeze = 0;
       this.shield = 0;
       this.lasso = 0;
@@ -1894,6 +1916,8 @@ function addClouds( count ) {
     allClouds.push( new Cloud() );
   }
 }
+
+addClouds(15);
 
 function addEnemies( count ) {
   for ( var i = 0; i < count; i++ ) {
