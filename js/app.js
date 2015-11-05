@@ -655,7 +655,10 @@ Enemy.prototype.hide = function( time ) {
 Enemy.prototype.resetBurrow = function() {
   var numEnemies = allEnemies.length;
   for ( var i = 0; i < numEnemies; i++ ) {
-    allEnemies.burrowWait = 5;
+    allEnemies[i].burrowWait = 5;
+    if (allEnemies[i].burrow2) {
+      allEnemies[i].x = -100;
+    }
   }
 };
 
