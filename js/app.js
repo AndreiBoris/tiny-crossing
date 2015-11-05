@@ -224,7 +224,7 @@ Map.prototype.update = function(dt) {
         // Timer will count down as long as the game is being played:
         if (this.powerUpDelay > 0 && !player.paused && player.charSelected) {
             this.powerUpDelay -= dt;
-        // Once timer reaches 0 a power up is released:
+            // Once timer reaches 0 a power up is released:
         } else if (this.powerUpDelay <= 0 && !player.paused) {
             // Reset timer:
             this.powerUpDelay = 5;
