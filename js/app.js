@@ -374,17 +374,10 @@ var Cloud = function() {
   this.display = true;
 };
 
-Cloud.prototype.displayAll = function(){
+Cloud.prototype.keepMoving = function(){
   var length = allClouds.length;
   for (var i = 0; i<length;i++){
-    allClouds[i].display = true;
-  }
-};
-
-Cloud.prototype.hideAll = function(){
-  var length = allClouds.length;
-  for (var i = 0; i<length;i++){
-    allClouds[i].display = false;
+    allClouds[i].moving = 1;
   }
 };
 
@@ -1349,14 +1342,14 @@ Player.prototype.render = function() {
     // If the game is paused due to pressing pause button, show pause message
     Player.prototype.pauseMessage();
   } else if ( this.drowned === true ) {
-    Cloud.prototype.hideAll();
+    Cloud.prototype.keepMoving();
     this.drownMessage();
   } else if ( this.ouch === true ) {
-    Cloud.prototype.hideAll();
+    Cloud.prototype.keepMoving();
     this.hitMessage();
     this.hitOverlay();
   } else if ( this.isDead === true ) {
-    Cloud.prototype.hideAll();
+    Cloud.prototype.keepMoving();
     this.deadOverlay();
     this.deadMessage();
     this.playAgainMessage();
@@ -1381,7 +1374,7 @@ Player.prototype.announcePoints = function( points ) {
 };
 
 Player.prototype.victory = function() {
-  Cloud.prototype.hideAll();
+  Cloud.prototype.keepMoving();
   Player.prototype.victoryMessage();
   Player.prototype.continueMessage();
 };
@@ -1877,7 +1870,6 @@ Player.prototype.handleInput = function( input ) {
         Enemy.prototype.resetBurrow();
         this.blurPause();
       }
-      Cloud.prototype.displayAll();
       this.freeze = 0;
       this.shield = 0;
       this.lasso = 0;
