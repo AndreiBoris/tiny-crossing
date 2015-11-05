@@ -1878,6 +1878,7 @@ Player.prototype.handleInput = function( input ) {
       this.ouch = false;
       this.drowned = false;
       this.togglePause();
+      Cloud.prototype.keepMoving();
       // Back to starting position of game:
       this.sprite = this.charOptions[ this.selection ];
       this.resetStart();
@@ -1908,8 +1909,6 @@ function addClouds( count ) {
     allClouds.push( new Cloud() );
   }
 }
-
-addClouds(15);
 
 function addEnemies( count ) {
   for ( var i = 0; i < count; i++ ) {
