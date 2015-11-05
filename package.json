@@ -6,7 +6,8 @@
     "grunt-contrib-jshint": "~0.11.3",
     "grunt-responsive-images": "~0.1.7",
     "grunt-rename": "~0.1.4",
-    "grunt-contrib-imagemin": "~0.9.4"
+    "grunt-contrib-imagemin": "~0.9.4",
+    "grunt-jsbeautifier": "~0.2.10"
   },
   "dependencies": {
     "imagemin-optipng": "~4.3.0"
