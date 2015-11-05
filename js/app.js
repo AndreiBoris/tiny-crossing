@@ -1860,6 +1860,7 @@ Player.prototype.handleInput = function( input ) {
       this.shield = 0;
       this.lasso = 0;
       this.water = 0;
+      this.enemySpeedTime = 0;
       this.ouch = false;
       this.drowned = false;
       this.togglePause();
@@ -1957,5 +1958,5 @@ document.addEventListener( 'keyup', function( e ) {
 // TODO: Diplay information off of the canvas (like the timers);
 // TODO: Sound effects?
 
-// TODO: Reset enemy slow and speed on victory
 // TODO: display Enemy slow/speed
+// TODO: Display messages OVER clouds
