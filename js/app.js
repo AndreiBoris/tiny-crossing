@@ -371,20 +371,29 @@ var Cloud = function() {
   this.sprite = map.clouds[ Math.floor( Math.random() * 7 ) ];
   this.moving = 1;
   this.speed = 20 + Math.random() * 80;
-  this.display = true;
+  this.respawn = true;
 };
 
-Cloud.prototype.keepMoving = function(){
+Cloud.prototype.keepMoving = function() {
   var length = allClouds.length;
-  for (var i = 0; i<length;i++){
-    allClouds[i].moving = 1;
+  for ( var i = 0; i < length; i++ ) {
+    allClouds[ i ].moving = 2;
+    allClouds[ i ].respawn = false;
+  }
+};
+
+Cloud.prototype.moveNormally = function() {
+  var length = allClouds.length;
+  for ( var i = 0; i < length; i++ ) {
+    allClouds[ i ].moving = 1;
+    allClouds[ i ].respawn = true;
   }
 };
 
 Cloud.prototype.update = function( dt ) {
   this.x += this.speed * dt * this.moving;
-  if ( this.x > map.totalWidth + 410 ) {
-    this.x = -410;
+  if ( this.x > map.totalWidth + 410 && this.respawn ) {
+    this.x = -410 + Math.random() * 120;
     this.y = Math.random() * map.totalHeight;
     this.sprite = map.clouds[ Math.floor( Math.random() * 7 ) ];
     this.speed = 20 + Math.random() * 80;
@@ -392,9 +401,7 @@ Cloud.prototype.update = function( dt ) {
 };
 
 Cloud.prototype.render = function() {
-  if ( this.display ) {
-    ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
-  }
+  ctx.drawImage( Resources.get( this.sprite ), this.x, this.y );
 };
 
 Cloud.prototype.togglePause = function() {
@@ -1878,7 +1885,7 @@ Player.prototype.handleInput = function( input ) {
       this.ouch = false;
       this.drowned = false;
       this.togglePause();
-      Cloud.prototype.keepMoving();
+      Cloud.prototype.moveNormally();
       // Back to starting position of game:
       this.sprite = this.charOptions[ this.selection ];
       this.resetStart();
