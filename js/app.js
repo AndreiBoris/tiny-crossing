@@ -1,13 +1,25 @@
 var Map = function() {
   this.tileWidth = 50;
   this.tileHeight = 41;
-  // The number of columns can be changed
   this.numColumns = 11;
-  // The number of columns can be changed, more enemy rows will be generated
   this.numRows = 15;
-  // This is dynamically generated based this.numRows, see
-  // Map.prototype.makeRows();
-  this.rowImages = [];
+  this.rowImages = [
+    'images/white-block.png',
+    'images/white-block.png',
+    'images/grass-block.png',
+    'images/water-block2.png',
+    'images/water-block2.png',
+    'images/water-block2.png',
+    'images/grass-block.png',
+    'images/stone-block.png',
+    'images/stone-block.png',
+    'images/stone-block.png',
+    'images/grass-block.png',
+    'images/stone-block.png',
+    'images/stone-block.png',
+    'images/stone-block.png',
+    'images/grass-block.png',
+  ];
   // Determines size of canvas in engine.js
   this.totalWidth = this.tileWidth * this.numColumns;
   this.totalHeight = this.tileHeight * ( this.numRows + 1 );
@@ -221,22 +233,6 @@ Map.prototype.makeCoordinates = function() {
   for ( i = 0; i < this.numRows; i++ ) {
     this.yValues[ i ] = this.buffer + this.tileHeight * i;
   }
-};
-
-Map.prototype.makeRows = function( numRows ) {
-  this.rowImages.push( map.mapTiles[ 0 ] );
-  this.rowImages.push( map.mapTiles[ 0 ] );
-  this.rowImages.push( map.mapTiles[ 3 ] );
-  for ( var i = 1; i < numRows - 3; i++ ) {
-    if ( i === 4 || i === 8 ) {
-      this.rowImages.push( map.mapTiles[ 3 ] );
-    } else if ( i === 1 || i === 2 || i === 3 ) {
-      this.rowImages.push( map.mapTiles[ 4 ] );
-    } else {
-      this.rowImages.push( map.mapTiles[ 2 ] );
-    }
-  }
-  this.rowImages.push( map.mapTiles[ 3 ] );
 };
 
 Map.prototype.canGo = function( newX, newY ) {
@@ -1800,8 +1796,6 @@ Player.prototype.handleInput = function( input ) {
 // Instantiation of all objects:
 
 var map = new Map();
-// Load correct tile images for each row:
-map.makeRows( map.numRows );
 // Generate coordinate system for Player.prototyle.handleInput() to use:
 map.makeCoordinates();
 
