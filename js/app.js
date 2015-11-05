@@ -1,6 +1,6 @@
 var Map = function() {
   this.tileWidth = 50;
-  this.tileHeight = 41;
+  this.tileHeight = 41; // 83/101 to be more precise
   this.numColumns = 11;
   this.numRows = 15;
   this.rowImages = [
@@ -20,7 +20,7 @@ var Map = function() {
     'images/stone-block.png',
     'images/grass-block.png',
   ];
-  // Determines size of canvas in engine.js
+  // Keeps track of the canvas size
   this.totalWidth = this.tileWidth * this.numColumns;
   this.totalHeight = this.tileHeight * ( this.numRows + 1 );
   // Offset value due to white space at the top of water tiles

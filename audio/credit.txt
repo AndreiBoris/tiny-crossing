@@ -1,4 +1,5 @@
-All files were changed from .wav to .mp3
+All files were changed from .wav to .mp3 and the quality was reduced to compress
+file sizes
 
 I found the file I called key.mp3. It was uploaded by Gabriel Araujo:
 Link to file: https://www.freesound.org/people/GabrielAraujo/sounds/242501/
