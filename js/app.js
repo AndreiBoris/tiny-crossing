@@ -283,19 +283,24 @@ Map.prototype.keysCollected = function() {
     return win;
 };
 
+// This gets inherited by Item, Float, Enemy and Cloud:
 var Entity = function() {
-  this.x = 0;
-  this.y = 0;
-  this.moving = 1;
-  this.sprite = '';
+    this.x = 0;
+    this.y = 0;
+    this.moving = 1;
+    this.sprite = '';
 };
 
+// As long as the player's character is selected, the all entities will be
+// rendered at their current positions:
 Entity.prototype.render = function() {
     if (player.charSelected === true) {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 };
 
+// this.moving is multiplied by the speed of each all entities in their
+// respective .update methods. If this.moving is 0, an entity won't move:
 Entity.prototype.togglePause = function() {
     if (this.moving === 0) {
         this.moving = 1;
@@ -304,6 +309,10 @@ Entity.prototype.togglePause = function() {
     }
 };
 
+// Sometimes the game has to be paused, in those circumstances this method is
+// invoked to make sure all entities stop moving. A notable example is when the
+// game window is navigated away from (the 'blur' event occurs, hence the name
+// of the method:
 Entity.prototype.blurPause = function() {
     this.moving = 0;
 };
