@@ -296,6 +296,19 @@ Entity.prototype.render = function() {
     }
 };
 
+Entity.prototype.togglePause = function() {
+    if (this.moving === 0) {
+        this.moving = 1;
+    } else {
+        this.moving = 0;
+    }
+};
+
+Entity.prototype.blurPause = function() {
+    this.moving = 0;
+};
+
+
 var Cloud = function() {
     this.x = -400 - Math.random() * 450;
     this.y = Math.random() * map.totalHeight;
@@ -349,19 +362,6 @@ Cloud.prototype.update = function(dt) {
     }
 };
 
-Cloud.prototype.togglePause = function() {
-    if (this.moving === 0) {
-        this.moving = 1;
-    } else {
-        this.moving = 0;
-    }
-};
-
-Cloud.prototype.blurPause = function() {
-    this.moving = 0;
-};
-
-
 var Float = function(row, pos, speed) {
     this.sprite = map.variousImages[5];
     this.x = pos;
@@ -412,20 +412,6 @@ Float.prototype.update = function(dt) {
 Float.prototype.floatRow = function(row) {
     // Picks one of the rows for the float:
     return map.yValues[row];
-};
-
-Float.prototype.togglePause = function(row) {
-    if (this.moving === 1) {
-        // this.moving gets multiplied by the speed of each float to determine
-        // whether the float is moving or not:
-        this.moving = 0;
-    } else {
-        this.moving = 1;
-    }
-};
-
-Float.prototype.blurPause = function() {
-    this.moving = 0;
 };
 
 var Item = function(type, pos) {
@@ -552,19 +538,6 @@ Item.prototype.update = function(dt) {
     }
 };
 
-Item.prototype.togglePause = function() {
-    if (this.moving === 1) {
-        // this.moving gets multiplied by the speed of each bug to determine whether
-        // an enemy is moving or not.
-        this.moving = 0;
-    } else {
-        this.moving = 1;
-    }
-};
-
-Item.prototype.blurPause = function() {
-    this.moving = 0;
-};
 
 // Enemies the player must avoid
 var Enemy = function(burrow) {
@@ -831,20 +804,6 @@ Enemy.prototype.newSpeed = function(direction) {
     } else if (direction === 'left') {
         return (map.tileWidth / -2 + (Math.random() * map.tileWidth * -3));
     }
-};
-
-Enemy.prototype.togglePause = function() {
-    if (this.moving === 1) {
-        // this.moving gets multiplied by the speed of each bug to determine whether
-        // an enemy is moving or not.
-        this.moving = 0;
-    } else {
-        this.moving = 1;
-    }
-};
-
-Enemy.prototype.blurPause = function() {
-    this.moving = 0;
 };
 
 var Player = function() {
