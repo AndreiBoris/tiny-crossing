@@ -240,8 +240,8 @@ Map.prototype.update = function(dt) {
     }
 };
 
-// Dynamically generate Map.xValues and yValues objects to allow for different
-// map sizes.
+// Creates an object that maps x and y Coordinate numbers to corresponding
+// x and y values on the canvas to create a mapped grid:
 Map.prototype.makeCoordinates = function() {
     for (var i = 0; i < this.numColumns; i++) {
         this.xValues[i] = this.tileWidth * i;
@@ -251,8 +251,9 @@ Map.prototype.makeCoordinates = function() {
     }
 };
 
+// Used in handleInput to determine whether a tile is available.
 Map.prototype.canGo = function(newX, newY) {
-    // Player can't walk into rocks:
+    // Player can't walk into rocks or too far up/down:
     if ((newY === 9 && newX !== 1 && newX !== 5 && newX !== 9) ||
         (newY === 5 && newX !== 3 && newX !== 7) ||
         newY === 0 || newY === map.numRows - 1) {
@@ -261,6 +262,8 @@ Map.prototype.canGo = function(newX, newY) {
     return true;
 };
 
+// This is invoked at the start of every round. Keys always appear in the top
+// row and the number 1, 5, and 9 indicate the column positions of the keys:
 Map.prototype.makeKeys = function() {
     allKeys.length = 0;
     allKeys.push(new Item('key', 1));
@@ -268,6 +271,8 @@ Map.prototype.makeKeys = function() {
     allKeys.push(new Item('key', 9));
 };
 
+// The round is won when all the keys are collected (are 'flying' across the
+// map):
 Map.prototype.keysCollected = function() {
     var win = true;
     for (var i = 0; i < allKeys.length; i++) {
@@ -287,6 +292,10 @@ var Cloud = function() {
     this.respawn = true;
 };
 
+// When the player is hit/drowned/killed/has won everything is paused except
+// for the clouds, which keepMoving(). This allows the clouds to get out of
+// the way so that the text on the screen can be read without being obscured.
+// They also stop respawning on the left side of the map:
 Cloud.prototype.keepMoving = function() {
     var length = allClouds.length;
     for (var i = 0; i < length; i++) {
@@ -295,6 +304,8 @@ Cloud.prototype.keepMoving = function() {
     }
 };
 
+// When all the other objects are unpaused, clouds return to moving at their
+// normal speed, and also start to respawn again:
 Cloud.prototype.moveNormally = function() {
     var length = allClouds.length;
     for (var i = 0; i < length; i++) {
@@ -304,9 +315,18 @@ Cloud.prototype.moveNormally = function() {
 };
 
 Cloud.prototype.update = function(dt) {
+    // this.moving determines if the clouds are moving or not and also is used
+    // to determine if they are moving faster than usual (if keepMoving() is
+    // invoked). dt is the delta time between the last frame and the current
+    // one, which keeps the movements synched across computers:
     this.x += this.speed * dt * this.moving;
-    if (this.x > map.totalWidth + 410 && this.respawn) {
+    // Once the clouds are too far off screen right and they are aren't
+    // currently in the keepMoving state, they will respawn offscreen left:
+    if (this.x > map.totalWidth + 100 && this.respawn) {
+        // There is some variation in the x-start position so that the initial
+        // clouds don't all come at the same time:
         this.x = -410 + Math.random() * 120;
+        // Clouds can be anywhere on the y-axis:
         this.y = Math.random() * map.totalHeight;
         this.sprite = map.clouds[Math.floor(Math.random() * 7)];
         this.speed = 20 + Math.random() * 80;
