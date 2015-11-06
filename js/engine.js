@@ -99,8 +99,8 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
-        allFloats.forEach(function(float) {
-            float.update(dt);
+        allCorn.forEach(function(corn) {
+            corn.update(dt);
         });
         allKeys.forEach(function(key) {
             key.update(dt);
@@ -173,8 +173,8 @@ var Engine = (function(global) {
             enemy.render();
         });
 
-        allFloats.forEach(function(float) {
-            float.render();
+        allCorn.forEach(function(corn) {
+            corn.render();
         });
         allKeys.forEach(function(key) {
             key.render();

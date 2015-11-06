@@ -130,9 +130,9 @@ var Map = function() {
     ];
 
     // The initial speed of floating corn top, middle and bottom rows:
-    this.slowFloaters = 70;
-    this.medFloaters = -100;
-    this.fastFloaters = 120;
+    this.slowCorn = 70;
+    this.medCorn = -100;
+    this.fastCorn = 120;
 
     // This is to current number of powerups on the map:
     this.powerUpCount = 0;
@@ -283,7 +283,7 @@ Map.prototype.keysCollected = function() {
     return win;
 };
 
-// This gets inherited by Item, Float, Enemy and Cloud:
+// This gets inherited by Item, Corn, Enemy and Cloud:
 var Entity = function() {
     this.x = 0;
     this.y = 0;
@@ -377,28 +377,28 @@ Cloud.prototype.update = function(dt) {
     }
 };
 
-// Floats are the corn that the player can walk on at the top part of the map.
-// If the player steps on water where there is no Float, the player.drown()s:
-var Float = function(row, pos, speed) {
+// Corn are the corn that the player can walk on at the top part of the map.
+// If the player steps on water where there is no Corn, the player.drown()s:
+var Corn = function(row, pos, speed) {
     // Corn sprite:
     this.sprite = map.variousImages[5];
-    // This is the initial position of the Float as initialized by addFloats():
+    // This is the initial position of the Corn as initialized by addCorn():
     this.x = pos;
     // y values have to be more precise as these are constant throughout the
     // game and need to line up with the player's y positions:
-    this.y = this.floatRow(row);
-    // As initialized by addFloats():
+    this.y = this.cornRow(row);
+    // As initialized by addCorn():
     this.speed = speed;
     this.moving = 1;
     this.gemSpeed = 1.0;
 };
 
-inherit(Float, Entity);
+inherit(Corn, Entity);
 
-Float.prototype.update = function(dt) {
+Corn.prototype.update = function(dt) {
     // this.moving is changed to 0 when the game is paused.
     this.x = this.x + this.speed * dt * this.moving * this.gemSpeed;
-    // Reset floats when they go offscreen:
+    // Reset Corn when they go offscreen:
     if (this.x > map.totalWidth + (2.5 * map.tileWidth)) {
         this.x = -2.0 * map.tileWidth;
     }
@@ -407,8 +407,8 @@ Float.prototype.update = function(dt) {
     }
 };
 
-// Picks one of the rows for the float:
-Float.prototype.floatRow = function(row) {
+// Picks one of the rows for the corn:
+Corn.prototype.cornRow = function(row) {
     return map.yValues[row];
 };
 
@@ -840,7 +840,7 @@ var Player = function() {
     // This is used to help guide the victory jumps as they loop in
     // Player.prototype.update()
     this.movingUp = true;
-    // Is the player on a floater?
+    // Is the player on a Corn?
     this.floating = false;
     this.speed = null;
     this.gemSpeed = 1.0;
@@ -919,7 +919,7 @@ Player.prototype.character = function() {
 // This gets run for every frame of the game
 Player.prototype.update = function(dt) {
 
-    var numFloats = allFloats.length;
+    var numCorn = allCorn.length;
     var numEnemies = allEnemies.length;
 
     // Victory conditions:
@@ -958,8 +958,8 @@ Player.prototype.update = function(dt) {
         for (var q = 0; q < numEnemies; q++) {
             allEnemies[q].gemSpeed = 1.0;
         }
-        for (q = 0; q < numFloats; q++) {
-            allFloats[q].gemSpeed = 1.0;
+        for (q = 0; q < numCorn; q++) {
+            allCorn[q].gemSpeed = 1.0;
         }
     }
 
@@ -999,7 +999,7 @@ Player.prototype.update = function(dt) {
         }
     }
 
-    // Player is on water floats:
+    // Player is on water corn:
     if (this.floating && !this.paused) {
         this.moving = 1;
         // Dynamically update the this.xCoord and this.x values;
@@ -1042,25 +1042,25 @@ Player.prototype.update = function(dt) {
     if (this.timeLeft <= 0) {
         this.timeLeft = "No bonus!";
     }
-    // Holds current positions of all floats:
-    var floatSpots = [];
-    for (var i = 0; i < numFloats; i++) {
-        var x = allFloats[i].x;
-        var y = allFloats[i].y;
-        floatSpots.push([x, y]);
+    // Holds current positions of all corn:
+    var cornSpots = [];
+    for (var i = 0; i < numCorn; i++) {
+        var x = allCorn[i].x;
+        var y = allCorn[i].y;
+        cornSpots.push([x, y]);
     }
     this.floating = false;
-    // Check to see if the player has stepped on a float:
+    // Check to see if the player has stepped on a corn:
     if (this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4 &&
         !this.paused) {
-        for (var b = 0; b < numFloats; b++) {
-            if ((this.x + 30 < floatSpots[b][0] + 2 * map.tileWidth &&
-                    this.x + 25 > floatSpots[b][0]) &&
-                (this.y - map.tileHeight / 8 < floatSpots[b][1] &&
-                    this.y + map.tileHeight / 8 > floatSpots[b][1])) {
-                // Floater there:
+        for (var b = 0; b < numCorn; b++) {
+            if ((this.x + 30 < cornSpots[b][0] + 2 * map.tileWidth &&
+                    this.x + 25 > cornSpots[b][0]) &&
+                (this.y - map.tileHeight / 8 < cornSpots[b][1] &&
+                    this.y + map.tileHeight / 8 > cornSpots[b][1])) {
+                // Corn there:
                 this.floating = true;
-                this.speed = allFloats[b].speed;
+                this.speed = allCorn[b].speed;
             }
         }
         if (this.floating === false) {
@@ -1365,7 +1365,7 @@ Player.prototype.deadMessage = function() {
 
 Player.prototype.togglePause = function() {
     var numEnemies = allEnemies.length,
-        numFloats = allFloats.length,
+        numCorn = allCorn.length,
         numKeys = allKeys.length,
         numClouds = allClouds.length,
         numPowerUps = allPowerUps.length;
@@ -1373,8 +1373,8 @@ Player.prototype.togglePause = function() {
     for (var i = 0; i < numEnemies; i++) {
         allEnemies[i].togglePause();
     }
-    for (i = 0; i < numFloats; i++) {
-        allFloats[i].togglePause();
+    for (i = 0; i < numCorn; i++) {
+        allCorn[i].togglePause();
     }
     for (i = 0; i < numKeys; i++) {
         allKeys[i].togglePause();
@@ -1395,7 +1395,7 @@ Player.prototype.togglePause = function() {
 
 Player.prototype.blurPause = function() {
     var numEnemies = allEnemies.length,
-        numFloats = allFloats.length,
+        numCorn = allCorn.length,
         numKeys = allKeys.length,
         numClouds = allClouds.length,
         numPowerUps = allPowerUps.length;
@@ -1403,8 +1403,8 @@ Player.prototype.blurPause = function() {
     for (var i = 0; i < numEnemies; i++) {
         allEnemies[i].blurPause();
     }
-    for (i = 0; i < numFloats; i++) {
-        allFloats[i].blurPause();
+    for (i = 0; i < numCorn; i++) {
+        allCorn[i].blurPause();
     }
     for (i = 0; i < numKeys; i++) {
         allKeys[i].blurPause();
@@ -1449,12 +1449,12 @@ Player.prototype.gemEnemy = function() {
     this.enemySpeedTime = 5;
     this.gemSpeed = 1.5;
     var numEnemies = allEnemies.length,
-        numFloats = allFloats.length;
+        numCorn = allCorn.length;
     for (var i = 0; i < numEnemies; i++) {
         allEnemies[i].gemSpeed = 1.5;
     }
-    for (i = 0; i < numFloats; i++) {
-        allFloats[i].gemSpeed = 1.5;
+    for (i = 0; i < numCorn; i++) {
+        allCorn[i].gemSpeed = 1.5;
     }
 };
 
@@ -1500,21 +1500,21 @@ Player.prototype.gemSlow = function() {
     this.enemySpeedTime = 5;
     this.gemSpeed = 0.5;
     var numEnemies = allEnemies.length,
-        numFloats = allFloats.length;
+        numCorn = allCorn.length;
     for (var i = 0; i < numEnemies; i++) {
         allEnemies[i].gemSpeed = 0.5;
     }
-    for (i = 0; i < numFloats; i++) {
-        allFloats[i].gemSpeed = 0.5;
+    for (i = 0; i < numCorn; i++) {
+        allCorn[i].gemSpeed = 0.5;
     }
 };
 
 Player.prototype.gemReverse = function() {
     map.playSFX('flip');
     this.winPoints(100);
-    var numFloats = allFloats.length;
-    for (i = 0; i < numFloats; i++) {
-        allFloats[i].speed *= -1;
+    var numCorn = allCorn.length;
+    for (i = 0; i < numCorn; i++) {
+        allCorn[i].speed *= -1;
     }
 };
 
@@ -1812,7 +1812,7 @@ map.makeCoordinates();
 var player = new Player();
 
 var allEnemies = [];
-var allFloats = [];
+var allCorn = [];
 var allKeys = [];
 var allPowerUps = [];
 var allClouds = [];
@@ -1829,16 +1829,16 @@ function addEnemies(count) {
     }
 }
 
-function addFloats() {
-    // Add first row of floats:
+function addCorn() {
+    // Add first row of corn:
     for (var i = 0; i < 4; i++) {
-        allFloats.push(new Float(2, (map.tileWidth * 3.5 * i) - map.tileWidth, map.slowFloaters));
-    } // Add second row of floats:
+        allCorn.push(new Corn(2, (map.tileWidth * 3.5 * i) - map.tileWidth, map.slowCorn));
+    } // Add second row of corn:
     for (i = 0; i < 3; i++) {
-        allFloats.push(new Float(3, map.tileWidth * 5 * i, map.medFloaters));
-    } // Add third row of floats:
+        allCorn.push(new Corn(3, map.tileWidth * 5 * i, map.medCorn));
+    } // Add third row of corn:
     for (i = 0; i < 3; i++) {
-        allFloats.push(new Float(4, map.tileWidth * 4.5 * i, map.fastFloaters));
+        allCorn.push(new Corn(4, map.tileWidth * 4.5 * i, map.fastCorn));
     }
 }
 
@@ -1854,8 +1854,8 @@ function setEnemies(count) {
 // Pick a number of enemies:
 addEnemies(8);
 
-// Generate floats:
-addFloats();
+// Generate Corn:
+addCorn();
 
 
 // This listens for key presses and sends the keys to the Player.handleInput()
@@ -1888,7 +1888,7 @@ document.addEventListener('keyup', function(e) {
 // TODO: Change sprites to make a unique look
 
 // TODO: menu
-// TODO: Refactor everything, particularly methods belonging to Float, Enemy and
+// TODO: Refactor everything, particularly methods belonging to Corn, Enemy and
 // Item, Cloud
 
 // TODO: Level editor to move rocks
