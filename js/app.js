@@ -326,8 +326,9 @@ Cloud.prototype.update = function(dt) {
         // There is some variation in the x-start position so that the initial
         // clouds don't all come at the same time:
         this.x = -410 + Math.random() * 120;
-        // Clouds can be anywhere on the y-axis:
-        this.y = Math.random() * map.totalHeight;
+        // Clouds can be anywhere on the y-axis except on the menu:
+        this.y = map.tileWidth + Math.random() * map.totalHeight;
+        // Each time a cloud respawns it changes its sprite and speed:
         this.sprite = map.clouds[Math.floor(Math.random() * 7)];
         this.speed = 20 + Math.random() * 80;
     }
@@ -1870,6 +1871,11 @@ function addFloats() {
     for (i = 0; i < 3; i++) {
         allFloats.push(new Float(4, map.tileWidth * 4.5 * i, map.fastFloaters));
     }
+}
+
+function inherit(subClass,superClass) {
+     subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
+        subClass.prototype.constructor = subClass; // set constructor on prototype
 }
 
 function setEnemies(count) {
