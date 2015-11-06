@@ -536,8 +536,50 @@ Item.prototype.update = function(dt) {
     }
 };
 
+var PowerUp = function(pos) {
+    this.type = 'power';
+    this.exists = true;
+    this.moving = 1;
+    this.flying = false;
+    this.lasso = false;
+    this.throwDelay = 30;
+    this.movingRight = false;
+    this.flyingOffset = (function offsetter(type) {
+        if (type === 'key') {
+            return Math.floor(Math.random() * map.tileWidth * 3);
+        } else {
+            return null;
+        }
+    })(type);
+    this.choice = (function choiceMaker(type) {
+        if (type === 'power') {
+            var options = [6, 7, 8, 9, 10, 11, 12, 13];
+            // Choose a random gem:
+            var choice = options[Math.floor(Math.random() * options.length)];
+            return choice;
+        }
+    })(type);
+    this.sprite = map.variousImages[3];
+    this.x = (function colMaker(type, pos) {
+        var options = [-100, map.totalWidth + 100];
+        var choice;
+        if (type === 'key') {
+            return map.xValues[pos];
+        } else {
+            // powerup start offscreen:
+            return options[Math.floor(Math.random() * 2)];
+        }
+    })(type, pos);
+    this.y = (function rowMaker(type) {
+        if (type === 'key') {
+            return map.yValues[1];
+        } else {
+            return Enemy.prototype.startY();
+        }
+    });
+};
+
 var Key = function(pos) {
-    this.type = 'key';
     this.exists = true;
     this.moving = 1;
     this.flying = false;
