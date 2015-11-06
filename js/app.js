@@ -231,24 +231,13 @@ Map.prototype.update = function(dt) {
             this.powerUpsLeft--;
             this.powerUpCount++;
             // Create a new power up:
-            allPowerUps.push(new Item('power'));
-            for (var i = 0; i < allPowerUps.length; i++) {
-                // the starting sprite is a key, if the sprite is a key, it should be
-                // changed
-                if (allPowerUps[i].sprite === map.variousImages[3]) {
-                    allPowerUps[i].choose();
-                }
-            }
+            var newPower = new Item('power');
+            // Power up type gets chosen:
+            newPower.choose();
+            // Add power up to array to track collisions with player:
+            allPowerUps.push(newPower);
         }
     }
-};
-
-// Allows Player.prototype.move to work to move the player around using
-// coordinates
-Map.prototype.giveCoordinates = function(xCoord, yCoord) {
-    var xCoordinate = this.xValues[xCoord];
-    var yCoordinate = this.yValues[yCoord];
-    return [xCoordinate, yCoordinate];
 };
 
 // Dynamically generate Map.xValues and yValues objects to allow for different
@@ -466,29 +455,34 @@ Item.prototype.choose = function() {
         this.sprite = map.variousImages[this.choice];
         if (this.choice === 6) {
             this.gem = 'time';
+            this.sprite = map.variousImages[this.choice];
         } else if (this.choice === 7) {
             this.gem = 'shield';
+            this.sprite = map.variousImages[this.choice];
         } else if (this.choice === 8) {
             this.gem = 'enemy';
+            this.sprite = map.variousImages[this.choice];
         } else if (this.choice === 9) {
             this.gem = 'water';
+            this.sprite = map.variousImages[this.choice];
         } else if (this.choice === 10) {
             this.gem = 'lasso';
+            this.sprite = map.variousImages[this.choice];
         } else if (this.choice === 11) {
             this.gem = 'points';
+            this.sprite = map.variousImages[this.choice];
         } else if (this.choice === 12) {
             this.gem = 'slow';
+            this.sprite = map.variousImages[this.choice];
         } else if (this.choice === 13) {
             this.gem = 'reverse';
+            this.sprite = map.variousImages[this.choice];
         }
-    } else if (this.type === 'enemy') {
-        this.gem = 'enemy';
-        this.sprite = map.variousImages[8];
     }
 };
 
 Item.prototype.update = function(dt) {
-    if (this.type === 'power' || this.type === 'enemy') {
+    if (this.type === 'power' ) {
         if (this.x > -50 && this.movingRight === false) {
             this.x -= this.moving * this.speed * dt;
         } else if (this.x <= -40 && !this.movingRight) {
@@ -1182,9 +1176,8 @@ Player.prototype.trackPosition = function() {
 // Moves player.sprite to the current grid coordinates which get updated by
 // Player.prototype.handleInput()
 Player.prototype.move = function() {
-    var coordArray = map.giveCoordinates(this.xCoord, this.yCoord);
-    this.x = coordArray[0];
-    this.y = coordArray[1];
+    this.x = map.xValues[this.xCoord];
+    this.y = map.yValues[this.yCoord];
 };
 
 // Less frustrating way of moving on the water:
