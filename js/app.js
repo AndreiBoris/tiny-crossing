@@ -266,9 +266,9 @@ Map.prototype.canGo = function(newX, newY) {
 // row and the number 1, 5, and 9 indicate the column positions of the keys:
 Map.prototype.makeKeys = function() {
     allKeys.length = 0;
-    allKeys.push(new Item('key', 1));
-    allKeys.push(new Item('key', 5));
-    allKeys.push(new Item('key', 9));
+    allKeys.push(new Key(1));
+    allKeys.push(new Key(5));
+    allKeys.push(new Key(9));
 };
 
 // The round is won when all the keys are collected (are 'flying' across the
@@ -380,14 +380,15 @@ Cloud.prototype.update = function(dt) {
 // Floats are the corn that the player can walk on at the top part of the map.
 // If the player steps on water where there is no Float, the player.drown()s:
 var Float = function(row, pos, speed) {
+    // Corn sprite:
     this.sprite = map.variousImages[5];
+    // This is the initial position of the Float as initialized by addFloats():
     this.x = pos;
-    // Random column
+    // y values have to be more precise as these are constant throughout the
+    // game and need to line up with the player's y positions:
     this.y = this.floatRow(row);
-    //this.stockSpeed = speed;
+    // As initialized by addFloats():
     this.speed = speed;
-    // If 1, the floats are moving, if 0, they are not,
-    // see Float.prototype.togglePause() This function allows the pause to work.
     this.moving = 1;
     this.gemSpeed = 1.0;
 };
@@ -395,18 +396,8 @@ var Float = function(row, pos, speed) {
 inherit(Float, Entity);
 
 Float.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers. this.moving is changed to 0 when the game is paused.
+    // this.moving is changed to 0 when the game is paused.
     this.x = this.x + this.speed * dt * this.moving * this.gemSpeed;
-    // Set floats going in the correct directions:
-    /*if ( this.speed === 0 ) {
-      if ( this.y === map.yValues[ 2 ] || this.y === map.yValues[ 4 ] ) {
-        this.speed = this.stockSpeed;
-      } else {
-        this.speed = this.stockSpeed * -1;
-      }
-    }*/
     // Reset floats when they go offscreen:
     if (this.x > map.totalWidth + (2.5 * map.tileWidth)) {
         this.x = -2.0 * map.tileWidth;
@@ -414,20 +405,10 @@ Float.prototype.update = function(dt) {
     if (this.x < -2.5 * map.tileWidth) {
         this.x = map.totalWidth + 2.0 * map.tileWidth;
     }
-    /*
-    if ( this.x > map.totalWidth + ( 2.5 * map.tileWidth ) ||
-      this.x < -( 2.5 * map.tileWidth ) ) {
-      if ( this.y === map.yValues[ 2 ] || this.y === map.yValues[ 4 ] ) {
-        this.x = -1 * ( 2.25 * map.tileWidth );
-      } else {
-        this.x = map.totalWidth + ( 2.25 * map.tileWidth );
-      }
-    }*/
 };
 
-
+// Picks one of the rows for the float:
 Float.prototype.floatRow = function(row) {
-    // Picks one of the rows for the float:
     return map.yValues[row];
 };
 
@@ -555,6 +536,20 @@ Item.prototype.update = function(dt) {
     }
 };
 
+var Key = function(pos) {
+    this.type = 'key';
+    this.exists = true;
+    this.moving = 1;
+    this.flying = false;
+    this.lasso = false;
+    this.throwDelay = 30;
+    this.flyingOffset = Math.floor(Math.random() * map.tileWidth * 3);
+    this.sprite = map.variousImages[3];
+    this.x = map.xValues[pos];
+    this.y = map.yValues[1];
+};
+
+inherit(Key, Item);
 
 // Enemies the player must avoid
 var Enemy = function(burrow) {
