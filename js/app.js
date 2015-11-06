@@ -230,12 +230,8 @@ Map.prototype.update = function(dt) {
             this.powerUpDelay = 5;
             this.powerUpsLeft--;
             this.powerUpCount++;
-            // Create a new power up:
-            var newPower = new Item('power');
-            // Power up type gets chosen:
-            newPower.choose();
             // Add power up to array to track collisions with player:
-            allPowerUps.push(newPower);
+            allPowerUps.push(new PowerUp());
         }
     }
 };
@@ -412,110 +408,78 @@ Corn.prototype.cornRow = function(row) {
     return map.yValues[row];
 };
 
-var Item = function(type, pos) {
-    this.type = type;
-    this.exists = true;
+var PowerUp = function() {
+    var randomChoice = (function aChoice() {
+        var options = [6, 7, 8, 9, 10, 11, 12, 13];
+        return options[Math.floor(Math.random() * options.length)];
+    })();
+    this.moving = 1;
+    this.movingRight = false;
+    this.gem = (function randomGem() {
+        if (randomChoice === 6) {
+            return 'time';
+        } else if (randomChoice === 7) {
+            return 'shield';
+        } else if (randomChoice === 8) {
+            return 'enemy';
+        } else if (randomChoice === 9) {
+            return 'water';
+        } else if (randomChoice === 10) {
+            return 'lasso';
+        } else if (randomChoice === 11) {
+            return 'points';
+        } else if (randomChoice === 12) {
+            return 'slow';
+        } else if (randomChoice === 13) {
+            return 'reverse';
+        }
+    })();
+    this.sprite = map.variousImages[randomChoice];
+    this.y = Enemy.prototype.startY();
+    this.speed = 50 + Math.random() * 50;
+    this.x = (function chooseSide() {
+        var options = [-100, map.totalWidth + 100];
+        return options[Math.floor(Math.random() * 2)];
+    })();
+};
+
+inherit(PowerUp, Entity);
+
+PowerUp.prototype.update = function(dt) {
+    if (this.x > -50 && this.movingRight === false) {
+        this.x -= this.moving * this.speed * dt;
+    } else if (this.x <= -40 && !this.movingRight) {
+        this.movingRight = true;
+    } else if (this.movingRight && this.x <= map.totalWidth + 50) {
+        this.x += this.moving * this.speed * dt;
+    } else {
+        this.movingRight = false;
+    }
+};
+
+
+var Key = function(pos) {
     this.moving = 1;
     this.flying = false;
     this.lasso = false;
     this.throwDelay = 30;
-    this.movingRight = false;
-    this.flyingOffset = (function offsetter(type) {
-        if (type === 'key') {
-            return Math.floor(Math.random() * map.tileWidth * 3);
-        } else {
-            return null;
-        }
-    })(type);
-    this.choice = (function choiceMaker(type) {
-        if (type === 'power') {
-            var options = [6, 7, 8, 9, 10, 11, 12, 13];
-            // Choose a random gem:
-            var choice = options[Math.floor(Math.random() * options.length)];
-            return choice;
-        }
-    })(type);
+    this.flyingOffset = Math.floor(Math.random() * map.tileWidth * 3);
     this.sprite = map.variousImages[3];
-    this.x = (function colMaker(type, pos) {
-        var options = [-100, map.totalWidth + 100];
-        var choice;
-        if (type === 'key') {
-            return map.xValues[pos];
-        } else {
-            // powerup start offscreen:
-            return options[Math.floor(Math.random() * 2)];
-        }
-    })(type, pos);
-    this.y = (function rowMaker(type) {
-        if (type === 'key') {
-            return map.yValues[1];
-        } else {
-            return Enemy.prototype.startY();
-        }
-    })(type);
-    this.speed = (function speedMaker(type) {
-        if (type === 'key') {
-            return null;
-        } else {
-            return Math.floor(20 + Math.random() * 15);
-        }
-    })(type);
-
+    this.x = map.xValues[pos];
+    this.y = map.yValues[1];
 };
 
-inherit(Item, Entity);
+inherit(Key, Entity);
 
-Item.prototype.choose = function() {
-    if (this.type === 'power') {
-        this.sprite = map.variousImages[this.choice];
-        if (this.choice === 6) {
-            this.gem = 'time';
-            this.sprite = map.variousImages[this.choice];
-        } else if (this.choice === 7) {
-            this.gem = 'shield';
-            this.sprite = map.variousImages[this.choice];
-        } else if (this.choice === 8) {
-            this.gem = 'enemy';
-            this.sprite = map.variousImages[this.choice];
-        } else if (this.choice === 9) {
-            this.gem = 'water';
-            this.sprite = map.variousImages[this.choice];
-        } else if (this.choice === 10) {
-            this.gem = 'lasso';
-            this.sprite = map.variousImages[this.choice];
-        } else if (this.choice === 11) {
-            this.gem = 'points';
-            this.sprite = map.variousImages[this.choice];
-        } else if (this.choice === 12) {
-            this.gem = 'slow';
-            this.sprite = map.variousImages[this.choice];
-        } else if (this.choice === 13) {
-            this.gem = 'reverse';
-            this.sprite = map.variousImages[this.choice];
-        }
-    }
-};
-
-Item.prototype.update = function(dt) {
-    if (this.type === 'power') {
-        if (this.x > -50 && this.movingRight === false) {
-            this.x -= this.moving * this.speed * dt;
-        } else if (this.x <= -40 && !this.movingRight) {
-            this.movingRight = true;
-        } else if (this.movingRight && this.x <= map.totalWidth + 50) {
-            this.x += this.moving * this.speed * dt;
-        } else {
-            this.movingRight = false;
-        }
-    }
+Key.prototype.update = function(dt) {
     if (this.flying) {
         if (this.throwDelay > 0) {
             this.throwDelay = this.throwDelay - 100 * dt * this.moving;
         } else {
             if (this.x < map.xValues[map.numColumns - 4] + this.flyingOffset) {
                 this.x = this.x + 100 * dt *
-                    // Slow down the x-movement as time goes on for a smoother animation:
-                    (map.xValues[map.numColumns - 2] / this.x) * this.moving;
+                // Slow down the x-movement as time goes on for a smoother animation:
+                (map.xValues[map.numColumns - 2] / this.x) * this.moving;
             }
             if (this.y < map.yValues[map.numRows - 2]) {
                 this.y = this.y + 300 * dt * this.moving;
@@ -535,63 +499,6 @@ Item.prototype.update = function(dt) {
         }
     }
 };
-
-var PowerUp = function(pos) {
-    this.type = 'power';
-    this.exists = true;
-    this.moving = 1;
-    this.flying = false;
-    this.lasso = false;
-    this.throwDelay = 30;
-    this.movingRight = false;
-    this.flyingOffset = (function offsetter(type) {
-        if (type === 'key') {
-            return Math.floor(Math.random() * map.tileWidth * 3);
-        } else {
-            return null;
-        }
-    })(type);
-    this.choice = (function choiceMaker(type) {
-        if (type === 'power') {
-            var options = [6, 7, 8, 9, 10, 11, 12, 13];
-            // Choose a random gem:
-            var choice = options[Math.floor(Math.random() * options.length)];
-            return choice;
-        }
-    })(type);
-    this.sprite = map.variousImages[3];
-    this.x = (function colMaker(type, pos) {
-        var options = [-100, map.totalWidth + 100];
-        var choice;
-        if (type === 'key') {
-            return map.xValues[pos];
-        } else {
-            // powerup start offscreen:
-            return options[Math.floor(Math.random() * 2)];
-        }
-    })(type, pos);
-    this.y = (function rowMaker(type) {
-        if (type === 'key') {
-            return map.yValues[1];
-        } else {
-            return Enemy.prototype.startY();
-        }
-    });
-};
-
-var Key = function(pos) {
-    this.exists = true;
-    this.moving = 1;
-    this.flying = false;
-    this.lasso = false;
-    this.throwDelay = 30;
-    this.flyingOffset = Math.floor(Math.random() * map.tileWidth * 3);
-    this.sprite = map.variousImages[3];
-    this.x = map.xValues[pos];
-    this.y = map.yValues[1];
-};
-
-inherit(Key, Item);
 
 // Enemies the player must avoid
 var Enemy = function(burrow) {
