@@ -317,19 +317,25 @@ Entity.prototype.blurPause = function() {
     this.moving = 0;
 };
 
-
+// Clouds appear in later rounds to obscure the player's field of vision and
+// make the game more challenging:
 var Cloud = function() {
-    this.x = -400 - Math.random() * 450;
+    // All Cloud sprites are 400 pixels wide so they have to start at least
+    // that many pixels off screen left. The randomization is done to stagger
+    // their initial positions. See Cloud.prototype.update() for more info:
+    this.x = -400 - Math.random() * 110;
     this.y = Math.random() * map.totalHeight;
     this.sprite = map.clouds[Math.floor(Math.random() * 7)];
     this.moving = 1;
     this.speed = 20 + Math.random() * 80;
+    // While true, Clouds will respawn offscreen left after reaching a certain
+    // spot offscreen right:
     this.respawn = true;
 };
 
 inherit(Cloud, Entity);
 
-// When the player is hit/drowned/killed/has won everything is paused except
+// When the player is hit/drowned/killed/has, won everything is paused except
 // for the clouds, which keepMoving(). This allows the clouds to get out of
 // the way so that the text on the screen can be read without being obscured.
 // They also stop respawning on the left side of the map:
@@ -371,6 +377,8 @@ Cloud.prototype.update = function(dt) {
     }
 };
 
+// Floats are the corn that the player can walk on at the top part of the map.
+// If the player steps on water where there is no Float, the player.drown()s:
 var Float = function(row, pos, speed) {
     this.sprite = map.variousImages[5];
     this.x = pos;
