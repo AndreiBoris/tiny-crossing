@@ -283,6 +283,19 @@ Map.prototype.keysCollected = function() {
     return win;
 };
 
+var Entity = function() {
+  this.x = 0;
+  this.y = 0;
+  this.moving = 1;
+  this.sprite = '';
+};
+
+Entity.prototype.render = function() {
+    if (player.charSelected === true) {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
+};
+
 var Cloud = function() {
     this.x = -400 - Math.random() * 450;
     this.y = Math.random() * map.totalHeight;
@@ -291,6 +304,8 @@ var Cloud = function() {
     this.speed = 20 + Math.random() * 80;
     this.respawn = true;
 };
+
+inherit(Cloud, Entity);
 
 // When the player is hit/drowned/killed/has won everything is paused except
 // for the clouds, which keepMoving(). This allows the clouds to get out of
@@ -334,10 +349,6 @@ Cloud.prototype.update = function(dt) {
     }
 };
 
-Cloud.prototype.render = function() {
-    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-};
-
 Cloud.prototype.togglePause = function() {
     if (this.moving === 0) {
         this.moving = 1;
@@ -363,6 +374,8 @@ var Float = function(row, pos, speed) {
     this.moving = 1;
     this.gemSpeed = 1.0;
 };
+
+inherit(Float, Entity);
 
 Float.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
@@ -395,11 +408,6 @@ Float.prototype.update = function(dt) {
     }*/
 };
 
-Float.prototype.render = function() {
-    if (player.charSelected === true) {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    }
-};
 
 Float.prototype.floatRow = function(row) {
     // Picks one of the rows for the float:
@@ -471,6 +479,8 @@ var Item = function(type, pos) {
 
 };
 
+inherit(Item, Entity);
+
 Item.prototype.choose = function() {
     if (this.type === 'power') {
         this.sprite = map.variousImages[this.choice];
@@ -503,7 +513,7 @@ Item.prototype.choose = function() {
 };
 
 Item.prototype.update = function(dt) {
-    if (this.type === 'power' ) {
+    if (this.type === 'power') {
         if (this.x > -50 && this.movingRight === false) {
             this.x -= this.moving * this.speed * dt;
         } else if (this.x <= -40 && !this.movingRight) {
@@ -541,13 +551,6 @@ Item.prototype.update = function(dt) {
         }
     }
 };
-
-Item.prototype.render = function() {
-    if (player.charSelected === true) {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    }
-};
-
 
 Item.prototype.togglePause = function() {
     if (this.moving === 1) {
@@ -599,6 +602,8 @@ var Enemy = function(burrow) {
     // see Enemy.prototype.togglePause() This function allows the pause to work.
     this.moving = 1;
 };
+
+inherit(Enemy, Entity);
 
 // Generate a start position for each enemy
 Enemy.prototype.startX = function(burrow) {
@@ -825,13 +830,6 @@ Enemy.prototype.newSpeed = function(direction) {
         return map.tileWidth / 2 + (Math.random() * map.tileWidth * 3);
     } else if (direction === 'left') {
         return (map.tileWidth / -2 + (Math.random() * map.tileWidth * -3));
-    }
-};
-
-// Draw the enemy on the screen, required method for game
-Enemy.prototype.render = function() {
-    if (player.charSelected === true) {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 };
 
@@ -1873,9 +1871,9 @@ function addFloats() {
     }
 }
 
-function inherit(subClass,superClass) {
-     subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
-        subClass.prototype.constructor = subClass; // set constructor on prototype
+function inherit(subClass, superClass) {
+    subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
+    subClass.prototype.constructor = subClass; // set constructor on prototype
 }
 
 function setEnemies(count) {
