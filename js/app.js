@@ -1254,7 +1254,7 @@ Player.prototype.render = function() {
     } else if (this.victory === false && this.paused === true &&
         this.ouch === false && this.isDead === false) {
         // If the game is paused due to pressing pause button, show pause message
-        Player.prototype.pauseMessage();
+        this.pauseMessage();
     } else if (this.drowned === true) {
         Cloud.prototype.keepMoving();
         this.drownMessage();
@@ -1784,7 +1784,6 @@ Player.prototype.handleInput = function(input) {
                     addClouds(1);
                 }
                 map.powerUpsLeft = 5;
-                Enemy.prototype.resetBurrow();
                 this.blurPause();
             }
             this.freeze = 0;
@@ -1796,6 +1795,7 @@ Player.prototype.handleInput = function(input) {
             this.drowned = false;
             this.togglePause();
             Cloud.prototype.moveNormally();
+            Enemy.prototype.resetBurrow();
             // Back to starting position of game:
             this.sprite = this.charOptions[this.selection];
             this.resetStart();
@@ -1905,3 +1905,7 @@ document.addEventListener('keyup', function(e) {
 // TODO: Slow down regular enemies and add FAST one
 // TODO: Add a water enemy
 // TODO: Create a powerup class that inherits from Item
+// TODO: Fix switch to be smaller
+// TODO: No class for non-class
+// TODO: Fix bug with unburrow
+// TODO: How many keys has player collected? Put it on the player
