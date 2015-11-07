@@ -267,8 +267,7 @@ Map.prototype.makeKeys = function() {
     allKeys.push(new Key(9));
 };
 
-// The round is won when all the keys are collected (are 'collected' across the
-// map):
+// The round is won when all the keys are collected:
 Map.prototype.keysCollected = function() {
     var win = true;
     for (var i = 0; i < allKeys.length; i++) {
@@ -422,7 +421,7 @@ var PowerUp = function() {
     // Controls which way the PowerUp is currently moving, see .update:
     this.movingRight = false;
     // Sets a name to the PowerUp to be used by the .pickUp method on player: 
-    this.gem = (function randomGem() { 
+    this.gem = (function randomGem() {
         if (randomChoice === 6) {
             return 'time';
         } else if (randomChoice === 7) {
@@ -465,11 +464,11 @@ PowerUp.prototype.update = function(dt) {
     // If far enough left, start moving right:
     else if (this.x <= -40 && !this.movingRight) {
         this.movingRight = true;
-    } 
+    }
     // If not too far right, more right:
     else if (this.movingRight && this.x <= map.totalWidth + 50) {
         this.x += this.moving * this.speed * dt;
-    } 
+    }
     // Assume PowerUp is too far right, move left:
     else {
         this.movingRight = false;
@@ -480,23 +479,35 @@ PowerUp.prototype.update = function(dt) {
 var Key = function(pos) {
     // Pause control:
     this.moving = 1;
-    // 
+    // If false, key has yet to be reached by player:
     this.collected = false;
+    // If activated, key will move toward player from a distance:
     this.lasso = false;
+    // Short delay between player grabbing key and it flying to bottom of map,
+    // this is just for aesthetic effect:
     this.throwDelay = 30;
+    // Keys all fly to slightly different spots at the bottom of the map so that 
+    // the player can tell whether 1 or two have been collected:
     this.collectedOffset = Math.floor(Math.random() * map.tileWidth * 3);
+    // Key .png file:
     this.sprite = map.variousImages[3];
+    // x-value is given as a coordinate at initialization:
     this.x = map.xValues[pos];
+    // All keys start at the top line:
     this.y = map.yValues[1];
 };
 
 inherit(Key, Entity);
 
 Key.prototype.update = function(dt) {
+    // this.collected gets activated by the Player.prototype.update method when
+    // the player is close enough to the key:
     if (this.collected) {
+        // Wait a short time:
         if (this.throwDelay > 0) {
-            this.throwDelay = this.throwDelay - 100 * dt * this.moving;
-        } else {
+            this.throwDelay -= 100 * dt * this.moving;
+        } // Fly to a designated spot at the bottom right of the screen:
+        else {
             if (this.x < map.xValues[map.numColumns - 4] + this.collectedOffset) {
                 this.x = this.x + 100 * dt *
                     // Slow down the x-movement as time goes on for a smoother animation:
@@ -507,6 +518,9 @@ Key.prototype.update = function(dt) {
             }
         }
     }
+
+    // lasso PowerUp will cause key to fly toward the player, from where it can
+    // be easily collected:
     if (this.lasso && !this.collected) {
         if (this.x > player.x) {
             this.x -= 230 * dt * this.moving;
@@ -521,21 +535,35 @@ Key.prototype.update = function(dt) {
     }
 };
 
-// Enemies the player must avoid
+// Enemies the player must avoid. burrow is an optional argument, and when it is
+// passed in as either 'burrow' or 'burrow2' a special kind of burrowing enemy
+// is created. 'burrow' should be unique and will only unburrow in the 5 grass
+// spots in the middle of the map in a consecutive order while burrow2 will 
+// randomly unburrow along the grass at the very bottom of the map. If no burrow
+// argument is passed in, regular, walking enemies will be created:
 var Enemy = function(burrow) {
-
-    // The image/sprite for our enemies, this uses
-    // a helper we've provided to easily load images
+    // Enemy sprite changes depending on what direction the enemy is travelling 
+    // in:
     this.sprite = '';
     // Random value for the start of any given enemy
     this.x = this.startX(burrow);
-    // Random column
+    // Picks an appropriate column for the enemy type:
     this.y = this.startY(burrow);
+    // Speed is determined by which row an enemy is found in (positive/negative
+    // speeds are used to find direction due to multi directional possibilities 
+    // when this.zigzag = true:
     this.xSpeed = 0;
-    this.gemSpeed = 1.0;
+    // This is used when zigzag is true and enemies are moving vertically:
     this.ySpeed = 0;
+    // When gemSpeed or gemSlow is picked up, this increase and decreases
+    // respectively in order to modify speed of the enemy temporarily. 
+    this.gemSpeed = 1.0;
+    // Gets turned on after several rounds to give regular enemies the ability 
+    // to move vertically:
     this.zigzag = false;
+    // Timer between changes of direction for zigzagging enemies:
     this.alterDirCount = 2 + Math.random() * 15;
+    // Unnecessairily complex bools used in determining the Enemy style:
     this.burrow = (function isBurrower(burrow) {
         if (burrow === 'burrow') {
             return true;
@@ -550,6 +578,8 @@ var Enemy = function(burrow) {
             return false;
         }
     })(burrow);
+    // Used to keep track of movements of 'burrow' by determining which hole the
+    // burrower unburrowed from last:
     this.lastBurrow = 5;
     this.burrowWait = 5;
     this.unburrowed = 0;
@@ -1879,3 +1909,4 @@ document.addEventListener('keyup', function(e) {
 // TODO: No class for non-class
 // TODO: Fix bug with unburrow
 // TODO: How many keys has player collected? Put it on the player
+// TODO: Make a new class for burrow and burrow2
