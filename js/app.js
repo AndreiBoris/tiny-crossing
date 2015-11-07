@@ -383,9 +383,11 @@ var Corn = function(row, pos, speed) {
     // y values have to be more precise as these are constant throughout the
     // game and need to line up with the player's y positions:
     this.y = this.cornRow(row);
-    // As initialized by addCorn():
+    // As initialized by addCorn() at the bottom of app.js:
     this.speed = speed;
+    // Pause control:
     this.moving = 1;
+    // Affected by the enemy
     this.gemSpeed = 1.0;
 };
 
@@ -421,7 +423,7 @@ var PowerUp = function() {
         } else if (randomChoice === 7) {
             return 'shield';
         } else if (randomChoice === 8) {
-            return 'enemy';
+            return 'fast';
         } else if (randomChoice === 9) {
             return 'water';
         } else if (randomChoice === 10) {
@@ -1369,8 +1371,8 @@ Player.prototype.blurPause = function() {
 };
 
 Player.prototype.pickUp = function(power) {
-    if (power.gem === 'enemy') {
-        this.gemEnemy();
+    if (power.gem === 'fast') {
+        this.gemFast();
     } else if (power.gem === 'time') {
         this.gemTime();
     } else if (power.gem === 'shield') {
@@ -1392,7 +1394,7 @@ Player.prototype.pickUp = function(power) {
     allPowerUps.splice(index, 1);
 };
 
-Player.prototype.gemEnemy = function() {
+Player.prototype.gemFast = function() {
     map.playSFX('run');
     this.winPoints(150);
     this.enemySpeedTime = 5;
