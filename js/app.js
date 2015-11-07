@@ -436,7 +436,7 @@ var PowerUp = function() {
     })();
     this.sprite = map.variousImages[randomChoice];
     this.y = Enemy.prototype.startY();
-    this.speed = 50 + Math.random() * 50;
+    this.speed = 25 + Math.random() * 25;
     this.x = (function chooseSide() {
         var options = [-100, map.totalWidth + 100];
         return options[Math.floor(Math.random() * 2)];
@@ -478,8 +478,8 @@ Key.prototype.update = function(dt) {
         } else {
             if (this.x < map.xValues[map.numColumns - 4] + this.flyingOffset) {
                 this.x = this.x + 100 * dt *
-                // Slow down the x-movement as time goes on for a smoother animation:
-                (map.xValues[map.numColumns - 2] / this.x) * this.moving;
+                    // Slow down the x-movement as time goes on for a smoother animation:
+                    (map.xValues[map.numColumns - 2] / this.x) * this.moving;
             }
             if (this.y < map.yValues[map.numRows - 2]) {
                 this.y = this.y + 300 * dt * this.moving;
