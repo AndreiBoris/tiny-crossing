@@ -267,12 +267,12 @@ Map.prototype.makeKeys = function() {
     allKeys.push(new Key(9));
 };
 
-// The round is won when all the keys are collected (are 'flying' across the
+// The round is won when all the keys are collected (are 'collected' across the
 // map):
 Map.prototype.keysCollected = function() {
     var win = true;
     for (var i = 0; i < allKeys.length; i++) {
-        if (allKeys[i].flying === false) {
+        if (allKeys[i].collected === false) {
             win = false;
         }
     }
@@ -411,13 +411,18 @@ Corn.prototype.cornRow = function(row) {
 };
 
 var PowerUp = function() {
+    // Picks a random number corresponding to an array map.variousImages 
+    // inside map object:
     var randomChoice = (function aChoice() {
         var options = [6, 7, 8, 9, 10, 11, 12, 13];
         return options[Math.floor(Math.random() * options.length)];
     })();
+    // Pause control:
     this.moving = 1;
+    // Controls which way the PowerUp is currently moving, see .update:
     this.movingRight = false;
-    this.gem = (function randomGem() {
+    // Sets a name to the PowerUp to be used by the .pickUp method on player: 
+    this.gem = (function randomGem() { 
         if (randomChoice === 6) {
             return 'time';
         } else if (randomChoice === 7) {
@@ -436,9 +441,13 @@ var PowerUp = function() {
             return 'reverse';
         }
     })();
+    // Finds the corresponding .png file from an array in the map object:
     this.sprite = map.variousImages[randomChoice];
+    // Use the method defined in Enemy class to choose one of the enemy lanes
+    // for the PowerUp to use:
     this.y = Enemy.prototype.startY();
     this.speed = 25 + Math.random() * 25;
+    // Original position is either on the left or the right of the map:
     this.x = (function chooseSide() {
         var options = [-100, map.totalWidth + 100];
         return options[Math.floor(Math.random() * 2)];
@@ -447,25 +456,35 @@ var PowerUp = function() {
 
 inherit(PowerUp, Entity);
 
+// Runs on every requestAnimationFrame cycle engine.js:
 PowerUp.prototype.update = function(dt) {
-    if (this.x > -50 && this.movingRight === false) {
+    // If not too far left, move left:
+    if (this.x > -50 && !this.movingRight) {
         this.x -= this.moving * this.speed * dt;
-    } else if (this.x <= -40 && !this.movingRight) {
+    }
+    // If far enough left, start moving right:
+    else if (this.x <= -40 && !this.movingRight) {
         this.movingRight = true;
-    } else if (this.movingRight && this.x <= map.totalWidth + 50) {
+    } 
+    // If not too far right, more right:
+    else if (this.movingRight && this.x <= map.totalWidth + 50) {
         this.x += this.moving * this.speed * dt;
-    } else {
+    } 
+    // Assume PowerUp is too far right, move left:
+    else {
         this.movingRight = false;
     }
 };
 
-
+// Class for the keys supposed to be collected by the player:
 var Key = function(pos) {
+    // Pause control:
     this.moving = 1;
-    this.flying = false;
+    // 
+    this.collected = false;
     this.lasso = false;
     this.throwDelay = 30;
-    this.flyingOffset = Math.floor(Math.random() * map.tileWidth * 3);
+    this.collectedOffset = Math.floor(Math.random() * map.tileWidth * 3);
     this.sprite = map.variousImages[3];
     this.x = map.xValues[pos];
     this.y = map.yValues[1];
@@ -474,11 +493,11 @@ var Key = function(pos) {
 inherit(Key, Entity);
 
 Key.prototype.update = function(dt) {
-    if (this.flying) {
+    if (this.collected) {
         if (this.throwDelay > 0) {
             this.throwDelay = this.throwDelay - 100 * dt * this.moving;
         } else {
-            if (this.x < map.xValues[map.numColumns - 4] + this.flyingOffset) {
+            if (this.x < map.xValues[map.numColumns - 4] + this.collectedOffset) {
                 this.x = this.x + 100 * dt *
                     // Slow down the x-movement as time goes on for a smoother animation:
                     (map.xValues[map.numColumns - 2] / this.x) * this.moving;
@@ -488,7 +507,7 @@ Key.prototype.update = function(dt) {
             }
         }
     }
-    if (this.lasso && !this.flying) {
+    if (this.lasso && !this.collected) {
         if (this.x > player.x) {
             this.x -= 230 * dt * this.moving;
         } else if (this.x < player.x) {
@@ -1051,11 +1070,11 @@ Player.prototype.update = function(dt) {
             (this.y - map.tileHeight / 8 < keySpots[p][1] &&
                 this.y + map.tileHeight / 8 > keySpots[p][1])) {
             // Key picked up:
-            if (allKeys[p].flying === false) {
+            if (allKeys[p].collected === false) {
                 map.playSFX('key');
                 this.winPoints(50);
             }
-            allKeys[p].flying = true;
+            allKeys[p].collected = true;
         }
     }
     // Holds current positions of all power ups:
