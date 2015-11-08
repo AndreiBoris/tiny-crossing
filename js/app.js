@@ -510,8 +510,8 @@ Key.prototype.update = function(dt) {
         else {
             if (this.x < map.xValues[map.numColumns - 4] + this.collectedOffset) {
                 this.x = this.x + 100 * dt *
-                    // Slow down the x-movement as time goes on for a smoother animation:
-                    (map.xValues[map.numColumns - 2] / this.x) * this.moving;
+                // Slow down the x-movement as time goes on for a smoother animation:
+                (map.xValues[map.numColumns - 2] / this.x) * this.moving;
             }
             if (this.y < map.yValues[map.numRows - 2]) {
                 this.y = this.y + 300 * dt * this.moving;
@@ -769,45 +769,35 @@ var Burrower = function(type) {
 
 inherit(Burrower, Entity);
 
-Burrower.prototype.update = function() {
+Burrower.prototype.update = function(dt) {
+    
+    if (this.burrowWait >= 0) {
+        this.burrowWait -= dt * this.moving;
+    }
+
+    if (this.unburrowed <= 1 || this.unburrowed >= 2.5) {
+        this.sprite = map.enemySprites[4];
+    } else {
+        this.sprite = map.enemySprites[5];
+    }
+
     if (this.type === 1) {
-        if (this.burrowWait >= 0) {
-            this.burrowWait -= dt * this.moving;
-        }
-        if (this.unburrowed <= 1 || this.unburrowed >= 2.5) {
-            this.sprite = map.enemySprites[4];
-        } else {
-            this.sprite = map.enemySprites[5];
-        }
         if (this.burrowWait <= 0 && this.unburrowed <= 0) {
             this.unburrow();
-        }
-        if (this.unburrowed > 0) {
-            this.unburrowed -= dt * this.moving;
-        }
-        if (this.unburrowed <= 0 && this.burrowWait <= 0) {
-            this.hide(5);
         }
     }
 
     if (this.type === 2) {
-        if (this.burrowWait >= 0) {
-            this.burrowWait -= dt * this.moving;
-        }
-        if (this.unburrowed <= 1 || this.unburrowed >= 2.5) {
-            this.sprite = map.enemySprites[4];
-        } else {
-            this.sprite = map.enemySprites[5];
-        }
         if (this.burrowWait <= 0 && this.unburrowed <= 0) {
             this.unburrow2();
         }
-        if (this.unburrowed > 0) {
-            this.unburrowed -= dt * this.moving;
-        }
-        if (this.unburrowed <= 0 && this.burrowWait <= 0) {
-            this.hide(1 + 4 * Math.random());
-        }
+    }
+
+    if (this.unburrowed > 0) {
+        this.unburrowed -= dt * this.moving;
+    }
+    if (this.unburrowed <= 0 && this.burrowWait <= 0) {
+        this.hide();
     }
 };
 
@@ -844,7 +834,12 @@ Burrower.prototype.unburrow2 = function() {
 Burrower.prototype.hide = function(wait) {
     this.x = -100;
     this.y = -100;
-    this.burrowWait = wait;
+    if (this.type === 1) {
+        this.burrowWait = 5;
+    } else {
+        this.burrowWait = (2 + 4 * Math.random());
+    }
+
 };
 
 Burrower.prototype.resetBurrow = function() {
@@ -1855,6 +1850,8 @@ var allCorn = [];
 var allKeys = [];
 var allPowerUps = [];
 var allClouds = [];
+allEnemies.push(new Burrower(1));
+allEnemies.push(new Burrower(2));
 
 function addClouds(count) {
     for (var i = 0; i < count; i++) {
