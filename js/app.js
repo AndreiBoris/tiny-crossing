@@ -535,17 +535,12 @@ Key.prototype.update = function(dt) {
     }
 };
 
-// Enemies the player must avoid. burrow is an optional argument, and when it is
-// passed in as either 'burrow' or 'burrow2' a special kind of burrowing enemy
-// is created. 'burrow' should be unique and will only unburrow in the 5 grass
-// spots in the middle of the map in a consecutive order while burrow2 will 
-// randomly unburrow along the grass at the very bottom of the map. If no burrow
-// argument is passed in, regular, walking enemies will be created:
+// Enemies the player must avoid:
 var Enemy = function(burrow) {
     // Enemy sprite changes depending on what direction the enemy is travelling 
     // in:
     this.sprite = '';
-    // Random value for the start of any given enemy
+    // Random value for the start of any given enemy:
     this.x = this.startX();
     // Picks an appropriate column for the enemy type:
     this.y = this.startY();
@@ -575,77 +570,118 @@ Enemy.prototype.startX = function() {
     return Math.random() * map.totalWidth * 1.0;
 };
 
-// Random value from array courtesy of:
-// http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
+// Picks a random row for the enemy out of an array defined in the map object:
 Enemy.prototype.startY = function() {
     return map.yValues[map.enemyRows[Math.floor(Math.random() * map.enemyRows.length)]];
 };
 
 // Update the enemy's position, required method for game
-// Parameter: dt, a time delta between ticks
+// Parameter: dt, a time delta between rendererings of the canvas:
 Enemy.prototype.update = function(dt) {
-    // You should multiply any movement by the dt parameter
-    // which will ensure the game runs at the same speed for
-    // all computers. this.moving is changed to 0 when the game is paused.
+
+    // Update the current position of the enemy appropriately according to the 
+    // enemy's speed. this.moving is changed to 0 when the game is paused and 
+    // this.gemSpeed determines a speed boost/handicap:
     this.x = this.x + this.xSpeed * dt * this.moving * this.gemSpeed;
     this.y = this.y + this.ySpeed * dt * this.moving * this.gemSpeed;
-    // Reset enemies to the left side of the screen when they are offscreen right.
+
+    // Give enemies an appropriate initial speed if they have no current speed,
+    // Appropriateness is gauged by the column in which the enemy is:
     if (this.xSpeed === 0 && this.ySpeed === 0) {
-        if (this.y === map.yValues[10] || this.y === map.yValues[7]) {
-            this.xSpeed = this.newSpeed('left');
-            //this.sprite = map.enemySprites[ 1 ];
-        } else {
-            this.xSpeed = this.newSpeed('right');
-            //this.sprite = map.enemySprites[ 0 ];
-        }
+        this.initialSpeed();
     }
-    if (this.moving === 1) {
-        this.alterDirCount -= dt;
-    }
-    if (this.alterDirCount <= 0) {
-        this.alterDirection(this.zigzag);
-    }
-    if (this.y <= map.yValues[6] && this.ySpeed < 0) {
-        this.alterDirection(this.zigzag);
-    }
-    if (this.y >= map.yValues[12] && this.ySpeed > 0) {
-        this.alterDirection(this.zigzag);
-    }
-    if (this.y <= map.yValues[10] && this.y > map.yValues[9] && this.ySpeed < 0) {
-        this.alterDirectionSide();
-    }
-    if (this.y >= map.yValues[8] && this.y < map.yValues[9] && this.ySpeed > 0) {
-        this.alterDirectionSide();
-    }
-    if (this.xSpeed > 0) {
-        this.sprite = map.enemySprites[0];
-    }
-    if (this.xSpeed < 0) {
-        this.sprite = map.enemySprites[1];
-    }
-    if (this.ySpeed < 0) {
-        this.sprite = map.enemySprites[2];
-    }
-    if (this.ySpeed > 0) {
-        this.sprite = map.enemySprites[3];
+    // Zig-zagging behaviour will only occur if this mode is turned on:
+    if (this.zigzag) {
+        this.handleZigzag(dt);
     }
 
-    if (this.x > map.totalWidth + 100 || this.x < -100) {
-        this.y = this.startY();
-        if (this.y === map.yValues[10] || this.y === map.yValues[7]) {
-            this.x = map.totalWidth + 80;
-            // Change speed of the enemy for the next loop
-            this.xSpeed = this.newSpeed('left');
-            //this.sprite = map.enemySprites[ 1 ];
-        } else {
-            this.x = -80;
-            // Change speed of the enemy for the next loop
-            this.xSpeed = this.newSpeed('right');
-            //this.sprite = map.enemySprites[ 0 ];
-        }
+    // Update sprite depending on what direction the enemy is travelling in:
+    this.updateSprite();
+
+    // If the enemy is too far left or right, reset the enemy's position on the 
+    // row:
+    if (this.x < -100 || this.x > map.totalWidth + 100) {
+        this.resetTrack();
     }
 };
 
+Enemy.prototype.resetTrack = function() {
+    // Pick a random, appropriate column for the enemy:
+    this.y = this.startY();
+    // Certain rows have enemies initially traveling left in them:
+    if (this.y === map.yValues[10] || this.y === map.yValues[7]) {
+        this.x = map.totalWidth + 80;
+        // Change speed of the enemy for the next loop
+        this.xSpeed = this.newSpeed('left');
+    } // Other rows have enemies initially travelling right in the them:
+    else {
+        this.x = -80;
+        // Change speed of the enemy for the next loop
+        this.xSpeed = this.newSpeed('right');
+    }
+};
+
+// Assign a speed to a newly created enemy:
+Enemy.prototype.initialSpeed = function() {
+    if (this.y === map.yValues[10] || this.y === map.yValues[7]) {
+        this.xSpeed = this.newSpeed('left');
+    } else {
+        this.xSpeed = this.newSpeed('right');
+    }
+};
+
+// Change the sprite based on direction enemy is travelling:
+Enemy.prototype.updateSprite = function() {
+    // Travelling right sprite:
+    if (this.xSpeed > 0) {
+        this.sprite = map.enemySprites[0];
+    }
+    // left:
+    if (this.xSpeed < 0) {
+        this.sprite = map.enemySprites[1];
+    }
+    // up:
+    if (this.ySpeed < 0) {
+        this.sprite = map.enemySprites[2];
+    }
+    // down:
+    if (this.ySpeed > 0) {
+        this.sprite = map.enemySprites[3];
+    }
+};
+
+Enemy.prototype.handleZigzag = function(dt) {
+    // If enemy is not paused, the countdown until a change of direction will 
+    // continue:
+    if (this.moving === 1) {
+        this.alterDirCount -= dt;
+    }
+    // When countdown is 0, change direction:
+    if (this.alterDirCount <= 0) {
+        this.alterDirection();
+    }
+    // The next 4 if blocks deal with situations where enemies are moving 
+    // out of bounds, in which case they are redirected:
+    // Enemies in top path moving too far up:
+    if (this.y <= map.yValues[6] && this.ySpeed < 0) {
+        this.alterDirectionSide();
+    }
+    // Enemies in top path moving too far down:
+    if (this.y >= map.yValues[8] && this.y < map.yValues[9] && this.ySpeed > 0) {
+        this.alterDirectionSide();
+    }
+    // Enemies in bottom path moving too far up:
+    if (this.y <= map.yValues[10] && this.y > map.yValues[9] && this.ySpeed < 0) {
+        this.alterDirectionSide();
+    }
+    // Enemies in bottom path moving too far down:
+    if (this.y >= map.yValues[12] && this.ySpeed > 0) {
+        this.alterDirectionSide();
+    }
+};
+
+// Causes all enemies to begin zigzag behaviour of sometimes changing directions
+// and occationally moving vertically:
 Enemy.prototype.activateZigzag = function() {
     var numEnemies = allEnemies.length;
     for (var i = 0; i < numEnemies; i++) {
@@ -653,8 +689,12 @@ Enemy.prototype.activateZigzag = function() {
     }
 };
 
+// Handles situations where enemies are about to vertically go out of bounds and 
+// sends them left or right:
 Enemy.prototype.alterDirectionSide = function() {
     var options = ['left', 'right'];
+    // Get the magnitude to their current speed in order to maintain speed but 
+    // assign a new, horizontal direction:
     var speed = Math.abs(this.ySpeed);
     this.ySpeed = 0;
     var choice = options[Math.floor(Math.random() * 2)];
@@ -666,31 +706,36 @@ Enemy.prototype.alterDirectionSide = function() {
     }
 };
 
-Enemy.prototype.alterDirection = function(bool) {
-    if (bool) {
-        this.alterDirCount = 2 + Math.random() * 15;
-        var options = ['left', 'up', 'down', 'right'];
-        var speed;
-        if (this.xSpeed === 0) {
-            speed = Math.abs(this.ySpeed);
-        } else {
-            speed = Math.abs(this.xSpeed);
-        }
+// Changes the direction that an enemy is moving in randomly. This only works 
+// when the enemies have this.zigzac activated using activateZigzag():
+Enemy.prototype.alterDirection = function() {
+    // Reset countdown timer until the next time the direction will be altered:
+    this.alterDirCount = 2 + Math.random() * 15;
+    var options = ['left', 'up', 'down', 'right'];
+    var speed;
+    // Get magnitude of the current speed. Enemies don't move diagonally so 
+    // either the vertical speed or the horizontal speed will represent the 
+    // current magnitude:
+    if (this.xSpeed === 0) {
+        speed = Math.abs(this.ySpeed);
+    } else {
+        speed = Math.abs(this.xSpeed);
+    }
 
-        this.xSpeed = 0;
-        this.ySpeed = 0;
+    // Clear current speeds in order to set a new one:
+    this.xSpeed = 0;
+    this.ySpeed = 0;
 
-        var choice = options[Math.floor(Math.random() * 4)];
+    var choice = options[Math.floor(Math.random() * 4)];
 
-        if (choice === 'left') {
-            this.xSpeed = -1 * speed;
-        } else if (choice === 'right') {
-            this.xSpeed = speed;
-        } else if (choice === 'up') {
-            this.ySpeed = -1 * speed;
-        } else if (choice === 'down') {
-            this.ySpeed = speed;
-        }
+    if (choice === 'left') {
+        this.xSpeed = -1 * speed;
+    } else if (choice === 'right') {
+        this.xSpeed = speed;
+    } else if (choice === 'up') {
+        this.ySpeed = -1 * speed;
+    } else if (choice === 'down') {
+        this.ySpeed = speed;
     }
 };
 
@@ -703,23 +748,22 @@ Enemy.prototype.newSpeed = function(direction) {
     }
 };
 
+// A different type of enemy that burrows out of the ground on grass to hit the
+// player:
 var Burrower = function(type) {
-    // Enemy sprite changes depending on what direction the enemy is travelling 
-    // in:
     this.sprite = map.enemySprites[4];
-    // Random value for the start of any given enemy
+    // Burrowers start off screen until the unburrow:
     this.x = -100;
-    // Picks an appropriate column for the enemy type:
     this.y = -100;
     // Determines behavior of the Burrower:
     this.type = type;
-    // Used to keep track of movements of 'burrow' by determining which hole the
+    // Used to keep track of movements of unburrow by determining which hole the
     // burrower unburrowed from last:
     this.lastBurrow = 5;
     this.burrowWait = 5;
     this.unburrowed = 0;
-    // If 1, the enemies are moving, if 0, they are not,
-    // see Enemy.prototype.togglePause() This function allows the pause to work.
+    // When the game is paused and this.moving is set to 0, the burrowWait timer 
+    // will stop counting down:
     this.moving = 1;
 };
 
@@ -1729,7 +1773,6 @@ Player.prototype.handleInput = function(input) {
     else if (this.victory === true || this.ouch === true || this.isDead === true ||
         this.drowned === true) {
         if (input === 'enter') {
-            console.log("we are hurt");
             if (this.isDead === true) {
                 this.isDead = false;
                 this.livesLeft = 5;
@@ -1763,7 +1806,7 @@ Player.prototype.handleInput = function(input) {
                 }
                 // Enemies will be able to move in all 4 directions starting on the
                 // fourth round:
-                if (map.round >= 4) {
+                if (map.round >= 1) {
                     Enemy.prototype.activateZigzag();
                 }
                 // Clouds and a second burrower will appear on the 5th round:
@@ -1907,3 +1950,4 @@ document.addEventListener('keyup', function(e) {
 // TODO: How many keys has player collected? Put it on the player
 // TODO: Make a new class for burrow and burrow2 (currently at 829 editting out 
 //  the complext bools.)
+// TODO: Seperate allEnemies and create a new allBurrowers
