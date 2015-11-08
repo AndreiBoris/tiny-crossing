@@ -510,8 +510,8 @@ Key.prototype.update = function(dt) {
         else {
             if (this.x < map.xValues[map.numColumns - 4] + this.collectedOffset) {
                 this.x = this.x + 100 * dt *
-                // Slow down the x-movement as time goes on for a smoother animation:
-                (map.xValues[map.numColumns - 2] / this.x) * this.moving;
+                    // Slow down the x-movement as time goes on for a smoother animation:
+                    (map.xValues[map.numColumns - 2] / this.x) * this.moving;
             }
             if (this.y < map.yValues[map.numRows - 2]) {
                 this.y = this.y + 300 * dt * this.moving;
@@ -561,6 +561,8 @@ var Enemy = function(burrow) {
     // If 1, the enemies are moving, if 0, they are not,
     // see Enemy.prototype.togglePause() This function allows the pause to work.
     this.moving = 1;
+    // Controls whether the enemy is frozen or not due to a PowerUp:
+    this.frozen = 1;
 };
 
 inherit(Enemy, Entity);
@@ -582,8 +584,8 @@ Enemy.prototype.update = function(dt) {
     // Update the current position of the enemy appropriately according to the 
     // enemy's speed. this.moving is changed to 0 when the game is paused and 
     // this.gemSpeed determines a speed boost/handicap:
-    this.x = this.x + this.xSpeed * dt * this.moving * this.gemSpeed;
-    this.y = this.y + this.ySpeed * dt * this.moving * this.gemSpeed;
+    this.x = this.x + this.xSpeed * dt * this.moving * this.gemSpeed * this.frozen;
+    this.y = this.y + this.ySpeed * dt * this.moving * this.gemSpeed * this.frozen;
 
     // Give enemies an appropriate initial speed if they have no current speed,
     // Appropriateness is gauged by the column in which the enemy is:
@@ -1092,13 +1094,12 @@ Player.prototype.update = function(dt) {
         // freeze all enemies
         this.freeze -= dt * this.moving;
         for (var t = 0; t < numEnemies; t++) {
-            allEnemies[t].moving = 0;
+            allEnemies[t].frozen = 0;
         }
-        this.paused = false;
     }
-    if (this.freeze <= 0 && !this.paused) {
+    if (this.freeze <= 0) {
         for (var r = 0; r < numEnemies; r++) {
-            allEnemies[r].moving = 1;
+            allEnemies[r].frozen = 1;
         }
     }
     // Start counting down once a character is selected:
@@ -1886,8 +1887,6 @@ var allCorn = [];
 var allKeys = [];
 var allPowerUps = [];
 var allClouds = [];
-allEnemies.push(new Burrower(1));
-allEnemies.push(new Burrower(2));
 
 function addClouds(count) {
     for (var i = 0; i < count; i++) {
