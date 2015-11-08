@@ -1077,11 +1077,7 @@ Player.prototype.update = function(dt) {
         this.moving = 1 * this.moving;
         // Dynamically update the this.xCoord and this.x values;
         this.trackPosition();
-        if (this.yCoord === 2) {
-            this.x += this.speed * dt * this.moving * this.gemSpeed;
-        } else if (this.yCoord === 3) {
-            this.x += this.speed * dt * this.moving * this.gemSpeed;
-        } else if (this.yCoord === 4) {
+        if (this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4) {
             this.x += this.speed * dt * this.moving * this.gemSpeed;
         }
     }
@@ -1091,35 +1087,56 @@ Player.prototype.update = function(dt) {
         this.timeLeft -= dt * this.moving;
     } 
 
-    if (this.freeze > 0 && !this.victory) {
-        // freeze all enemies
+    // Works as long as the freeze timer from timeGem() is greater than 0:
+    if (this.freeze > 0) {
+        // Count down timer:
         this.freeze -= dt * this.moving;
+        // Freeze all enemies:
         for (var t = 0; t < numEnemies; t++) {
             allEnemies[t].frozen = 0;
         }
     }
-    if (this.freeze <= 0) {
+
+    // If the first enemy is frozen, assume all enemies are. If the freeze timer 
+    // is at 0, unfreeze all enemies:
+    if (this.freeze <= 0 && allEnemies[0].frozen === 0) {
         for (var r = 0; r < numEnemies; r++) {
             allEnemies[r].frozen = 1;
         }
     }
+
     // Holds current positions of all corn:
     var cornSpots = [];
+
+    // Add current position of each Corn object to the array:
     for (var i = 0; i < numCorn; i++) {
         var x = allCorn[i].x;
         var y = allCorn[i].y;
         cornSpots.push([x, y]);
     }
+
+    // Reset this.floating to false, if the player is ontop of the corn this 
+    // value will be set to true in the following for-loop, otherwise, the 
+    // player should not be floating:
     this.floating = false;
-    // Check to see if the player has stepped on a corn:
-    if (this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4 &&
-        !this.paused) {
+
+    // Check to see if the player has stepped on a corn. This is only possible
+    // if the player is in the rows where corn exists:
+    if (this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4) {
+        // Check each position where the corn currently is to see if the player
+        // is on the corn:
         for (var b = 0; b < numCorn; b++) {
+            // The width of the corn is equal to 2 * map.tileWidth. The reason 
+            // for adding 30 and 25 to this.x is in order to match where the 
+            // character appears to be rendered with where the corn appears to
+            // be rendered on the screen. The actual width of the player sprite
+            // is buffered by transparent (alpha) space:
             if ((this.x + 30 < cornSpots[b][0] + 2 * map.tileWidth &&
                     this.x + 25 > cornSpots[b][0]) &&
                 (this.y - map.tileHeight / 8 < cornSpots[b][1] &&
                     this.y + map.tileHeight / 8 > cornSpots[b][1])) {
-                // Corn there:
+                // This will run if the player appears to be on the corn. When
+                // this.floating === true, the player will move 
                 this.floating = true;
                 this.speed = allCorn[b].speed;
             }
@@ -1178,7 +1195,7 @@ Player.prototype.update = function(dt) {
         powerSpots.push([xP, yP]);
     }
     // Check to see if the player is close enough to any of the power ups to
-    // pick them up
+    // pick them up:
     for (p = 0; p < numPowerUps; p++) {
         if ((this.x - map.tileWidth / 2 < powerSpots[p][0] &&
                 this.x + map.tileWidth / 2 > powerSpots[p][0]) &&
