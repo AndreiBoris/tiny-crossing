@@ -1729,6 +1729,7 @@ Player.prototype.handleInput = function(input) {
     else if (this.victory === true || this.ouch === true || this.isDead === true ||
         this.drowned === true) {
         if (input === 'enter') {
+            console.log("we are hurt");
             if (this.isDead === true) {
                 this.isDead = false;
                 this.livesLeft = 5;
@@ -1790,7 +1791,7 @@ Player.prototype.handleInput = function(input) {
             this.drowned = false;
             this.togglePause();
             Cloud.prototype.moveNormally();
-            Enemy.prototype.resetBurrow();
+            Burrower.prototype.resetBurrow();
             // Back to starting position of game:
             this.sprite = this.charOptions[this.selection];
             this.resetStart();
