@@ -937,14 +937,20 @@ var Player = function() {
     // character sprite will appear:
     this.selection = 0;
 
-    // Countdown timer for each round
-    this.timeLeft = 30;
-    this.timeKeeper = 30;
+    // Countdown timer for each round is assigned when resetStart() is run at
+    // the start of a new round:
+    this.timeLeft = 0;
+    // Time left before PowerUp affecting enemy speed runs out:
     this.enemySpeedTime = 0;
+    // Time left before enemies unfreeze:
     this.freeze = 0;
+    // Time left before player can get hit by enemies:
     this.shield = 0;
+    // Time left before player can no longer walk on water:
     this.water = 0;
+    // Time left before keys no longer fly towards the player:
     this.lasso = 0;
+    //
     this.counting = false;
 
     this.points = 0;
@@ -1001,12 +1007,7 @@ Player.prototype.update = function(dt) {
         this.victorySpot = this.y;
         this.sprite = this.charHappy[this.selection];
 
-        // Check if the countdown timer is still a number and not a string:
-        if (parseInt(Number(this.timeLeft)) === this.timeLeft) {
-            this.winPoints(100 + (this.timeLeft * 10), 'victory');
-        } else {
-            this.winPoints(100, 'victory');
-        }
+        this.winPoints(100 + (Math.ceil(this.timeLeft) * 10), 'victory');
         this.blurPause();
     }
 
@@ -1086,11 +1087,11 @@ Player.prototype.update = function(dt) {
     }
 
     // Keep countdown timer going when the game is not paused:
-    if (this.counting === true && !this.paused) {
-        this.timeKeeper -= dt;
-        this.timeLeft = Math.round(this.timeKeeper);
-    }
-    if (this.freeze > 0 && this.counting === true && !this.victory) {
+    if (!this.paused && this.timeLeft >= 0) {
+        this.timeLeft -= dt * this.moving;
+    } 
+
+    if (this.freeze > 0 && !this.victory) {
         // freeze all enemies
         this.freeze -= dt * this.moving;
         for (var t = 0; t < numEnemies; t++) {
@@ -1101,17 +1102,6 @@ Player.prototype.update = function(dt) {
         for (var r = 0; r < numEnemies; r++) {
             allEnemies[r].frozen = 1;
         }
-    }
-    // Start counting down once a character is selected:
-    if (this.paused === false && this.charSelected === true) {
-        this.counting = true;
-    }
-    // Stop counting when the game is paused:
-    if (this.paused === true) {
-        this.counting = false;
-    }
-    if (this.timeLeft <= 0) {
-        this.timeLeft = "No bonus!";
     }
     // Holds current positions of all corn:
     var cornSpots = [];
@@ -1262,7 +1252,6 @@ Player.prototype.resetStart = function() {
     this.move();
 
     this.timeLeft = 30;
-    this.timeKeeper = 30;
 };
 
 // Draws each frame.
@@ -1532,13 +1521,7 @@ Player.prototype.gemFast = function() {
 Player.prototype.gemTime = function() {
     map.playSFX('time');
     this.winPoints(100);
-    if (this.timeLeft === "No bonus!") {
-        this.timeLeft = 10;
-        this.timeKeeper = 10;
-    } else {
-        this.timeLeft += 10;
-        this.timeKeeper += 10;
-    }
+    this.timeLeft += 10;
     this.freeze = 6;
 };
 
@@ -1639,8 +1622,13 @@ Player.prototype.displayHearts = function() {
 Player.prototype.displayTimer = function() {
     this.bwMsgStyle();
     ctx.textAlign = 'right';
-    ctx.fillText(this.timeLeft, map.totalWidth - 5, 50);
-    ctx.strokeText(this.timeLeft, map.totalWidth - 5, 50);
+    if (this.timeLeft > 0) {
+        var displayMe = Math.ceil(this.timeLeft);
+    } else {
+        displayMe = 'No bonus!';
+    }
+    ctx.fillText(displayMe, map.totalWidth - 5, 50);
+    ctx.strokeText(displayMe, map.totalWidth - 5, 50);
     ctx.textAlign = 'center';
 };
 
@@ -1838,7 +1826,7 @@ Player.prototype.handleInput = function(input) {
                 }
                 // Enemies will be able to move in all 4 directions starting on the
                 // fourth round:
-                if (map.round >= 1) {
+                if (map.round >= 4) {
                     Enemy.prototype.activateZigzag();
                 }
                 // Clouds and a second burrower will appear on the 5th round:
@@ -1887,6 +1875,13 @@ var allCorn = [];
 var allKeys = [];
 var allPowerUps = [];
 var allClouds = [];
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
 
 function addClouds(count) {
     for (var i = 0; i < count; i++) {
