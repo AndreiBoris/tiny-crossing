@@ -770,44 +770,59 @@ var Burrower = function(type) {
 inherit(Burrower, Entity);
 
 Burrower.prototype.update = function(dt) {
-    
+
+    // Count down timer until the next time unburrow will happen:
     if (this.burrowWait >= 0) {
         this.burrowWait -= dt * this.moving;
     }
 
+    // Controls animation of unburrowed sprite:
     if (this.unburrowed <= 1 || this.unburrowed >= 2.5) {
         this.sprite = map.enemySprites[4];
     } else {
         this.sprite = map.enemySprites[5];
     }
 
+    // Unburrower type 1's behaviour upon the countdown timers reaching zero. 
+    // unburrow() sets this.umburrowed > 0 so this only runs once every few 
+    // seconds:
     if (this.type === 1) {
         if (this.burrowWait <= 0 && this.unburrowed <= 0) {
             this.unburrow();
         }
     }
 
+    // Unburrower type 2's behaviour:
     if (this.type === 2) {
         if (this.burrowWait <= 0 && this.unburrowed <= 0) {
             this.unburrow2();
         }
     }
 
+    // Countdown timer until Burrower stops being unburrowed:
     if (this.unburrowed > 0) {
         this.unburrowed -= dt * this.moving;
     }
+
+    // When the timer is 0, the burrower burrows again and a new timer is set 
+    // until the next unburrow:
     if (this.unburrowed <= 0 && this.burrowWait <= 0) {
         this.hide();
     }
 };
 
+// Type 1 Burrower behaviour:
 Burrower.prototype.unburrow = function() {
+    // Set timer until the Burrower will burrow again:
     this.unburrowed = 3;
+    // If the last unburrow happened at the final location (5), then go to the 
+    // first location again:
     if (this.lastBurrow === 5) {
         this.lastBurrow = 1;
         this.x = map.xValues[3];
         this.y = map.yValues[5];
     } else {
+        // Move to the next location:
         if (this.lastBurrow === 1) {
             this.x = map.xValues[7];
             this.y = map.yValues[5];
@@ -825,23 +840,31 @@ Burrower.prototype.unburrow = function() {
     }
 };
 
+// Type 2 Burrower behaviour:
 Burrower.prototype.unburrow2 = function() {
+    // Unburrow will last for this long:
     this.unburrowed = 1 + 4 * Math.random();
     this.y = map.yValues[13];
+    // Unburrow can happen on any tile along the bottommost row:
     this.x = map.xValues[Math.floor(Math.random() * map.numColumns)];
 };
 
+// What Burrowers do when they are burrow after unburrowing:
 Burrower.prototype.hide = function(wait) {
     this.x = -100;
     this.y = -100;
     if (this.type === 1) {
+        // Type 1 Burrowers have a fixed time to wait until the next unburrow:
         this.burrowWait = 5;
     } else {
+        // Type 2 Burrowers wait a random time:
         this.burrowWait = (2 + 4 * Math.random());
     }
 
 };
 
+// This is run whenever the player respawns to avoid having the player spawn on
+// top of a Burrower causing repeated deaths:
 Burrower.prototype.resetBurrow = function() {
     var numEnemies = allEnemies.length;
     for (var i = 0; i < numEnemies; i++) {
@@ -853,9 +876,10 @@ Burrower.prototype.resetBurrow = function() {
 };
 
 var Player = function() {
+    // this.sprite, this.x, this.y, this.xCoord and this.yCoord are all 
+    // generated for the first time in Player.prototype.handleInput() when a 
+    // player picks a character
     this.sprite = '';
-    // this.x, this.y, this.xCoord and this.yCoord are all generated for the first
-    // time in Player.prototype.handleInput() when a player picks a character
     this.x = 0;
     this.y = 0;
     // xCoord and yCoord are to do with the dynamically generated grid system
@@ -863,24 +887,34 @@ var Player = function() {
     this.xCoord = 0;
     this.yCoord = 0;
 
+    // Determines if the game is paused:
     this.paused = false;
+    // Determines if the victory message should be shown:
     this.victory = false;
+    // Determines if the player is hurt messages should be shown:
     this.ouch = false;
     this.drowned = false;
+    // Determines if the game should restart:
     this.isDead = false;
     this.livesLeft = 5;
-    // This value is used in anchoring the victory jumps the player does
+    // This value is used in anchoring the victory jumps the player does upon 
+    // collecting all the keys:
     this.victorySpot = 0;
     // This is used to help guide the victory jumps as they loop in
-    // Player.prototype.update()
+    // Player.prototype.update():
     this.movingUp = true;
     // Is the player on a Corn?
     this.floating = false;
+    // Used to determine how fast the player is moving when the player is on
+    // floating corn:
     this.speed = null;
+    // Used to determine speed on the floating corn if the corn is moving faster 
+    // or slower than usual due to a PowerUp:
     this.gemSpeed = 1.0;
+    // Pause control on the floating corn:
     this.moving = 1;
 
-    // game begins when this is true
+    // Game begins when this is true:
     this.charSelected = false;
     // selectX and selectY control the position of the character selection box,
     // this.x and this.y couldn't be used to due to possible collisions with
@@ -888,16 +922,18 @@ var Player = function() {
     // screen comes up.
     this.selectX = map.totalWidth / 2 - 260;
     this.selectY = map.tileHeight * 9;
-    // This selects which value from the above three arrays is used by handleInput
-    this.selection = 0;
-    // The following three arrays all get used through
-    // Player.prototype.handleInput to choose the correct player.sprite
+    // The following six arrays all get used through
+    // Player.prototype.handleInput to choose the correct player.sprite in 
+    // various situations:
     this.charOptions = map.playerChars;
     this.charHappy = map.playerCharsHappy;
     this.charHurt = map.playerCharsHurt;
     this.charShield = map.playerCharsShield;
     this.charLasso = map.playerCharsLasso;
     this.charWater = map.playerCharsWater;
+    // This selects which value from the above arrays is used to determine which
+    // character sprite will appear:
+    this.selection = 0;
 
     // Countdown timer for each round
     this.timeLeft = 30;
@@ -983,9 +1019,9 @@ Player.prototype.update = function(dt) {
         });
     }
 
-    // Enemies are fast:
+    // Enemies are fast/slow:
     if (this.enemySpeedTime >= 0) {
-        this.enemySpeedTime -= dt;
+        this.enemySpeedTime -= dt * this.moving;
     } else if (this.enemySpeedTime <= 0 && this.enemySpeedTime >= -1) {
         this.enemySpeedTime -= 2;
         this.gemSpeed = 1.0;
@@ -999,7 +1035,7 @@ Player.prototype.update = function(dt) {
 
     // Player with water gem buff ignores floating:
     if (this.lasso > 0) {
-        this.lasso -= dt;
+        this.lasso -= dt * this.moving;
         if (this.lasso > 0.1 && !this.ouch) {
             if (this.shield <= 0.09 && this.water <= 0.09) {
                 this.sprite = this.charLasso[this.selection];
@@ -1015,7 +1051,7 @@ Player.prototype.update = function(dt) {
 
     // Player with water gem buff ignores floating:
     if (this.water > 0) {
-        this.water -= dt;
+        this.water -= dt * this.moving;
         this.floating = false;
         if (this.water > 0.1 && this.shield <= 0.09 && !this.ouch) {
             this.sprite = this.charWater[this.selection];
@@ -1025,7 +1061,7 @@ Player.prototype.update = function(dt) {
     }
 
     if (this.shield > 0) {
-        this.shield -= dt;
+        this.shield -= dt * this.moving;
         if (this.shield > 0.1 && !this.ouch) {
             this.sprite = this.charShield[this.selection];
         } else if (this.shield < 0.09) {
@@ -1035,7 +1071,7 @@ Player.prototype.update = function(dt) {
 
     // Player is on water corn:
     if (this.floating && !this.paused) {
-        this.moving = 1;
+        this.moving = 1 * this.moving;
         // Dynamically update the this.xCoord and this.x values;
         this.trackPosition();
         if (this.yCoord === 2) {
@@ -1054,7 +1090,7 @@ Player.prototype.update = function(dt) {
     }
     if (this.freeze > 0 && this.counting === true && !this.victory) {
         // freeze all enemies
-        this.freeze -= dt;
+        this.freeze -= dt * this.moving;
         for (var t = 0; t < numEnemies; t++) {
             allEnemies[t].moving = 0;
         }
