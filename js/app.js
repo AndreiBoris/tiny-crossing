@@ -546,9 +546,9 @@ var Enemy = function(burrow) {
     // in:
     this.sprite = '';
     // Random value for the start of any given enemy
-    this.x = this.startX(burrow);
+    this.x = this.startX();
     // Picks an appropriate column for the enemy type:
-    this.y = this.startY(burrow);
+    this.y = this.startY();
     // Speed is determined by which row an enemy is found in (positive/negative
     // speeds are used to find direction due to multi directional possibilities 
     // when this.zigzag = true:
@@ -563,26 +563,6 @@ var Enemy = function(burrow) {
     this.zigzag = false;
     // Timer between changes of direction for zigzagging enemies:
     this.alterDirCount = 2 + Math.random() * 15;
-    // Unnecessairily complex bools used in determining the Enemy style:
-    this.burrow = (function isBurrower(burrow) {
-        if (burrow === 'burrow') {
-            return true;
-        } else {
-            return false;
-        }
-    })(burrow);
-    this.burrow2 = (function isBurrower2(burrow) {
-        if (burrow === 'burrow2') {
-            return true;
-        } else {
-            return false;
-        }
-    })(burrow);
-    // Used to keep track of movements of 'burrow' by determining which hole the
-    // burrower unburrowed from last:
-    this.lastBurrow = 5;
-    this.burrowWait = 5;
-    this.unburrowed = 0;
     // If 1, the enemies are moving, if 0, they are not,
     // see Enemy.prototype.togglePause() This function allows the pause to work.
     this.moving = 1;
@@ -591,121 +571,26 @@ var Enemy = function(burrow) {
 inherit(Enemy, Entity);
 
 // Generate a start position for each enemy
-Enemy.prototype.startX = function(burrow) {
-    if (burrow === 'burrow' || burrow === 'burrow2') {
-        return -100;
-    } else {
-        return Math.random() * map.totalWidth * 1.0;
-    }
+Enemy.prototype.startX = function() {
+    return Math.random() * map.totalWidth * 1.0;
 };
 
 // Random value from array courtesy of:
 // http://stackoverflow.com/questions/4550505/getting-random-value-from-an-array
-Enemy.prototype.startY = function(burrow) {
-    if (burrow === 'burrow' || burrow === 'burrow2') {
-        return -100;
-    } else {
-        // Picks one of the rows which enemies can use.
-        var result = map.yValues[map.enemyRows[Math.floor(Math.random() * map.enemyRows.length)]];
-        return result;
-    }
-};
-
-Enemy.prototype.unburrow = function() {
-    this.unburrowed = 3;
-    if (this.lastBurrow === 5) {
-        this.lastBurrow = 1;
-        this.x = map.xValues[3];
-        this.y = map.yValues[5];
-    } else {
-        if (this.lastBurrow === 1) {
-            this.x = map.xValues[7];
-            this.y = map.yValues[5];
-        } else if (this.lastBurrow === 2) {
-            this.x = map.xValues[1];
-            this.y = map.yValues[9];
-        } else if (this.lastBurrow === 3) {
-            this.x = map.xValues[5];
-            this.y = map.yValues[9];
-        } else if (this.lastBurrow === 4) {
-            this.x = map.xValues[9];
-            this.y = map.yValues[9];
-        }
-        this.lastBurrow++;
-    }
-};
-
-Enemy.prototype.unburrow2 = function() {
-    this.unburrowed = 1 + 4 * Math.random();
-    this.y = map.yValues[13];
-    this.x = map.xValues[Math.floor(Math.random() * map.numColumns)];
-};
-
-Enemy.prototype.hide = function(time) {
-    this.x = -100;
-    this.y = -100;
-    this.burrowWait = time;
-};
-
-Enemy.prototype.resetBurrow = function() {
-    var numEnemies = allEnemies.length;
-    for (var i = 0; i < numEnemies; i++) {
-        allEnemies[i].burrowWait = 5;
-        if (allEnemies[i].burrow2) {
-            allEnemies[i].x = -100;
-        }
-    }
+Enemy.prototype.startY = function() {
+    return map.yValues[map.enemyRows[Math.floor(Math.random() * map.enemyRows.length)]];
 };
 
 // Update the enemy's position, required method for game
 // Parameter: dt, a time delta between ticks
 Enemy.prototype.update = function(dt) {
-    if (this.burrow === true) {
-        if (this.burrowWait >= 0) {
-            this.burrowWait -= dt * this.moving;
-        }
-        if (this.unburrowed <= 1 || this.unburrowed >= 2.5) {
-            this.sprite = map.enemySprites[4];
-        } else {
-            this.sprite = map.enemySprites[5];
-        }
-        if (this.burrowWait <= 0 && this.unburrowed <= 0) {
-            this.unburrow();
-        }
-        if (this.unburrowed > 0) {
-            this.unburrowed -= dt * this.moving;
-        }
-        if (this.unburrowed <= 0 && this.burrowWait <= 0) {
-            this.hide(5);
-        }
-    }
-
-    if (this.burrow2 === true) {
-        if (this.burrowWait >= 0) {
-            this.burrowWait -= dt * this.moving;
-        }
-        if (this.unburrowed <= 1 || this.unburrowed >= 2.5) {
-            this.sprite = map.enemySprites[4];
-        } else {
-            this.sprite = map.enemySprites[5];
-        }
-        if (this.burrowWait <= 0 && this.unburrowed <= 0) {
-            this.unburrow2();
-        }
-        if (this.unburrowed > 0) {
-            this.unburrowed -= dt * this.moving;
-        }
-        if (this.unburrowed <= 0 && this.burrowWait <= 0) {
-            this.hide(1 + 4 * Math.random());
-        }
-    }
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers. this.moving is changed to 0 when the game is paused.
     this.x = this.x + this.xSpeed * dt * this.moving * this.gemSpeed;
     this.y = this.y + this.ySpeed * dt * this.moving * this.gemSpeed;
     // Reset enemies to the left side of the screen when they are offscreen right.
-    if (this.xSpeed === 0 && this.ySpeed === 0 && !this.burrow && !this.burrow2) {
+    if (this.xSpeed === 0 && this.ySpeed === 0) {
         if (this.y === map.yValues[10] || this.y === map.yValues[7]) {
             this.xSpeed = this.newSpeed('left');
             //this.sprite = map.enemySprites[ 1 ];
@@ -815,6 +700,116 @@ Enemy.prototype.newSpeed = function(direction) {
         return map.tileWidth / 2 + (Math.random() * map.tileWidth * 3);
     } else if (direction === 'left') {
         return (map.tileWidth / -2 + (Math.random() * map.tileWidth * -3));
+    }
+};
+
+var Burrower = function(type) {
+    // Enemy sprite changes depending on what direction the enemy is travelling 
+    // in:
+    this.sprite = map.enemySprites[4];
+    // Random value for the start of any given enemy
+    this.x = -100;
+    // Picks an appropriate column for the enemy type:
+    this.y = -100;
+    // Determines behavior of the Burrower:
+    this.type = type;
+    // Used to keep track of movements of 'burrow' by determining which hole the
+    // burrower unburrowed from last:
+    this.lastBurrow = 5;
+    this.burrowWait = 5;
+    this.unburrowed = 0;
+    // If 1, the enemies are moving, if 0, they are not,
+    // see Enemy.prototype.togglePause() This function allows the pause to work.
+    this.moving = 1;
+};
+
+inherit(Burrower, Entity);
+
+Burrower.prototype.update = function() {
+    if (this.type === 1) {
+        if (this.burrowWait >= 0) {
+            this.burrowWait -= dt * this.moving;
+        }
+        if (this.unburrowed <= 1 || this.unburrowed >= 2.5) {
+            this.sprite = map.enemySprites[4];
+        } else {
+            this.sprite = map.enemySprites[5];
+        }
+        if (this.burrowWait <= 0 && this.unburrowed <= 0) {
+            this.unburrow();
+        }
+        if (this.unburrowed > 0) {
+            this.unburrowed -= dt * this.moving;
+        }
+        if (this.unburrowed <= 0 && this.burrowWait <= 0) {
+            this.hide(5);
+        }
+    }
+
+    if (this.type === 2) {
+        if (this.burrowWait >= 0) {
+            this.burrowWait -= dt * this.moving;
+        }
+        if (this.unburrowed <= 1 || this.unburrowed >= 2.5) {
+            this.sprite = map.enemySprites[4];
+        } else {
+            this.sprite = map.enemySprites[5];
+        }
+        if (this.burrowWait <= 0 && this.unburrowed <= 0) {
+            this.unburrow2();
+        }
+        if (this.unburrowed > 0) {
+            this.unburrowed -= dt * this.moving;
+        }
+        if (this.unburrowed <= 0 && this.burrowWait <= 0) {
+            this.hide(1 + 4 * Math.random());
+        }
+    }
+};
+
+Burrower.prototype.unburrow = function() {
+    this.unburrowed = 3;
+    if (this.lastBurrow === 5) {
+        this.lastBurrow = 1;
+        this.x = map.xValues[3];
+        this.y = map.yValues[5];
+    } else {
+        if (this.lastBurrow === 1) {
+            this.x = map.xValues[7];
+            this.y = map.yValues[5];
+        } else if (this.lastBurrow === 2) {
+            this.x = map.xValues[1];
+            this.y = map.yValues[9];
+        } else if (this.lastBurrow === 3) {
+            this.x = map.xValues[5];
+            this.y = map.yValues[9];
+        } else if (this.lastBurrow === 4) {
+            this.x = map.xValues[9];
+            this.y = map.yValues[9];
+        }
+        this.lastBurrow++;
+    }
+};
+
+Burrower.prototype.unburrow2 = function() {
+    this.unburrowed = 1 + 4 * Math.random();
+    this.y = map.yValues[13];
+    this.x = map.xValues[Math.floor(Math.random() * map.numColumns)];
+};
+
+Burrower.prototype.hide = function(wait) {
+    this.x = -100;
+    this.y = -100;
+    this.burrowWait = wait;
+};
+
+Burrower.prototype.resetBurrow = function() {
+    var numEnemies = allEnemies.length;
+    for (var i = 0; i < numEnemies; i++) {
+        allEnemies[i].burrowWait = 5;
+        if (allEnemies[i].burrow2) {
+            allEnemies[i].x = -100;
+        }
     }
 };
 
@@ -1763,7 +1758,7 @@ Player.prototype.handleInput = function(input) {
                 }
                 // Add a burrower starting on the third round:
                 if (map.round === 3) {
-                    allEnemies.push(new Enemy('burrow'));
+                    allEnemies.push(new Burrower(1));
                 }
                 // Enemies will be able to move in all 4 directions starting on the
                 // fourth round:
@@ -1773,11 +1768,11 @@ Player.prototype.handleInput = function(input) {
                 // Clouds and a second burrower will appear on the 5th round:
                 if (map.round === 5) {
                     addClouds(3);
-                    allEnemies.push(new Enemy('burrow2'));
+                    allEnemies.push(new Burrower(2));
                 }
                 // Add another borrower 2 on the 6th round:
                 if (map.round === 6) {
-                    allEnemies.push(new Enemy('burrow2'));
+                    allEnemies.push(new Burrower(2));
                 }
                 // Clouds will be added starting on the fifth round:
                 if (allClouds.length <= 15 && map.round >= 5) {
@@ -1909,4 +1904,5 @@ document.addEventListener('keyup', function(e) {
 // TODO: No class for non-class
 // TODO: Fix bug with unburrow
 // TODO: How many keys has player collected? Put it on the player
-// TODO: Make a new class for burrow and burrow2
+// TODO: Make a new class for burrow and burrow2 (currently at 829 editting out 
+//  the complext bools.)
