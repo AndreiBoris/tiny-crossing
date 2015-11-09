@@ -71,7 +71,8 @@ var Map = function() {
         'images/Yellow.png',
         'images/Black.png',
         'images/White.png',
-        'images/Red.png'
+        'images/Red.png',
+        'images/Arrows.png'
     ];
     this.enemySprites = [
         'images/enemy-bug-right.png',
@@ -536,7 +537,7 @@ Key.prototype.update = function(dt) {
 };
 
 // Enemies the player must avoid:
-var Enemy = function(burrow) {
+var Enemy = function() {
     // Enemy sprite changes depending on what direction the enemy is travelling 
     // in:
     this.sprite = '';
@@ -871,7 +872,7 @@ Burrower.prototype.resetBurrow = function() {
     var numEnemies = allEnemies.length;
     for (var i = 0; i < numEnemies; i++) {
         allEnemies[i].burrowWait = 5;
-        if (allEnemies[i].burrow2) {
+        if (allEnemies[i] instanceof Burrower) {
             allEnemies[i].x = -100;
         }
     }
@@ -960,22 +961,24 @@ var Player = function() {
     this.pointsScreen = false;
 };
 
-// Until the player has selected a character, this gets rendered over the game
+// Until the player has selected a character, this gets rendered over the game:
 Player.prototype.character = function() {
+    // Determine number of character options for the for loop ahead:
     var length = this.charOptions.length,
+        // Find the character's position on the character menu:
         position = map.totalWidth / 2 - 260;
     // Change stroke and fillStyles
-    ctx.fillStyle = 'black';
-    ctx.textAlign = 'center';
-    ctx.font = '30px Impact';
-    ctx.fillText('Collect the keys.', map.totalWidth / 2, map.tileHeight);
-    ctx.fillText('Beat the time for bonus points.', map.totalWidth / 2, map.tileHeight * 1.75);
-    ctx.fillText('Collect gems for more points and effects.', map.totalWidth / 2, map.tileHeight * 2.5);
+    this.topIntroText();
+
     ctx.fillStyle = 'white';
-    ctx.fillText('Use the arrow or \'wasd\' keys to move around.', map.totalWidth / 2, map.tileHeight * 4.5);
-    ctx.fillText('Complete levels for a harder experience.', map.totalWidth / 2, map.tileHeight * 5.5);
-    ctx.fillText('You can press \'p\' to pause.', map.totalWidth / 2, map.tileHeight * 6.5);
+    ctx.textAlign = 'left';
+
+    ctx.fillText('Use ', (map.totalWidth / 6), map.tileHeight * 5);
+    ctx.drawImage(Resources.get(map.variousImages[14]), (map.totalWidth / 5) + 30, map.tileHeight * 3)
+    ctx.fillText(' to move. ', (map.totalWidth / 2) + 10, map.tileHeight * 5);
+    ctx.fillText('Use \'m\' to mute sound.', map.totalWidth / 6, map.tileHeight * 6.3);
     this.bwMsgStyle();
+     ctx.textAlign = 'center';
     ctx.fillText('Select a character', map.totalWidth / 2, map.tileHeight * 8.6);
     ctx.strokeText('Select a character', map.totalWidth / 2, map.tileHeight * 8.6);
     ctx.fillText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 13.2);
@@ -1073,9 +1076,9 @@ Player.prototype.update = function(dt) {
     }
 
     // Player is on water corn:
-    if (this.floating && !this.paused) {
+    if (this.floating) {
         this.moving = 1 * this.moving;
-        // Dynamically update the this.xCoord and this.x values;
+        // Update the this.xCoord value;
         this.trackPosition();
         if (this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4) {
             this.x += this.speed * dt * this.moving * this.gemSpeed;
@@ -1085,7 +1088,7 @@ Player.prototype.update = function(dt) {
     // Keep countdown timer going when the game is not paused:
     if (!this.paused && this.timeLeft >= 0) {
         this.timeLeft -= dt * this.moving;
-    } 
+    }
 
     // Works as long as the freeze timer from timeGem() is greater than 0:
     if (this.freeze > 0) {
@@ -1136,11 +1139,13 @@ Player.prototype.update = function(dt) {
                 (this.y - map.tileHeight / 8 < cornSpots[b][1] &&
                     this.y + map.tileHeight / 8 > cornSpots[b][1])) {
                 // This will run if the player appears to be on the corn. When
-                // this.floating === true, the player will move 
+                // this.floating === true, the player will move at the speed of 
+                // the corn that's being stood on:
                 this.floating = true;
                 this.speed = allCorn[b].speed;
             }
         }
+        // If the player is not on any corn, the player must have drowned:
         if (this.floating === false) {
             this.drown();
         }
@@ -1368,6 +1373,16 @@ Player.prototype.victory = function() {
     Cloud.prototype.keepMoving();
     Player.prototype.victoryMessage();
     Player.prototype.continueMessage();
+};
+
+Player.prototype.topIntroText = function() {
+    ctx.fillStyle = 'black';
+    ctx.textAlign = 'center';
+    ctx.font = '30px Impact';
+
+    ctx.fillText('Collect the keys,', map.totalWidth / 2, map.tileHeight);
+    ctx.fillText('Collect the gems,', map.totalWidth / 2, map.tileHeight * 1.75);
+    ctx.fillText('Beat the clock!', map.totalWidth / 2, map.tileHeight * 2.5);
 };
 
 Player.prototype.victoryMessage = function() {
@@ -1639,8 +1654,9 @@ Player.prototype.displayHearts = function() {
 Player.prototype.displayTimer = function() {
     this.bwMsgStyle();
     ctx.textAlign = 'right';
+    var displayMe;
     if (this.timeLeft > 0) {
-        var displayMe = Math.ceil(this.timeLeft);
+        displayMe = Math.ceil(this.timeLeft);
     } else {
         displayMe = 'No bonus!';
     }

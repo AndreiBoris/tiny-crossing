@@ -263,7 +263,8 @@ var Engine = (function(global) {
         'images/cloud4.png',
         'images/cloud5.png',
         'images/cloud6.png',
-        'images/cloud7.png'
+        'images/cloud7.png',
+        'images/Arrows.png'
     ];
 
     Resources.load(loadMe);
