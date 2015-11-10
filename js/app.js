@@ -1593,8 +1593,8 @@ Player.prototype.deadMessage = function() {
     ctx.fillStyle = 'black';
     ctx.strokeStyle = 'red';
     ctx.textAlign = 'center';
-    ctx.fillText('You got ' + this.points + ' points!', canvas.width / 2, canvas.height - 140);
-    ctx.strokeText('You got ' + this.points + ' points!', canvas.width / 2, canvas.height - 140);
+    ctx.fillText(this.points + ' points!', canvas.width / 2, canvas.height - 140);
+    ctx.strokeText(this.points + ' points!', canvas.width / 2, canvas.height - 140);
 };
 
 // This is used to in most circumstances to switch between having all entities 
@@ -2129,12 +2129,14 @@ map.makeCoordinates();
 
 var player = new Player();
 
+// These arrays will be used in for loops throughout:
 var allEnemies = [];
 var allCorn = [];
 var allKeys = [];
 var allPowerUps = [];
 var allClouds = [];
 
+// Shorthand for Class inheritance:
 function inherit(subClass, superClass) {
     subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
     subClass.prototype.constructor = subClass; // set constructor on prototype
