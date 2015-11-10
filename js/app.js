@@ -153,13 +153,13 @@ var Map = function() {
         // Load audio files
         chime: new Audio('audio/chime.mp3'),
         chaching: new Audio('audio/chaching.mp3'),
+        flip: new Audio('audio/flip.mp3'),
         gong: new Audio('audio/gong.mp3'),
         key: new Audio('audio/key.mp3'),
         powerdown: new Audio('audio/powerdown.mp3'),
         run: new Audio('audio/run.mp3'),
         shield: new Audio('audio/shield.mp3'),
         splash: new Audio('audio/splash.mp3'),
-        flip: new Audio('audio/switch.mp3'),
         thud: new Audio('audio/thud.mp3'),
         time: new Audio('audio/time.mp3'),
         trumpet: new Audio('audio/trumpet.mp3'),
@@ -173,47 +173,7 @@ var Map = function() {
 Map.prototype.playSFX = function(SFX) {
     // Player can mute sounds by pressing 'm':
     if (!this.audio.muted) {
-        switch (SFX) {
-            case 'chime':
-                this.audio.chime.play();
-                break;
-            case 'chaching':
-                this.audio.chaching.play();
-                break;
-            case 'gong':
-                this.audio.gong.play();
-                break;
-            case 'key':
-                this.audio.key.play();
-                break;
-            case 'powerdown':
-                this.audio.powerdown.play();
-                break;
-            case 'run':
-                this.audio.run.play();
-                break;
-            case 'shield':
-                this.audio.shield.play();
-                break;
-            case 'splash':
-                this.audio.splash.play();
-                break;
-            case 'flip':
-                this.audio.flip.play();
-                break;
-            case 'thud':
-                this.audio.thud.play();
-                break;
-            case 'time':
-                this.audio.time.play();
-                break;
-            case 'trumpet':
-                this.audio.trumpet.play();
-                break;
-            case 'yeehaw':
-                this.audio.yeehaw.play();
-                break;
-        }
+        this.audio[SFX].play();
     }
 };
 
