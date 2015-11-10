@@ -1,5 +1,5 @@
-All files were changed from .wav to .mp3 and the quality was reduced to compress
-file sizes
+***All files were changed from .wav to .mp3 and the quality was reduced to
+compress file sizes:
 
 I found the file I called key.mp3. It was uploaded by Gabriel Araujo:
 Link to file: https://www.freesound.org/people/GabrielAraujo/sounds/242501/
@@ -69,3 +69,9 @@ I found the file I called gong.mp3. It was uploaded by nickgar:
 Link to file: https://www.freesound.org/people/nickgar/sounds/120545/
 Link to license: http://creativecommons.org/licenses/by/3.0/
 The time has come for thanks. Thank you nickgar.
+
+I found the file I called music.mp3. It was uploaded by joshuaempyre:
+Link to file: https://www.freesound.org/people/joshuaempyre/sounds/251461/
+Link to license: http://creativecommons.org/licenses/by/3.0/
+You have spread your influence and conquered my heart with your rad tunes,
+joshuaempyre.

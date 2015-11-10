@@ -156,6 +156,7 @@ var Map = function() {
         flip: new Audio('audio/flip.mp3'),
         gong: new Audio('audio/gong.mp3'),
         key: new Audio('audio/key.mp3'),
+        music: new Audio('audio/music.mp3'),
         powerdown: new Audio('audio/powerdown.mp3'),
         run: new Audio('audio/run.mp3'),
         shield: new Audio('audio/shield.mp3'),
@@ -168,6 +169,9 @@ var Map = function() {
     // Holds the last twenty sounds played so that they can all be muted once 
     // the player presses the 'm' button:
     this.lastTwentySounds = [];
+    // Holds the current audio object that is acting as the backing track for
+    // game:
+    this.currentMusic = this.audio.music;
 };
 
 // Play game sound effects
@@ -234,6 +238,15 @@ Map.prototype.makeKeys = function() {
     allKeys.push(new Key(1));
     allKeys.push(new Key(5));
     allKeys.push(new Key(9));
+};
+
+// Plays the music on repeat as long as the sound is not muted:
+Map.prototype.playMusic = function() {
+    if (!this.audio.muted) {
+        this.currentMusic.play();
+        this.currentMusic.volume = 0.2;
+        this.currentMusic.loop = true;
+    }
 };
 
 // This gets inherited by Item, Corn, Enemy and Cloud:
@@ -468,8 +481,8 @@ Key.prototype.update = function(dt) {
         else {
             if (this.x < map.xValues[map.numColumns - 4] + this.collectedOffset) {
                 this.x = this.x + 100 * dt *
-                    // Slow down the x-movement as time goes on for a smoother animation:
-                    (map.xValues[map.numColumns - 2] / this.x) * this.moving;
+                // Slow down the x-movement as time goes on for a smoother animation:
+                (map.xValues[map.numColumns - 2] / this.x) * this.moving;
             }
             if (this.y < map.yValues[map.numRows - 2]) {
                 this.y = this.y + 300 * dt * this.moving;
@@ -916,10 +929,16 @@ var Player = function() {
     this.pointsY = -200;
 
     this.pointsScreen = false;
+
+    this.musicNotStarted = true;
 };
 
 // Until the player has selected a character, this gets rendered over the game:
 Player.prototype.character = function() {
+    if (this.musicNotStarted){
+        this.musicNotStarted = false;
+        map.playMusic();
+    }
     // Display game goal instructions in the white space at the top:
     this.topIntroText();
     // Display instructions about movement controls and how to mute the game:
@@ -1389,6 +1408,7 @@ Player.prototype.announcePoints = function(points) {
     ctx.fillStyle = 'orange';
     ctx.strokeStyle = 'black';
     ctx.font = '56px Impact';
+    ctx.textAlign = 'center';
     ctx.fillText('+' + points, map.totalWidth - map.tileWidth * 1.5, this.pointsY);
     ctx.strokeText('+' + points, map.totalWidth - map.tileWidth * 1.5, this.pointsY);
 };
@@ -1845,13 +1865,19 @@ Player.prototype.victoryBounce = function(startingY, dt) {
 
 // Actions to perform when the user presses keys:
 Player.prototype.handleInput = function(input) {
+    // This can be implemented at any time:
     if (input === 'mute') {
+        // No more sounds will be played:
         map.audio.muted = !map.audio.muted;
         if (map.audio.muted) {
+            // If we just muted the sounds, last 20 sounds will pause:
             var numSounds = map.lastTwentySounds.length;
-            for (var sound = 0; sound < numSounds; sound++){
+            map.currentMusic.pause();
+            for (var sound = 0; sound < numSounds; sound++) {
                 map.lastTwentySounds[sound].pause();
             }
+        } else {
+            map.playMusic();
         }
     }
 
