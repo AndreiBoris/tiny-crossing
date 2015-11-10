@@ -460,8 +460,8 @@ Key.prototype.update = function(dt) {
         else {
             if (this.x < map.xValues[map.numColumns - 4] + this.collectedOffset) {
                 this.x = this.x + 100 * dt *
-                    // Slow down the x-movement as time goes on for a smoother animation:
-                    (map.xValues[map.numColumns - 2] / this.x) * this.moving;
+                // Slow down the x-movement as time goes on for a smoother animation:
+                (map.xValues[map.numColumns - 2] / this.x) * this.moving;
             }
             if (this.y < map.yValues[map.numRows - 2]) {
                 this.y = this.y + 300 * dt * this.moving;
@@ -999,10 +999,9 @@ Player.prototype.update = function(dt) {
         } // If all the countdowns are really low, go back to the regular 
         // sprite:
         else if (this.lasso < 0.09) {
-            if (this.shield <= 0.09 && this.water <= 0.09) {
-                this.sprite = this.charOptions[this.selection];
-            }
-            // if lasso countdown is really low, remove extention:
+            // If no timer is about 0.1, set sprite back to normal:
+            this.resetSprite();
+            // Remove extention:
             this.extention = 0;
         }
     }
@@ -1011,20 +1010,22 @@ Player.prototype.update = function(dt) {
     if (this.water > 0) {
         // Count down timer:
         this.water -= dt * this.moving;
-        if (this.water > 0.1 && this.shield <= 0.09 && !this.ouch) {
+        // Shield would take priority over water, but otherwise, as long as 
+        // there is sufficient time on the countodnw timer, apply water sprite:
+        if (this.water > 0.1 && this.shield <= 0.09) {
             this.sprite = this.charWater[this.selection];
-        } else if (this.water < 0.09 && this.shield <= 0.09) {
-            this.sprite = this.charOptions[this.selection];
         }
+        // If no timer is about 0.1, set sprite back to normal:
+        this.resetSprite();
     }
 
     if (this.shield > 0) {
         this.shield -= dt * this.moving;
         if (this.shield > 0.1 && !this.ouch) {
             this.sprite = this.charShield[this.selection];
-        } else if (this.shield < 0.09) {
-            this.sprite = this.charOptions[this.selection];
-        }
+        } 
+        // If no timer is about 0.1, set sprite back to normal:
+        this.resetSprite();
     }
 
     // Player is on water corn:
@@ -1188,6 +1189,13 @@ Player.prototype.update = function(dt) {
     // doesn't get changed by the loop
     if (this.victory === true) {
         this.victoryBounce(this.victorySpot, dt);
+    }
+};
+
+Player.prototype.resetSprite = function() {
+    if (this.water < 0.1 && this.shield < 0.1 &&
+        this.lasso < 0.1) {
+        this.sprite = this.charOptions[this.selection];
     }
 };
 
