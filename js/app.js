@@ -460,8 +460,8 @@ Key.prototype.update = function(dt) {
         else {
             if (this.x < map.xValues[map.numColumns - 4] + this.collectedOffset) {
                 this.x = this.x + 100 * dt *
-                // Slow down the x-movement as time goes on for a smoother animation:
-                (map.xValues[map.numColumns - 2] / this.x) * this.moving;
+                    // Slow down the x-movement as time goes on for a smoother animation:
+                    (map.xValues[map.numColumns - 2] / this.x) * this.moving;
             }
             if (this.y < map.yValues[map.numRows - 2]) {
                 this.y = this.y + 300 * dt * this.moving;
@@ -1602,22 +1602,36 @@ Player.prototype.blurPause = function() {
     this.moving = 0;
 };
 
+// Runs whenever a PowerUp is picked up. It takes the picked-up PowerUp as an
+// argument:
 Player.prototype.pickUp = function(power) {
+    // Run the effects of picking up this PowerUp. power.gem returns a string 
+    // that identifies the kind of PowerUp that was picked up. It needs to be 
+    // run with .call(player) as otherwise the value of this in the effects will 
+    // be mapped as the Player.prototype.gems object:
     this.gems[power.gem].call(player);
+    // If the powerUpMax number has been reached on the map, this frees a spot
+    // for a new PowerUp to be spawned:
     map.powerUpCount--;
-    // Remove powerUp from array of PowerUps:
+    // Remove PowerUp from the array of PowerUps so that it cannot be picked up
+    // again:
     var index = allPowerUps.indexOf(power);
     allPowerUps.splice(index, 1);
 };
 
+// Stores all the effects of all of the PowerUps:
 Player.prototype.gems = {
+    // Orange PowerUp, increases the speed of all enemies and corn:
     fast: (function gemFast() {
         map.playSFX('run');
         this.winPoints(150);
+        // How long the effects will last in seconds:
         this.enemySpeedTime = 5;
+        // Increase the speed of the player when the player is floating on corn:
         this.gemSpeed = 1.5;
         var numEnemies = allEnemies.length,
             numCorn = allCorn.length;
+        // Increase speed of enemies and the corn:
         for (var i = 0; i < numEnemies; i++) {
             allEnemies[i].gemSpeed = 1.5;
         }
@@ -1625,35 +1639,47 @@ Player.prototype.gems = {
             allCorn[i].gemSpeed = 1.5;
         }
     }),
+    // Blue PowerUp, stops the enemies from moving:
     time: (function gemTime() {
         map.playSFX('time');
         this.winPoints(100);
+        // Adds some extra time to the clock to potentially get more points:
         this.timeLeft += 10;
+        // How long the effects will last in seconds:
         this.freeze = 6;
     }),
+    // Green PowerUp, makes the player invulnerable to collisions with enemies:
     shield: (function gemShield() {
         map.playSFX('shield');
         this.winPoints(100);
+        // How long the effects will last in seconds:
         this.shield = 5;
     }),
+    // Purple PowerUp, allows the player to walk on water without drowning:
     water: (function gemWater() {
         map.playSFX('chime');
         this.winPoints(100);
+        // How long the effects will last in seconds:
         this.water = 4;
     }),
+    // Yellow PowerUp, gives the player extra reach when grabbing keys:
     lasso: (function gemLasso() {
         map.playSFX('yeehaw');
         this.winPoints(100);
+        // How long the effects will last in seconds:
         this.lasso = 8;
     }),
+    // Black PowerUp, gives the player a lot of points:
     points: (function gemPoints() {
         map.playSFX('chaching');
         this.winPoints(300);
     }),
+    // White PowerUp, slows the enemies and corn down:
     slow: (function gemSlow() {
         map.playSFX('powerdown');
         this.winPoints(100);
         this.enemySpeedTime = 5;
+        // Decrease the speed of the player when the player is floating on corn:
         this.gemSpeed = 0.5;
         var numEnemies = allEnemies.length,
             numCorn = allCorn.length;
@@ -1664,6 +1690,7 @@ Player.prototype.gems = {
             allCorn[i].gemSpeed = 0.5;
         }
     }),
+    // Red PowerUp, switch the direction that all corn is floating in:
     reverse: (function gemReverse() {
         map.playSFX('flip');
         this.winPoints(100);
