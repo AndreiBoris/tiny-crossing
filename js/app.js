@@ -983,26 +983,34 @@ Player.prototype.update = function(dt) {
 
     // Lasso PowerUp allows extended reach when grabbing keys:
     if (this.lasso > 0) {
-        // Countdown timer:
+        // Count down timer:
         this.lasso -= dt * this.moving;
-        // As long as the player is not 
-        if (this.lasso > 0.1 && !this.ouch) {
+        // There is still some time left on the lasso countdown:
+        if (this.lasso > 0.1) {
+            // Shield and water sprites would take priority over the lasso 
+            // sprite if they have not almost completely run out as well:
             if (this.shield <= 0.09 && this.water <= 0.09) {
                 this.sprite = this.charLasso[this.selection];
             }
+            // This gives the player an extended influence over the keys. The  
+            // value written is the number of pixels that this reach is extended 
+            // by:
             this.extention = 100;
-        } else if (this.lasso < 0.09) {
+        } // If all the countdowns are really low, go back to the regular 
+        // sprite:
+        else if (this.lasso < 0.09) {
             if (this.shield <= 0.09 && this.water <= 0.09) {
                 this.sprite = this.charOptions[this.selection];
             }
+            // if lasso countdown is really low, remove extention:
             this.extention = 0;
         }
     }
 
     // Player with water gem buff ignores floating:
     if (this.water > 0) {
+        // Count down timer:
         this.water -= dt * this.moving;
-        this.floating = false;
         if (this.water > 0.1 && this.shield <= 0.09 && !this.ouch) {
             this.sprite = this.charWater[this.selection];
         } else if (this.water < 0.09 && this.shield <= 0.09) {
