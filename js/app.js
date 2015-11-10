@@ -1164,11 +1164,13 @@ Player.prototype.update = function(dt) {
     // Holds current positions of all power ups:
     var powerSpots = [];
 
+    // Push current positions of each PowerUp to the array:
     for (p = 0; p < numPowerUps; p++) {
         var xP = allPowerUps[p].x;
         var yP = allPowerUps[p].y;
         powerSpots.push([xP, yP]);
     }
+
     // Check to see if the player is close enough to any of the power ups to
     // pick them up:
     for (p = 0; p < numPowerUps; p++) {
@@ -1176,14 +1178,21 @@ Player.prototype.update = function(dt) {
                 this.x + map.tileWidth / 2 > powerSpots[p][0]) &&
             (this.y - map.tileHeight / 8 < powerSpots[p][1] &&
                 this.y + map.tileHeight / 8 > powerSpots[p][1])) {
-            // Collision detected:
+            // When a PowerUp is picked up, it adds its buff to the player, and 
+            // also gets removed from the allPowerUps array:
             this.pickUp(allPowerUps[p]);
+            // If the loop isn't broken at this point, it will continue running 
+            // through the previously established numPowerUps and might pickUp 
+            // PowerUps that are not actually at the correct location due to 
+            // powerSpots and allPowerUps indices no longer being matched after 
+            // the removal of the first PowerUp that was picked up:
             break;
         }
     }
     // Holds current positions of all enemies:
     var enemySpots = [];
-    numEnemies = allEnemies.length;
+
+    // Push all current enemy position values to the array:
     for (i = 0; i < numEnemies; i++) {
         var xE = allEnemies[i].x;
         var yE = allEnemies[i].y;
@@ -1201,8 +1210,7 @@ Player.prototype.update = function(dt) {
         }
     }
     // If player reached the end objective, character does a little bounce,
-    // this.victorySpot is determined when the player reaches the objective and
-    // doesn't get changed by the loop
+    // this.victorySpot is determined once the player reaches the objective:
     if (this.victory === true) {
         this.victoryBounce(this.victorySpot, dt);
     }
@@ -1543,7 +1551,7 @@ Player.prototype.pickUp = function(power) {
         this.gemReverse();
     }
     map.powerUpCount--;
-    // Remove powerUp from array of powerUps
+    // Remove powerUp from array of PowerUps:
     var index = allPowerUps.indexOf(power);
     allPowerUps.splice(index, 1);
 };
