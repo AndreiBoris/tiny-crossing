@@ -460,8 +460,8 @@ Key.prototype.update = function(dt) {
         else {
             if (this.x < map.xValues[map.numColumns - 4] + this.collectedOffset) {
                 this.x = this.x + 100 * dt *
-                    // Slow down the x-movement as time goes on for a smoother animation:
-                    (map.xValues[map.numColumns - 2] / this.x) * this.moving;
+                // Slow down the x-movement as time goes on for a smoother animation:
+                (map.xValues[map.numColumns - 2] / this.x) * this.moving;
             }
             if (this.y < map.yValues[map.numRows - 2]) {
                 this.y = this.y + 300 * dt * this.moving;
@@ -1362,15 +1362,26 @@ Player.prototype.render = function() {
     }
 };
 
+
+// Runs whenever points are awarded to the player. lastKey is an optional 
+// parameter that only need to be run when picking up the third key in a round:
 Player.prototype.winPoints = function(points, lastKey) {
+    // Give player points:
     this.points += points;
+    // Move the orange announcePoints text down so that it is briefly visible:
     this.pointsY = map.tileHeight * 5;
+    // Make the points being displayed the points that were just acquired:
     this.latestPoints = points;
+    // If the last key parameter is included, the points shown will have 50 
+    // added to them to account for the 50 points getting that key awareded. 
+    // Otherwise, the more recent time bonus score will override the value 
+    // of this.latestPoints completely:
     if (lastKey) {
         this.latestPoints = points + 50;
     }
 };
 
+// This always displays this.latestPoints through this.render();
 Player.prototype.announcePoints = function(points) {
     ctx.fillStyle = 'orange';
     ctx.strokeStyle = 'black';
@@ -1379,19 +1390,27 @@ Player.prototype.announcePoints = function(points) {
     ctx.strokeText('+' + points, map.totalWidth - map.tileWidth * 1.5, this.pointsY);
 };
 
+// Display when all keys are collected:
 Player.prototype.victoryScreen = function() {
+    // Clouds speed up even though eveything else is paused to clear area where 
+    // text appears:
     Cloud.prototype.keepMoving();
     Player.prototype.victoryMessage();
     Player.prototype.continueMessage();
 };
 
+// Display when all lives are lost:
 Player.prototype.deadScreen = function() {
+    // Clouds speed up even though eveything else is paused to clear area where 
+    // text appears, especially important here as final point count might 
+    // otherwise be obscured:
     Cloud.prototype.keepMoving();
     this.deadOverlay();
     this.deadMessage();
     this.playAgainMessage();
 };
 
+// Display during character selection screen:
 Player.prototype.topIntroText = function() {
     ctx.fillStyle = 'black';
     ctx.textAlign = 'center';
@@ -1402,6 +1421,7 @@ Player.prototype.topIntroText = function() {
     ctx.fillText('Beat the clock!', map.totalWidth / 2, map.tileHeight * 2.5);
 };
 
+// Display during character selection screen:
 Player.prototype.instructionsText = function() {
     ctx.fillStyle = 'white';
     ctx.textAlign = 'left';
@@ -1412,6 +1432,7 @@ Player.prototype.instructionsText = function() {
     ctx.fillText('Use \'m\' to mute sound.', map.totalWidth / 6, map.tileHeight * 6.3);
 };
 
+// Display during character selection screen:
 Player.prototype.charSelection = function() {
     this.bwMsgStyle();
     ctx.textAlign = 'center';
@@ -1427,6 +1448,7 @@ Player.prototype.charSelection = function() {
     ctx.drawImage(Resources.get(map.variousImages[0]), this.selectX, this.selectY);
 };
 
+// Display character options during character selection screen:
 Player.prototype.charChoices = function() {
     // Determine number of character options for the for loop ahead:
     var length = this.charOptions.length,
@@ -1480,30 +1502,34 @@ Player.prototype.pauseMessage = function() {
 };
 
 Player.prototype.hitMessage = function() {
-    Cloud.prototype.keepMoving();
+    // Red, see-through gradient appears around the player sprite:
     this.hitOverlay();
-    ctx.font = '56px Impact';
-    ctx.fillStyle = 'white';
-    ctx.strokeStyle = 'red';
+    // Sends clouds to keep moving and sets font style:
+    this.loseLifeMsgStyle();
     ctx.fillText('You got hit!', canvas.width / 2, canvas.height - 140);
     ctx.strokeText('You got hit!', canvas.width / 2, canvas.height - 140);
-    if (!this.isDead) {
-        Player.prototype.continueMessage();
-    }
+    this.continueMessage();
 };
 
 Player.prototype.drownMessage = function() {
+    // Sends clouds to keep moving and sets font style:
+    this.loseLifeMsgStyle();
+    ctx.fillText('You can\'t swim!', canvas.width / 2, canvas.height - 140);
+    ctx.strokeText('You can\'t swim!', canvas.width / 2, canvas.height - 140);
+    this.continueMessage();
+};
+
+Player.prototype.loseLifeMsgStyle = function() {
+    // If clouds are present, their speed will be doubled so that they move 
+    // offscreen and allow the text below them to be read:
     Cloud.prototype.keepMoving();
     ctx.font = '56px Impact';
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'red';
-    ctx.fillText('You can\'t swim!', canvas.width / 2, canvas.height - 140);
-    ctx.strokeText('You can\'t swim!', canvas.width / 2, canvas.height - 140);
-    if (!this.isDead) {
-        Player.prototype.continueMessage();
-    }
 };
 
+// Display when all lives are lost to show the player the number of points 
+// earned:
 Player.prototype.deadMessage = function() {
     ctx.font = '64px Impact';
     ctx.fillStyle = 'black';
@@ -1513,13 +1539,14 @@ Player.prototype.deadMessage = function() {
     ctx.strokeText('You got ' + this.points + ' points!', canvas.width / 2, canvas.height - 140);
 };
 
+// This is used to in most circumstances to switch between having all entities 
+// being paused and all entities being unpaused:
 Player.prototype.togglePause = function() {
     var numEnemies = allEnemies.length,
         numCorn = allCorn.length,
         numKeys = allKeys.length,
         numClouds = allClouds.length,
         numPowerUps = allPowerUps.length;
-    // Pause all enemies:
     for (var i = 0; i < numEnemies; i++) {
         allEnemies[i].togglePause();
     }
@@ -1536,6 +1563,8 @@ Player.prototype.togglePause = function() {
         allClouds[i].togglePause();
     }
     this.paused = !this.paused;
+    // This controls whether the player is moving while floating on top of the 
+    // corn:
     if (this.moving === 1) {
         this.moving = 0;
     } else {
@@ -1543,6 +1572,10 @@ Player.prototype.togglePause = function() {
     }
 };
 
+// This is used in circumstances where we want to make sure that everything 
+// gets paused whether it is paused already or not. The primary use (and 
+// possibily only ever necessary use) is to pause the game when the game window 
+// is navigated away from such that the 'blur' event occurs on the window:
 Player.prototype.blurPause = function() {
     var numEnemies = allEnemies.length,
         numCorn = allCorn.length,
@@ -1570,96 +1603,75 @@ Player.prototype.blurPause = function() {
 };
 
 Player.prototype.pickUp = function(power) {
-    if (power.gem === 'fast') {
-        this.gemFast();
-    } else if (power.gem === 'time') {
-        this.gemTime();
-    } else if (power.gem === 'shield') {
-        this.gemShield();
-    } else if (power.gem === 'water') {
-        this.gemWater();
-    } else if (power.gem === 'lasso') {
-        this.gemLasso();
-    } else if (power.gem === 'points') {
-        this.gemPoints();
-    } else if (power.gem === 'slow') {
-        this.gemSlow();
-    } else if (power.gem === 'reverse') {
-        this.gemReverse();
-    }
+    this.gems[power.gem].call(player);
     map.powerUpCount--;
     // Remove powerUp from array of PowerUps:
     var index = allPowerUps.indexOf(power);
     allPowerUps.splice(index, 1);
 };
 
-Player.prototype.gemFast = function() {
-    map.playSFX('run');
-    this.winPoints(150);
-    this.enemySpeedTime = 5;
-    this.gemSpeed = 1.5;
-    var numEnemies = allEnemies.length,
-        numCorn = allCorn.length;
-    for (var i = 0; i < numEnemies; i++) {
-        allEnemies[i].gemSpeed = 1.5;
-    }
-    for (i = 0; i < numCorn; i++) {
-        allCorn[i].gemSpeed = 1.5;
-    }
-};
-
-Player.prototype.gemTime = function() {
-    map.playSFX('time');
-    this.winPoints(100);
-    this.timeLeft += 10;
-    this.freeze = 6;
-};
-
-Player.prototype.gemShield = function() {
-    map.playSFX('shield');
-    this.winPoints(100);
-    this.shield = 5;
-};
-
-Player.prototype.gemWater = function() {
-    map.playSFX('chime');
-    this.winPoints(100);
-    this.water = 4;
-};
-
-Player.prototype.gemLasso = function() {
-    map.playSFX('yeehaw');
-    this.winPoints(100);
-    this.lasso = 8;
-};
-
-Player.prototype.gemPoints = function() {
-    map.playSFX('chaching');
-    this.winPoints(300);
-};
-
-Player.prototype.gemSlow = function() {
-    map.playSFX('powerdown');
-    this.winPoints(100);
-    this.enemySpeedTime = 5;
-    this.gemSpeed = 0.5;
-    var numEnemies = allEnemies.length,
-        numCorn = allCorn.length;
-    for (var i = 0; i < numEnemies; i++) {
-        allEnemies[i].gemSpeed = 0.5;
-    }
-    for (i = 0; i < numCorn; i++) {
-        allCorn[i].gemSpeed = 0.5;
-    }
-};
-
-Player.prototype.gemReverse = function() {
-    map.playSFX('flip');
-    this.winPoints(100);
-    var numCorn = allCorn.length;
-    for (i = 0; i < numCorn; i++) {
-        allCorn[i].speed *= -1;
-    }
+Player.prototype.gems = {
+    fast: (function gemFast() {
+        map.playSFX('run');
+        this.winPoints(150);
+        this.enemySpeedTime = 5;
+        this.gemSpeed = 1.5;
+        var numEnemies = allEnemies.length,
+            numCorn = allCorn.length;
+        for (var i = 0; i < numEnemies; i++) {
+            allEnemies[i].gemSpeed = 1.5;
+        }
+        for (i = 0; i < numCorn; i++) {
+            allCorn[i].gemSpeed = 1.5;
+        }
+    }),
+    time: (function gemTime() {
+        map.playSFX('time');
+        this.winPoints(100);
+        this.timeLeft += 10;
+        this.freeze = 6;
+    }),
+    shield: (function gemShield() {
+        map.playSFX('shield');
+        this.winPoints(100);
+        this.shield = 5;
+    }),
+    water: (function gemWater() {
+        map.playSFX('chime');
+        this.winPoints(100);
+        this.water = 4;
+    }),
+    lasso: (function gemLasso() {
+        map.playSFX('yeehaw');
+        this.winPoints(100);
+        this.lasso = 8;
+    }),
+    points: (function gemPoints() {
+        map.playSFX('chaching');
+        this.winPoints(300);
+    }),
+    slow: (function gemSlow() {
+        map.playSFX('powerdown');
+        this.winPoints(100);
+        this.enemySpeedTime = 5;
+        this.gemSpeed = 0.5;
+        var numEnemies = allEnemies.length,
+            numCorn = allCorn.length;
+        for (var i = 0; i < numEnemies; i++) {
+            allEnemies[i].gemSpeed = 0.5;
+        }
+        for (i = 0; i < numCorn; i++) {
+            allCorn[i].gemSpeed = 0.5;
+        }
+    }),
+    reverse: (function gemReverse() {
+        map.playSFX('flip');
+        this.winPoints(100);
+        var numCorn = allCorn.length;
+        for (i = 0; i < numCorn; i++) {
+            allCorn[i].speed *= -1;
+        }
+    })
 };
 
 Player.prototype.hit = function() {
@@ -1898,8 +1910,8 @@ Player.prototype.handleInput = function(input) {
                 // Back to round 1.
                 map.round = 1;
                 setEnemies(8);
-                // Pause the enemies only, so that the new ones generated don't begin
-                // the next game paused:
+                // Pause the enemies only, so that the new ones generated don't 
+                // begin the next game paused:
                 this.blurPause();
                 this.points = 0;
             } else if (this.victory === true) {
@@ -2078,3 +2090,5 @@ document.addEventListener('keyup', function(e) {
 // TODO: Make a function that handles all sprite changes due to buffs
 // TODO: Stop the alterDirection timer on enemies when the game is paused/when
 // they are frozen (this is when the problem happens)
+// TODO: Make it possible to see several points announcements if many PowerUps
+// are picked up
