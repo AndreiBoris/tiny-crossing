@@ -72,7 +72,8 @@ var Map = function() {
         'images/Black.png',
         'images/White.png',
         'images/Red.png',
-        'images/Arrows.png'
+        'images/Arrows.png',
+        'images/Mute.png'
     ];
     this.enemySprites = [
         'images/enemy-bug-right.png',
@@ -151,6 +152,7 @@ var Map = function() {
         // Sound on/off
         'muted': false,
         // Load audio files
+        burrow: new Audio('audio/burrow.mp3'),
         chime: new Audio('audio/chime.mp3'),
         chaching: new Audio('audio/chaching.mp3'),
         flip: new Audio('audio/flip.mp3'),
@@ -164,6 +166,7 @@ var Map = function() {
         thud: new Audio('audio/thud.mp3'),
         time: new Audio('audio/time.mp3'),
         trumpet: new Audio('audio/trumpet.mp3'),
+        unburrow: new Audio('audio/unburrow.mp3'),
         yeehaw: new Audio('audio/yeehaw.mp3')
     };
     // Holds the last twenty sounds played so that they can all be muted once 
@@ -816,6 +819,7 @@ Burrower.prototype.update = function(dt) {
 
 // Type 1 Burrower behaviour:
 Burrower.prototype.unburrow = function() {
+    map.playSFX('unburrow');
     // Set timer until the Burrower will burrow again:
     this.unburrowed = 3;
     // If the last unburrow happened at the final location (5), then go to the 
@@ -845,6 +849,7 @@ Burrower.prototype.unburrow = function() {
 
 // Type 2 Burrower behaviour:
 Burrower.prototype.unburrow2 = function() {
+    map.playSFX('unburrow');
     // Unburrow will last for this long:
     this.unburrowed = 1 + 4 * Math.random();
     this.y = map.yValues[13];
@@ -854,6 +859,7 @@ Burrower.prototype.unburrow2 = function() {
 
 // What Burrowers do when they are burrow after unburrowing:
 Burrower.prototype.hide = function(wait) {
+    map.playSFX('burrow');
     this.x = -100;
     this.y = -100;
     if (this.type === 1) {
@@ -1333,6 +1339,13 @@ Player.prototype.resetStart = function() {
 // Draws each frame.
 Player.prototype.render = function() {
 
+    // If the game is muted, the muted symbol should be displaying under the 
+    // hearts:
+    if (map.audio.muted) {
+        ctx.drawImage(Resources.get(map.variousImages[15]), 10,
+            map.tileHeight + 20);
+    }
+
     // Always display the latest points won. Except unless the points where won
     // just recently, the display will occur off the canvas and won't be seen,
     // and once points are won and the display is back on canvas, the
@@ -1480,6 +1493,7 @@ Player.prototype.instructionsText = function() {
     ctx.textAlign = 'left';
 
     ctx.fillText('Use ', (map.totalWidth / 6), map.tileHeight * 5);
+    // Display arrow keys:
     ctx.drawImage(Resources.get(map.variousImages[14]), (map.totalWidth / 5) + 30, map.tileHeight * 3);
     ctx.fillText(' to move. ', (map.totalWidth / 2) + 10, map.tileHeight * 5);
     ctx.fillText('Use \'m\' to mute sound.', map.totalWidth / 6, map.tileHeight * 6.3);
@@ -2182,16 +2196,13 @@ document.addEventListener('keyup', function(e) {
 
 // TODO: Level editor to move rocks
 
-// TODO: Diplay information off of the canvas (like the timers);
-// TODO: Include muted symbol bottom lefthand corner
+// TODO: Display information off of the canvas (like the timers);
 // TODO: Edit intro with Sarah's suggestions
 
 // TODO: display Enemy slow/speed
 // TODO: unburrow sound
 // TODO: 2 lane monster
 // TODO: Slow down regular enemies and add FAST one
-// TODO: Add a water enemy
-// TODO: No class for non-class
 // TODO: Wakka Wakka monster on the water
 // TODO: Make a function that handles all sprite changes due to buffs
 // TODO: Stop the alterDirection timer on enemies when the game is paused/when
