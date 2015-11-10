@@ -165,6 +165,9 @@ var Map = function() {
         trumpet: new Audio('audio/trumpet.mp3'),
         yeehaw: new Audio('audio/yeehaw.mp3')
     };
+    // Holds the last twenty sounds played so that they can all be muted once 
+    // the player presses the 'm' button:
+    this.lastTwentySounds = [];
 };
 
 // Play game sound effects
@@ -173,7 +176,12 @@ var Map = function() {
 Map.prototype.playSFX = function(SFX) {
     // Player can mute sounds by pressing 'm':
     if (!this.audio.muted) {
+        // Stores the current sound being played so that it can be muted by the 
+        // 'm' button even if it has already begun:
         this.audio[SFX].play();
+        if (map.lastTwentySounds.length < 20) {
+            map.lastTwentySounds.push(this.audio[SFX]);
+        }
     }
 };
 
@@ -1835,10 +1843,18 @@ Player.prototype.victoryBounce = function(startingY, dt) {
     }
 };
 
+// Actions to perform when the user presses keys:
 Player.prototype.handleInput = function(input) {
     if (input === 'mute') {
         map.audio.muted = !map.audio.muted;
+        if (map.audio.muted) {
+            var numSounds = map.lastTwentySounds.length;
+            for (var sound = 0; sound < numSounds; sound++){
+                map.lastTwentySounds[sound].pause();
+            }
+        }
     }
+
     // Character-selection screen controls
     if (this.charSelected === false) {
         if (input === 'left') {
