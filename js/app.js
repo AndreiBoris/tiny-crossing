@@ -1229,7 +1229,11 @@ Player.prototype.resetSprite = function() {
 // This runs whenever the player is on the floating corn to determine where the 
 // player should .move() to if the player moves off the floating corn area:
 Player.prototype.trackPosition = function() {
+    // Run through all xCoodinate positions:
     for (var i = 0; i < (map.numColumns - 1); i++) {
+        // The use of the -25 accounts for the player sprite's aplha/transparent
+        // parts, such that trackPosition() will return a result that is more in
+        // line with where the character sprite appears to be standing:
         if (this.x > map.xValues[i] - 25 && this.x < map.xValues[i + 1] - 25) {
             this.xCoord = i;
         }
@@ -1243,7 +1247,9 @@ Player.prototype.move = function() {
     this.y = map.yValues[this.yCoord];
 };
 
-// Less frustrating way of moving on the water:
+// This move the player sprite without regard for the coordinate system. This is 
+// used in conjunction with trackPosition() in order to make transitions from 
+// waterMove()s to move()s (which use the coordinate system) seemless:
 Player.prototype.waterMove = function(direc) {
     if (direc === 'left') {
         this.x = this.x - map.tileWidth;
@@ -1256,68 +1262,77 @@ Player.prototype.waterMove = function(direc) {
     }
 };
 
+// Resets the player.sprite to the starting position near the bottom centre
+// part of the screen:
 Player.prototype.resetStart = function() {
-    // Resets the player.sprite to the starting position near the bottom centre
-    // part of the screen:
+    // Position player somewhere in the middle of the bottom-most row:
     this.xCoord = Math.floor(map.numColumns / 2);
     this.yCoord = map.numRows - 2;
     this.move();
-
+    // Countdown timer is reset so that the player can get extra points:
     this.timeLeft = 30;
 };
 
 // Draws each frame.
 Player.prototype.render = function() {
-    // Show character selection at start of game
-
+    
+    // Always display the latest points won. Except unless the points where won
+    // just recently, the display will occur off the canvas and won't be seen,
+    // and once points are won and the display is back on canvas, the
+    // this.pointsY property that determines the current position of 
+    // announcePoints will continue decreasing until it is once again offscreen:
     this.announcePoints(this.latestPoints);
 
+    // Show character selection at start of game:
     if (this.charSelected === false) {
         this.character();
     }
-    // Draw current position of appropriate player.sprite
+
+    // When the character sprite is chosen, the game has begun:
     if (this.charSelected === true) {
+        // Draw current position of appropriate player.sprite:
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        // Draw the HUD at the top of the screen:
         this.displayTimer();
         this.displayPoints();
         this.displayHearts();
     }
 
+    // Set 
+    ctx.font = '24px Impact';
+    ctx.textAlign = 'left';
+    var xText = map.totalWidth / 2.1;
+
     if (this.shield > 0) {
-        ctx.font = '24px Impact';
-        ctx.textAlign = 'left';
         ctx.fillStyle = 'green';
-        ctx.fillText('Shield: ' + Math.ceil(this.shield), map.totalWidth / 2.1, map.tileHeight * 0.6);
-        ctx.textAlign = 'center';
+        ctx.fillText('Shield: ' + Math.ceil(this.shield), xText, 
+                    map.tileHeight * 0.6);
     }
 
     if (this.freeze > 0) {
-        ctx.font = '24px Impact';
-        ctx.textAlign = 'left';
         ctx.fillStyle = 'blue';
-        ctx.fillText('Freeze: ' + Math.ceil(this.freeze), map.totalWidth / 2.1, map.tileHeight * 1.2);
-        ctx.textAlign = 'center';
+        ctx.fillText('Freeze: ' + Math.ceil(this.freeze), xText, 
+                    map.tileHeight * 1.2);
     }
 
     if (this.water > 0) {
-        ctx.font = '24px Impact';
-        ctx.textAlign = 'left';
         ctx.fillStyle = 'purple';
-        ctx.fillText('Water: ' + Math.ceil(this.water), map.totalWidth / 2.1, map.tileHeight * 1.8);
-        ctx.textAlign = 'center';
+        ctx.fillText('Water: ' + Math.ceil(this.water), xText, 
+                    map.tileHeight * 1.8);
     }
 
     if (this.lasso > 0) {
-        ctx.font = '24px Impact';
-        ctx.textAlign = 'left';
         ctx.fillStyle = 'yellow';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = '1';
-        ctx.fillText('Lasso: ' + Math.ceil(this.lasso), map.totalWidth / 2.1, map.tileHeight * 2.4);
-        ctx.strokeText('Lasso: ' + Math.ceil(this.lasso), map.totalWidth / 2.1, map.tileHeight * 2.4);
+        ctx.fillText('Lasso: ' + Math.ceil(this.lasso), xText, 
+                    map.tileHeight * 2.4);
+        ctx.strokeText('Lasso: ' + Math.ceil(this.lasso), xText, 
+                    map.tileHeight * 2.4);
         ctx.lineWidth = '2';
-        ctx.textAlign = 'center';
     }
+
+    ctx.textAlign = 'center';
 
 
     if (this.victory === true) {
