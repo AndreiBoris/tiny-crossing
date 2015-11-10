@@ -1338,11 +1338,6 @@ Player.prototype.render = function() {
         ctx.lineWidth = '2';
     }
 
-    // Reset the textAlign after the PowerUp displays to go back to what all 
-    // other text displays in the game use:
-    ctx.textAlign = 'center';
-
-
     if (this.victory === true) {
         this.victoryScreen();
     } else if (this.isDead === true) {
@@ -1466,6 +1461,7 @@ Player.prototype.victoryMessage = function() {
     ctx.font = '56px Impact';
     ctx.fillStyle = 'lime';
     ctx.strokeStyle = 'black';
+    ctx.textAlign = 'center';
 
     ctx.fillText('Good job!', canvas.width / 2, canvas.height / 2);
     ctx.strokeText('Good job!', canvas.width / 2, canvas.height / 2);
@@ -1475,6 +1471,7 @@ Player.prototype.continueMessage = function() {
     ctx.font = '40px Impact';
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'black';
+    ctx.textAlign = 'center';
 
     ctx.fillText('Press enter to continue', canvas.width / 2, canvas.height - 60);
     ctx.strokeText('Press enter to continue', canvas.width / 2, canvas.height - 60);
@@ -1484,6 +1481,7 @@ Player.prototype.playAgainMessage = function() {
     ctx.font = '40px Impact';
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'black';
+    ctx.textAlign = 'center';
 
     ctx.fillText('Press enter to play again!', canvas.width / 2, canvas.height - 60);
     ctx.strokeText('Press enter to play again!', canvas.width / 2, canvas.height - 60);
@@ -1497,6 +1495,7 @@ Player.prototype.bwMsgStyle = function() {
 
 Player.prototype.pauseMessage = function() {
     this.bwMsgStyle();
+    ctx.textAlign = 'center';
     ctx.fillText('Press "p" to unpause', canvas.width / 2, canvas.height / 2);
     ctx.strokeText('Press "p" to unpause', canvas.width / 2, canvas.height / 2);
 };
@@ -1526,6 +1525,7 @@ Player.prototype.loseLifeMsgStyle = function() {
     ctx.font = '56px Impact';
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'red';
+    ctx.textAlign = 'center';
 };
 
 // Display when all lives are lost to show the player the number of points 
@@ -1534,7 +1534,7 @@ Player.prototype.deadMessage = function() {
     ctx.font = '64px Impact';
     ctx.fillStyle = 'black';
     ctx.strokeStyle = 'red';
-    ctx.alignText = 'center';
+    ctx.textAlign = 'center';
     ctx.fillText('You got ' + this.points + ' points!', canvas.width / 2, canvas.height - 140);
     ctx.strokeText('You got ' + this.points + ' points!', canvas.width / 2, canvas.height - 140);
 };
@@ -1701,23 +1701,32 @@ Player.prototype.gems = {
     })
 };
 
+// Handles player colliding with enemies:
 Player.prototype.hit = function() {
+    // This will not run if the player has the shield PowerUp:
     if (this.paused === false && this.shield <= 0) {
         map.playSFX('thud');
+        // All PowerUp effects go away:
         this.resetTimers();
         this.loseLife();
     }
 };
 
+// Handles player stepping onto water:
 Player.prototype.drown = function() {
+    // This will not run if the player has the water PowerUp:
     if (this.paused === false && this.water <= 0) {
         map.playSFX('splash');
+        // Results in the drowned message being shown instead of the hit 
+        // message:
         this.drowned = true;
+        // All PowerUp effects go away:
         this.resetTimers();
         this.loseLife();
     }
 };
 
+// Removes all timed PowerUp effects:-
 Player.prototype.resetTimers = function() {
     this.enemySpeedTime = 0;
     this.freeze = 0;
@@ -1726,6 +1735,7 @@ Player.prototype.resetTimers = function() {
     this.lasso = 0;
 };
 
+// Runs when the player is hit() or drown()s:
 Player.prototype.loseLife = function() {
     // Everything should pause:
     this.blurPause();
@@ -1743,7 +1753,9 @@ Player.prototype.loseLife = function() {
     }
 };
 
+// Runs in render() to show number of lives left:
 Player.prototype.displayHearts = function() {
+    // x-value of the leftmost heart:
     var position = 10;
     for (var i = 0; i < this.livesLeft; i++) {
         ctx.drawImage(Resources.get(map.variousImages[4]), position, 10);
@@ -1751,27 +1763,31 @@ Player.prototype.displayHearts = function() {
     }
 };
 
+// Runs in render() to show how much bonus time is left:
 Player.prototype.displayTimer = function() {
     this.bwMsgStyle();
     ctx.textAlign = 'right';
     var displayMe;
     if (this.timeLeft > 0) {
+        // Will display the rounded-up value of the number of seconds left:
         displayMe = Math.ceil(this.timeLeft);
     } else {
+        // Indicate to the player that they have lost a chance to get bonus 
+        // points:
         displayMe = 'No bonus!';
     }
     ctx.fillText(displayMe, map.totalWidth - 5, 50);
     ctx.strokeText(displayMe, map.totalWidth - 5, 50);
-    ctx.textAlign = 'center';
 };
 
+// Runs in render() to show total number of points collected:
 Player.prototype.displayPoints = function() {
     this.bwMsgStyle();
     ctx.textAlign = 'right';
+    // Draw a star next to the points: 
     ctx.drawImage(Resources.get(map.variousImages[1]), map.totalWidth - map.tileWidth, 52);
     ctx.fillText(this.points, map.totalWidth - (5 + map.tileWidth), 100);
     ctx.strokeText(this.points, map.totalWidth - (5 + map.tileWidth), 100);
-    ctx.textAlign = 'center';
 };
 
 // Display red see-through overlay over player when player is hit:
@@ -1781,7 +1797,8 @@ Player.prototype.hitOverlay = function() {
         this.y + map.tileWidth, map.tileWidth / 2, this.x + map.tileWidth / 2,
         this.y + map.tileWidth, map.tileWidth);
 
-    // Fade gradient to completely see through away from the player:
+    // Fade gradient to become completely see-through as it moves away from the 
+    // player:
     grd.addColorStop(0, 'rgba(255, 0, 0, 0.4)');
     grd.addColorStop(1, "rgba(255, 0, 0, 0)");
 
@@ -1791,24 +1808,27 @@ Player.prototype.hitOverlay = function() {
     ctx.fill();
 };
 
+// Display grey see-through overlay over the game map when all lives are lost:
 Player.prototype.deadOverlay = function() {
     ctx.fillStyle = 'rgba(100, 100, 100, 0.5)';
     ctx.fillRect(0, map.buffer + 2 * map.tileHeight, map.totalWidth, map.totalHeight);
 };
 
-// player.sprite jumps up and down upon crossing the map:
+// player.sprite jumps up and down upon collecting all the keys:
 Player.prototype.victoryBounce = function(startingY, dt) {
-    // Height of jumps is determined by the height of the tiles for easy scaling:
+    // Height of jumps is determined by the height of the tiles for easy 
+    // scaling:
     var height = map.tileHeight / 4;
-    // Will be moving up if below the highest point and is currently in ascend
+    // The sprite be moving up if below the highest point and is currently in 
+    // ascend:
     if (this.y > startingY - height && this.movingUp === true) {
         // map.tileWidth here is used as a basis for a time measurement so that
-        // the game scales appropriately when bigger maps are used.
-        this.y = this.y - map.tileWidth * dt;
+        // the game scales appropriately if bigger maps are used:
+        this.y -= map.tileWidth * dt;
     } else if (this.y < startingY) {
-        // Move down
+        // Move down:
         this.movingUp = false;
-        this.y = this.y + map.tileWidth * dt;
+        this.y += map.tileWidth * dt;
     } else {
         // player.sprite is assumed to have reached starting position:
         this.movingUp = true;
