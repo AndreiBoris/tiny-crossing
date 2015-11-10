@@ -1275,7 +1275,7 @@ Player.prototype.resetStart = function() {
 
 // Draws each frame.
 Player.prototype.render = function() {
-    
+
     // Always display the latest points won. Except unless the points where won
     // just recently, the display will occur off the canvas and won't be seen,
     // and once points are won and the display is back on canvas, the
@@ -1298,59 +1298,66 @@ Player.prototype.render = function() {
         this.displayHearts();
     }
 
-    // Set 
+    // Set all common features of the following PowerUp time displays:
     ctx.font = '24px Impact';
     ctx.textAlign = 'left';
+    // Common x-position of all the PowerUp time displays:
     var xText = map.totalWidth / 2.1;
 
+    // Shield PowerUp timer appears when it is active:
     if (this.shield > 0) {
         ctx.fillStyle = 'green';
-        ctx.fillText('Shield: ' + Math.ceil(this.shield), xText, 
-                    map.tileHeight * 0.6);
+        ctx.fillText('Shield: ' + Math.ceil(this.shield), xText,
+            map.tileHeight * 0.6);
     }
 
+    // Time PowerUp timer appears when it is active:
     if (this.freeze > 0) {
         ctx.fillStyle = 'blue';
-        ctx.fillText('Freeze: ' + Math.ceil(this.freeze), xText, 
-                    map.tileHeight * 1.2);
+        ctx.fillText('Freeze: ' + Math.ceil(this.freeze), xText,
+            map.tileHeight * 1.2);
     }
 
+    // Water PowerUp timer appears when it is active:
     if (this.water > 0) {
         ctx.fillStyle = 'purple';
-        ctx.fillText('Water: ' + Math.ceil(this.water), xText, 
-                    map.tileHeight * 1.8);
+        ctx.fillText('Water: ' + Math.ceil(this.water), xText,
+            map.tileHeight * 1.8);
     }
 
+    // Lasso PowerUp timer appears when it is active:
     if (this.lasso > 0) {
         ctx.fillStyle = 'yellow';
+        // Yellow is hard to see, so a thin outline is added:
         ctx.strokeStyle = 'black';
         ctx.lineWidth = '1';
-        ctx.fillText('Lasso: ' + Math.ceil(this.lasso), xText, 
-                    map.tileHeight * 2.4);
-        ctx.strokeText('Lasso: ' + Math.ceil(this.lasso), xText, 
-                    map.tileHeight * 2.4);
+        ctx.fillText('Lasso: ' + Math.ceil(this.lasso), xText,
+            map.tileHeight * 2.4);
+        ctx.strokeText('Lasso: ' + Math.ceil(this.lasso), xText,
+            map.tileHeight * 2.4);
         ctx.lineWidth = '2';
     }
 
+    // Reset the textAlign after the PowerUp displays to go back to what all 
+    // other text displays in the game use:
     ctx.textAlign = 'center';
 
 
     if (this.victory === true) {
-        // Show appropriate messages for victory
-        Player.prototype.victory();
+        this.victoryScreen();
     } else if (this.isDead === true) {
-        Cloud.prototype.keepMoving();
-        this.deadOverlay();
-        this.deadMessage();
-        this.playAgainMessage();
-    } else if (this.drowned === true) {
-        Cloud.prototype.keepMoving();
+        this.deadScreen();
+    }
+    // Has to be above this.ouch === true, since if drowned is true, ouch is
+    // true as well:
+    else if (this.drowned === true) {
         this.drownMessage();
     } else if (this.ouch === true) {
-        Cloud.prototype.keepMoving();
         this.hitMessage();
-        this.hitOverlay();
-    } else if (this.paused === true) {
+    }
+    // Has to be lowest in chain since this.paused === true in all the above 
+    // situations as well:
+    else if (this.paused === true) {
         this.pauseMessage();
     }
 };
@@ -1372,10 +1379,17 @@ Player.prototype.announcePoints = function(points) {
     ctx.strokeText('+' + points, map.totalWidth - map.tileWidth * 1.5, this.pointsY);
 };
 
-Player.prototype.victory = function() {
+Player.prototype.victoryScreen = function() {
     Cloud.prototype.keepMoving();
     Player.prototype.victoryMessage();
     Player.prototype.continueMessage();
+};
+
+Player.prototype.deadScreen = function() {
+    Cloud.prototype.keepMoving();
+    this.deadOverlay();
+    this.deadMessage();
+    this.playAgainMessage();
 };
 
 Player.prototype.topIntroText = function() {
@@ -1466,6 +1480,8 @@ Player.prototype.pauseMessage = function() {
 };
 
 Player.prototype.hitMessage = function() {
+    Cloud.prototype.keepMoving();
+    this.hitOverlay();
     ctx.font = '56px Impact';
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'red';
@@ -1477,6 +1493,7 @@ Player.prototype.hitMessage = function() {
 };
 
 Player.prototype.drownMessage = function() {
+    Cloud.prototype.keepMoving();
     ctx.font = '56px Impact';
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'red';
