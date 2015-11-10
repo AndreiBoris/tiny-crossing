@@ -460,8 +460,8 @@ Key.prototype.update = function(dt) {
         else {
             if (this.x < map.xValues[map.numColumns - 4] + this.collectedOffset) {
                 this.x = this.x + 100 * dt *
-                // Slow down the x-movement as time goes on for a smoother animation:
-                (map.xValues[map.numColumns - 2] / this.x) * this.moving;
+                    // Slow down the x-movement as time goes on for a smoother animation:
+                    (map.xValues[map.numColumns - 2] / this.x) * this.moving;
             }
             if (this.y < map.yValues[map.numRows - 2]) {
                 this.y = this.y + 300 * dt * this.moving;
@@ -925,10 +925,12 @@ Player.prototype.character = function() {
 // This gets run for every frame of the game
 Player.prototype.update = function(dt) {
 
-    // Store the number of corn, enemies and PowerUps to use in scanning hit
-    // boxes:
+    // Store the number of corn, enemies, keys, and PowerUps to use in scanning 
+    // hit boxes:
     var numCorn = allCorn.length,
-        numEnemies = allEnemies.length;
+        numEnemies = allEnemies.length,
+        numKeys = allKeys.length,
+        numPowerUps = allPowerUps.length;
 
     // Victory conditions:
     if (this.keysHeld === 3 && !this.victory) {
@@ -1006,7 +1008,7 @@ Player.prototype.update = function(dt) {
         }
     }
 
-    // Player with water gem buff ignores floating:
+    // Player with water gem buff doesn't die when this.drown() is run:
     if (this.water > 0) {
         // Count down timer:
         this.water -= dt * this.moving;
@@ -1019,26 +1021,27 @@ Player.prototype.update = function(dt) {
         this.resetSprite();
     }
 
+    // Player with shield gem buff doesn't die when this.hit() is run:
     if (this.shield > 0) {
+        // Count down timer:
         this.shield -= dt * this.moving;
-        if (this.shield > 0.1 && !this.ouch) {
+        // Shield takes priority over other buffs in determining sprite:
+        if (this.shield > 0.1) {
             this.sprite = this.charShield[this.selection];
-        } 
+        }
         // If no timer is about 0.1, set sprite back to normal:
         this.resetSprite();
     }
 
-    // Player is on water corn:
+    // Player is on top of corn:
     if (this.floating) {
-        this.moving = 1 * this.moving;
-        // Update the this.xCoord value;
+        // Update the this.xCoord value as the player is moved by corn;
         this.trackPosition();
-        if (this.yCoord === 2 || this.yCoord === 3 || this.yCoord === 4) {
-            this.x += this.speed * dt * this.moving * this.gemSpeed;
-        }
+        // Move player at the speed of the corn that the player is on:
+        this.x += this.speed * dt * this.moving * this.gemSpeed;
     }
 
-    // Keep countdown timer going when the game is not paused:
+    // Keep points countdown timer going when the game is not paused:
     if (!this.paused && this.timeLeft >= 0) {
         this.timeLeft -= dt * this.moving;
     }
@@ -1049,6 +1052,8 @@ Player.prototype.update = function(dt) {
         this.freeze -= dt * this.moving;
         // Freeze all enemies:
         for (var t = 0; t < numEnemies; t++) {
+            // enemy.frozen gets multiplied by enemy.xSpeed and enemy.ySpeed 
+            // when determining the enemy's movement across the map:
             allEnemies[t].frozen = 0;
         }
     }
@@ -1071,7 +1076,7 @@ Player.prototype.update = function(dt) {
         cornSpots.push([x, y]);
     }
 
-    // Reset this.floating to false, if the player is ontop of the corn this 
+    // Reset this.floating to false. If the player is on top of the corn, this 
     // value will be set to true in the following for-loop, otherwise, the 
     // player should not be floating:
     this.floating = false;
@@ -1100,30 +1105,41 @@ Player.prototype.update = function(dt) {
         }
         // If the player is not on any corn, the player must have drowned:
         if (this.floating === false) {
+            // this.drown will do nothing if the player still has time left on 
+            // the water gem buff counter:
             this.drown();
         }
     }
+
+    // If the player is in the top row and not on top of one of the three grass 
+    // patches, the player must be in the water and must therefore drown:
     if (this.yCoord === 1 && this.xCoord !== 1 && this.xCoord !== 5 &&
         this.xCoord !== 9) {
         this.drown();
     }
+
     // Holds current positions of all keys:
     var keySpots = [];
-    var numKeys = allKeys.length;
 
+    // Push current key positions to the array. This is important when the lasso
+    // is in play as the keys might not necessarily be in their original spots 
+    // and still need to be picked up by the player in those instances:
     for (i = 0; i < numKeys; i++) {
         var xK = allKeys[i].x;
         var yK = allKeys[i].y;
         keySpots.push([xK, yK]);
     }
 
+    // If the any key is within the this.extention range of the player, it 
+    // is grabbed by the lasso and will fly toward the player:
     for (var p = 0; p < numKeys; p++) {
         if ((this.x - this.extention < keySpots[p][0] &&
                 this.x + this.extention > keySpots[p][0]) &&
             (this.y - this.extention < keySpots[p][1] &&
                 this.y + this.extention > keySpots[p][1]) &&
             this.lasso > 0) {
-            // Key lassoed:
+            // Key lassoed. Lassoed keys fly toward the player.x and player.y 
+            // values:
             allKeys[p].lasso = true;
         }
     }
@@ -1135,18 +1151,18 @@ Player.prototype.update = function(dt) {
                 this.x + map.tileWidth / 2 > keySpots[p][0]) &&
             (this.y - map.tileHeight / 8 < keySpots[p][1] &&
                 this.y + map.tileHeight / 8 > keySpots[p][1])) {
-            // Key picked up:
+            // If the key is not already picked up, it now should be:
             if (allKeys[p].collected === false) {
+                allKeys[p].collected = true;
                 map.playSFX('key');
+                // Once this.keysHeld is === 3, the round is won:
                 this.keysHeld++;
                 this.winPoints(50);
             }
-            allKeys[p].collected = true;
         }
     }
     // Holds current positions of all power ups:
     var powerSpots = [];
-    var numPowerUps = allPowerUps.length;
 
     for (p = 0; p < numPowerUps; p++) {
         var xP = allPowerUps[p].x;
@@ -2013,3 +2029,7 @@ document.addEventListener('keyup', function(e) {
 // TODO: Seperate allEnemies and create a new allBurrowers
 // TODO: Get mute to instantly mute the sounds that are already playing
 // TODO: FIX bug where Mute moves the player a bit when on top of the corn
+// TODO: Wakka Wakka monster on the water
+// TODO: Make a function that handles all sprite changes due to buffs
+// TODO: Stop the alterDirection timer on enemies when the game is paused/when
+// they are frozen (this is when the problem happens)
