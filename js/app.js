@@ -935,7 +935,7 @@ var Player = function() {
 
 // Until the player has selected a character, this gets rendered over the game:
 Player.prototype.character = function() {
-    if (this.musicNotStarted){
+    if (this.musicNotStarted) {
         this.musicNotStarted = false;
         map.playMusic();
     }
@@ -1870,19 +1870,22 @@ Player.prototype.handleInput = function(input) {
         // No more sounds will be played:
         map.audio.muted = !map.audio.muted;
         if (map.audio.muted) {
-            // If we just muted the sounds, last 20 sounds will pause:
             var numSounds = map.lastTwentySounds.length;
+            // Pause music:
             map.currentMusic.pause();
+            // If we just muted the sounds, last 20 sounds will pause:
             for (var sound = 0; sound < numSounds; sound++) {
                 map.lastTwentySounds[sound].pause();
             }
         } else {
+            // Resume music:
             map.playMusic();
         }
+        return;
     }
 
     // Character-selection screen controls
-    if (this.charSelected === false) {
+    if (!this.charSelected) {
         if (input === 'left') {
             // Leftmost selection:
             if (this.selection === 0) {
@@ -1908,18 +1911,29 @@ Player.prototype.handleInput = function(input) {
         } else if (input === 'enter') {
             // Choose character
             this.charSelected = true;
+            // this.selection will not remain at its current value for the 
+            // duration of the game. It will be passed into various sprite 
+            // arrays to have the chosen character appear in all the different
+            // ways throughout the game (ex. when hurt, when shield power up is 
+            // picked up, etc.):
             this.sprite = this.charOptions[this.selection];
+            // Send the player to the bottom center and reset the countdown 
+            // timer to 30:
             this.resetStart();
+            // Generate the three keys that are the objective of each round in
+            // the game:
             map.makeKeys();
         }
     }
     // Controls only work when game isn't paused
-    else if (this.charSelected === true && this.paused === false) {
+    else if (this.charSelected && !this.paused) {
 
         if (input === 'left') {
             // If on water, just move a tile width over, don't use coordinates:
             if (this.floating) {
                 this.waterMove('left');
+                // Need to return here or .move() will run at the bottom of this 
+                // if-tree:
                 return;
             } // Leftmost position:
             if (this.xCoord === 0) {
@@ -1940,6 +1954,8 @@ Player.prototype.handleInput = function(input) {
                 // Avoid coordinates:
                 if (this.floating && this.yCoord !== 1) {
                     this.waterMove('up');
+                    // Need to return here or .move() will run at the bottom of 
+                    // this if-tree:
                     return;
                 }
             }
@@ -1947,6 +1963,8 @@ Player.prototype.handleInput = function(input) {
             // If on water, just move a tile width over, don't use coordinates:
             if (this.floating) {
                 this.waterMove('right');
+                // Need to return here or .move() will run at the bottom of this 
+                // if-tree:
                 return;
             } // Rightmost position:
             if (this.xCoord === map.numColumns - 1) {
@@ -1966,25 +1984,27 @@ Player.prototype.handleInput = function(input) {
                 this.yCoord++;
                 if (this.floating && this.yCoord !== 5) {
                     this.waterMove('down');
+                    // Need to return here or .move() will run at the bottom of 
+                    // this if-tree:
                     return;
                 }
             }
-        } else if (input === 'pause') {
+        }
+        // Pause will work whenever the game is playing normally, (i.e. not 
+        // already paused due to victory, being hit, etc.):
+        else if (input === 'pause') {
             this.togglePause();
+            // Need to return here or .move() will run at the bottom of this 
+            // if-tree, which would be probelmatic if the player is currently 
+            // on the corn, floating;
             return;
         }
 
-
-        // Handles the move for all the possible changes in the if statements above:
+        // Handles the move for all the possible changes in the if statements 
+        // above that are not followed by return statements:
         this.move();
     }
-    // If the game is paused, only the unpause button will work:
-    else if (this.paused === true && this.victory === false &&
-        this.ouch === false && this.isDead === false) {
-        if (input === 'pause') {
-            this.togglePause();
-        }
-    } // 'enter' can be used to reset the game:
+    // 'enter' can be used to reset the game:
     else if (this.victory === true || this.ouch === true || this.isDead === true ||
         this.drowned === true) {
         if (input === 'enter') {
@@ -2053,6 +2073,13 @@ Player.prototype.handleInput = function(input) {
             // Back to starting position of game:
             this.sprite = this.charOptions[this.selection];
             this.resetStart();
+        }
+    } 
+    // Assume the game is paused by the player/due to a 'blur' event and allow 
+    // the player to unpause it:
+    else {
+        if (input === 'pause') {
+            this.togglePause();
         }
     }
 };
@@ -2149,35 +2176,25 @@ document.addEventListener('keyup', function(e) {
 // TODO: Change sprites to make a unique look
 
 // TODO: menu
-// TODO: Refactor everything, particularly methods belonging to Corn, Enemy and
-// Item, Cloud
 
 // TODO: Level editor to move rocks
 
 // TODO: Diplay information off of the canvas (like the timers);
-// TODO: Mention mute controls
 // TODO: Include muted symbol bottom lefthand corner
 // TODO: Edit intro with Sarah's suggestions
 
 // TODO: display Enemy slow/speed
 // TODO: unburrow sound
-// TODO: move sound
 // TODO: 2 lane monster
 // TODO: Slow down regular enemies and add FAST one
 // TODO: Add a water enemy
-// TODO: Create a powerup class that inherits from Item
-// TODO: Fix switch to be smaller
 // TODO: No class for non-class
-// TODO: Fix bug with unburrow
-// TODO: How many keys has player collected? Put it on the player
-// TODO: Make a new class for burrow and burrow2 (currently at 829 editting out 
-//  the complext bools.)
-// TODO: Seperate allEnemies and create a new allBurrowers
-// TODO: Get mute to instantly mute the sounds that are already playing
-// TODO: FIX bug where Mute moves the player a bit when on top of the corn
 // TODO: Wakka Wakka monster on the water
 // TODO: Make a function that handles all sprite changes due to buffs
 // TODO: Stop the alterDirection timer on enemies when the game is paused/when
 // they are frozen (this is when the problem happens)
 // TODO: Make it possible to see several points announcements if many PowerUps
 // are picked up
+// TODO: get enemies to bump into each other!
+// TODO: Make less enemies appear (no more second round huge boost)
+// TODO: Max 2 powerups at any one time
