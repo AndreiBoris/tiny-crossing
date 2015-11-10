@@ -8,13 +8,13 @@ module.exports = function(grunt) {
                 options: {
                     engine: 'im',
                     sizes: [{
-                        width: 150,
+                        width: 100,
                         quality: 100
                     }]
                 },
                 files: [{
                     expand: true,
-                    src: ['Arrows.{gif,jpg,png}'],
+                    src: ['Duck*.{gif,jpg,png}'],
                     cwd: 'images_src/',
                     dest: 'images_made/'
                 }]
@@ -36,7 +36,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true, // Enable dynamic expansion
                     cwd: 'images_made/', // Src matches are relative to this path
-                    src: ['mute.{png,jpg,gif}'], // Actual patterns to match
+                    src: ['*.{png,jpg,gif}'], // Actual patterns to match
                     dest: 'images_min/' // Destination path prefix
                 }]
             }

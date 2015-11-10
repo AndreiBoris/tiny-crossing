@@ -139,11 +139,11 @@ var Map = function() {
     // This is to current number of powerups on the map:
     this.powerUpCount = 0;
     // This is the maximum number of powerups on the map:
-    this.powerUpMax = 3;
-    // Wait time between release of powerups:
+    this.powerUpMax = 2;
+    // Wait time between release of powerups (initial is 4, subsequent is 5):
     this.powerUpDelay = 4;
     // Number of powerups per round:
-    this.powerUpsLeft = 5;
+    this.powerUpsLeft = 4;
     // Current round (game scales in difficulty with higher rounds):
     this.round = 1;
     // Storage of game sounds:
@@ -883,6 +883,25 @@ Burrower.prototype.resetBurrow = function() {
         }
     }
 };
+
+var Eater = function() {
+    this.sprite = map.enemySprites[4];
+    // Burrowers start off screen until the unburrow:
+    this.x = -100;
+    this.y = -100;
+    // Determines behavior of the Burrower:
+    this.type = type;
+    // Used to keep track of movements of unburrow by determining which hole the
+    // burrower unburrowed from last:
+    this.lastBurrow = 5;
+    this.burrowWait = 5;
+    this.unburrowed = 0;
+    // When the game is paused and this.moving is set to 0, the burrowWait timer 
+    // will stop counting down:
+    this.moving = 1;
+};
+
+inherit(Eater, Entity);
 
 var Player = function() {
     // this.sprite, this.x, this.y, this.xCoord and this.yCoord are all 
@@ -2054,10 +2073,12 @@ Player.prototype.handleInput = function(input) {
         if (input === 'enter') {
             // Restart the whole game:
             if (this.isDead === true) {
+                // When dead you lose all keys collected:
+                this.keysHeld = 0;
                 this.isDead = false;
                 this.livesLeft = 5;
                 map.powerUpCount = 0;
-                map.powerUpsLeft = 5;
+                map.powerUpsLeft = 4;
                 // Delete existing Clouds and PowerUps:
                 allPowerUps.length = 0;
                 allClouds.length = 0;
@@ -2107,7 +2128,7 @@ Player.prototype.handleInput = function(input) {
                 if (allClouds.length <= 15 && map.round >= 5) {
                     map.addClouds(1);
                 }
-                map.powerUpsLeft = 5;
+                map.powerUpsLeft = 4;
                 // Make sure all new added Entities are paused:
                 this.blurPause();
             }
@@ -2200,7 +2221,6 @@ document.addEventListener('keyup', function(e) {
 // TODO: Edit intro with Sarah's suggestions
 
 // TODO: display Enemy slow/speed
-// TODO: unburrow sound
 // TODO: 2 lane monster
 // TODO: Slow down regular enemies and add FAST one
 // TODO: Wakka Wakka monster on the water
