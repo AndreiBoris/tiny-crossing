@@ -1216,6 +1216,8 @@ Player.prototype.update = function(dt) {
     }
 };
 
+// When all the gem buff timers that change the sprite of the character are 
+// simultaneously slow, set the sprite to the original one:
 Player.prototype.resetSprite = function() {
     if (this.water < 0.1 && this.shield < 0.1 &&
         this.lasso < 0.1) {
@@ -1223,6 +1225,9 @@ Player.prototype.resetSprite = function() {
     }
 };
 
+
+// This runs whenever the player is on the floating corn to determine where the 
+// player should .move() to if the player moves off the floating corn area:
 Player.prototype.trackPosition = function() {
     for (var i = 0; i < (map.numColumns - 1); i++) {
         if (this.x > map.xValues[i] - 25 && this.x < map.xValues[i + 1] - 25) {
@@ -1826,7 +1831,7 @@ Player.prototype.handleInput = function(input) {
             if (map.canGo(this.xCoord, this.yCoord + 1)) {
                 // Move down:
                 this.yCoord++;
-                if (this.floating) {
+                if (this.floating && this.yCoord !== 5) {
                     this.waterMove('down');
                     return;
                 }
