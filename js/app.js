@@ -268,17 +268,6 @@ Map.prototype.makeKeys = function() {
     allKeys.push(new Key(9));
 };
 
-// The round is won when all the keys are collected:
-Map.prototype.keysCollected = function() {
-    var win = true;
-    for (var i = 0; i < allKeys.length; i++) {
-        if (allKeys[i].collected === false) {
-            win = false;
-        }
-    }
-    return win;
-};
-
 // This gets inherited by Item, Corn, Enemy and Cloud:
 var Entity = function() {
     this.x = 0;
@@ -889,11 +878,11 @@ var Player = function() {
     // which Player uses to move around the game map.
     this.xCoord = 0;
     this.yCoord = 0;
-
     // Determines if the game is paused:
     this.paused = false;
     // Determines if the victory message should be shown:
     this.victory = false;
+    this.keysHeld = 0;
     // Determines if the player is hurt messages should be shown:
     this.ouch = false;
     this.drowned = false;
@@ -976,12 +965,15 @@ Player.prototype.character = function() {
 // This gets run for every frame of the game
 Player.prototype.update = function(dt) {
 
-    var numCorn = allCorn.length;
-    var numEnemies = allEnemies.length;
+    // Store the number of corn, enemies and PowerUps to use in scanning hit
+    // boxes:
+    var numCorn = allCorn.length,
+        numEnemies = allEnemies.length;
 
     // Victory conditions:
-    if (map.keysCollected() && allKeys.length === 3 && !this.victory) {
+    if (this.keysHeld === 3 && !this.victory) {
         map.playSFX('trumpet');
+        this.keysHeld = 0;
         this.victory = true;
         this.victorySpot = this.y;
         this.sprite = this.charHappy[this.selection];
@@ -1161,6 +1153,7 @@ Player.prototype.update = function(dt) {
             // Key picked up:
             if (allKeys[p].collected === false) {
                 map.playSFX('key');
+                this.keysHeld++;
                 this.winPoints(50);
             }
             allKeys[p].collected = true;
