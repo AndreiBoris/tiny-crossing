@@ -963,38 +963,14 @@ var Player = function() {
 
 // Until the player has selected a character, this gets rendered over the game:
 Player.prototype.character = function() {
-    // Determine number of character options for the for loop ahead:
-    var length = this.charOptions.length,
-        // Find the character's position on the character menu:
-        position = map.totalWidth / 2 - 260;
-    // Change stroke and fillStyles
+    // Display game goal instructions in the white space at the top:
     this.topIntroText();
-
-    ctx.fillStyle = 'white';
-    ctx.textAlign = 'left';
-
-    ctx.fillText('Use ', (map.totalWidth / 6), map.tileHeight * 5);
-    ctx.drawImage(Resources.get(map.variousImages[14]), (map.totalWidth / 5) + 30, map.tileHeight * 3)
-    ctx.fillText(' to move. ', (map.totalWidth / 2) + 10, map.tileHeight * 5);
-    ctx.fillText('Use \'m\' to mute sound.', map.totalWidth / 6, map.tileHeight * 6.3);
-    this.bwMsgStyle();
-     ctx.textAlign = 'center';
-    ctx.fillText('Select a character', map.totalWidth / 2, map.tileHeight * 8.6);
-    ctx.strokeText('Select a character', map.totalWidth / 2, map.tileHeight * 8.6);
-    ctx.fillText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 13.2);
-    ctx.strokeText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 13.2);
-    // Box to contain the characters
-    ctx.fillStyle = 'silver';
-    ctx.fillRect(0, map.tileHeight * 8.6, map.totalWidth, 140);
-    ctx.strokeRect(0, map.tileHeight * 8.6, map.totalWidth, 140);
-    // Box to indicate which character is being selected
-    ctx.drawImage(Resources.get(map.variousImages[0]), this.selectX, this.selectY);
-    // Draw all of the characters so user can see which one is being selected
-    for (var i = 0; i < length; i++) {
-        ctx.drawImage(Resources.get(this.charOptions[i]), position, map.tileHeight * 9);
-        // spread the characters out evenly
-        position = position + 112;
-    }
+    // Display instructions about movement controls and how to mute the game:
+    this.instructionsText();
+    // Display the box holding the characters and the accompanying text:
+    this.charSelection();
+    // Draw the character sprites that can be selected:
+    this.charChoices();
 };
 
 // This gets run for every frame of the game
@@ -1383,6 +1359,44 @@ Player.prototype.topIntroText = function() {
     ctx.fillText('Collect the keys,', map.totalWidth / 2, map.tileHeight);
     ctx.fillText('Collect the gems,', map.totalWidth / 2, map.tileHeight * 1.75);
     ctx.fillText('Beat the clock!', map.totalWidth / 2, map.tileHeight * 2.5);
+};
+
+Player.prototype.instructionsText = function() {
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'left';
+
+    ctx.fillText('Use ', (map.totalWidth / 6), map.tileHeight * 5);
+    ctx.drawImage(Resources.get(map.variousImages[14]), (map.totalWidth / 5) + 30, map.tileHeight * 3);
+    ctx.fillText(' to move. ', (map.totalWidth / 2) + 10, map.tileHeight * 5);
+    ctx.fillText('Use \'m\' to mute sound.', map.totalWidth / 6, map.tileHeight * 6.3);
+};
+
+Player.prototype.charSelection = function() {
+    this.bwMsgStyle();
+    ctx.textAlign = 'center';
+    ctx.fillText('Select a character', map.totalWidth / 2, map.tileHeight * 8.6);
+    ctx.strokeText('Select a character', map.totalWidth / 2, map.tileHeight * 8.6);
+    ctx.fillText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 13.2);
+    ctx.strokeText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 13.2);
+    // Box to contain the characters
+    ctx.fillStyle = 'silver';
+    ctx.fillRect(0, map.tileHeight * 8.6, map.totalWidth, 140);
+    ctx.strokeRect(0, map.tileHeight * 8.6, map.totalWidth, 140);
+    // Box to indicate which character is being selected
+    ctx.drawImage(Resources.get(map.variousImages[0]), this.selectX, this.selectY);
+};
+
+Player.prototype.charChoices = function() {
+    // Determine number of character options for the for loop ahead:
+    var length = this.charOptions.length,
+        // Find the character's position on the character menu:
+        position = map.totalWidth / 2 - 260;
+    // Draw all of the characters so user can see which one is being selected
+    for (var i = 0; i < length; i++) {
+        ctx.drawImage(Resources.get(this.charOptions[i]), position, map.tileHeight * 9);
+        // spread the characters out evenly
+        position = position + 112;
+    }
 };
 
 Player.prototype.victoryMessage = function() {
@@ -2011,3 +2025,5 @@ document.addEventListener('keyup', function(e) {
 // TODO: Make a new class for burrow and burrow2 (currently at 829 editting out 
 //  the complext bools.)
 // TODO: Seperate allEnemies and create a new allBurrowers
+// TODO: Get mute to instantly mute the sounds that are already playing
+// TODO: FIX bug where Mute moves the player a bit when on top of the corn
