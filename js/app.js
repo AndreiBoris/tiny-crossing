@@ -249,6 +249,36 @@ Map.prototype.playMusic = function() {
     }
 };
 
+Map.prototype.addClouds = function(count) {
+    for (var i = 0; i < count; i++) {
+        allClouds.push(new Cloud());
+    }
+};
+
+Map.prototype.addEnemies = function(count) {
+    for (var i = 0; i < count; i++) {
+        allEnemies.push(new Enemy());
+    }
+};
+
+Map.prototype.addCorn = function() {
+    // Add first row of corn:
+    for (var i = 0; i < 4; i++) {
+        allCorn.push(new Corn(2, (map.tileWidth * 3.5 * i) - map.tileWidth, map.slowCorn));
+    } // Add second row of corn:
+    for (i = 0; i < 3; i++) {
+        allCorn.push(new Corn(3, map.tileWidth * 5 * i, map.medCorn));
+    } // Add third row of corn:
+    for (i = 0; i < 3; i++) {
+        allCorn.push(new Corn(4, map.tileWidth * 4.5 * i, map.fastCorn));
+    }
+};
+
+Map.prototype.setEnemies = function(count) {
+    allEnemies.length = 0;
+    this.addEnemies(count);
+};
+
 // This gets inherited by Item, Corn, Enemy and Cloud:
 var Entity = function() {
     this.x = 0;
@@ -481,8 +511,8 @@ Key.prototype.update = function(dt) {
         else {
             if (this.x < map.xValues[map.numColumns - 4] + this.collectedOffset) {
                 this.x = this.x + 100 * dt *
-                // Slow down the x-movement as time goes on for a smoother animation:
-                (map.xValues[map.numColumns - 2] / this.x) * this.moving;
+                    // Slow down the x-movement as time goes on for a smoother animation:
+                    (map.xValues[map.numColumns - 2] / this.x) * this.moving;
             }
             if (this.y < map.yValues[map.numRows - 2]) {
                 this.y = this.y + 300 * dt * this.moving;
@@ -2008,32 +2038,38 @@ Player.prototype.handleInput = function(input) {
     else if (this.victory === true || this.ouch === true || this.isDead === true ||
         this.drowned === true) {
         if (input === 'enter') {
+            // Restart the whole game:
             if (this.isDead === true) {
                 this.isDead = false;
                 this.livesLeft = 5;
                 map.powerUpCount = 0;
                 map.powerUpsLeft = 5;
+                // Delete existing Clouds and PowerUps:
                 allPowerUps.length = 0;
                 allClouds.length = 0;
+                // Reset keys:
                 map.makeKeys();
                 // Back to round 1.
                 map.round = 1;
-                setEnemies(8);
+                map.setEnemies(8);
                 // Pause the enemies only, so that the new ones generated don't 
                 // begin the next game paused:
                 this.blurPause();
+                // Reset score:
                 this.points = 0;
             } else if (this.victory === true) {
                 this.victory = false;
+                // Make the game harder:
                 map.round++;
+
                 map.makeKeys();
-                // More enemies each rounch
+                // More enemies each round:
                 if (allEnemies.length <= 40) {
-                    addEnemies(1);
+                    map.addEnemies(1);
                 }
                 if (map.round === 2) {
                     // Extra add in for round 2:
-                    addEnemies(5);
+                    map.addEnemies(5);
                 }
                 // Add a burrower starting on the third round:
                 if (map.round === 3) {
@@ -2044,37 +2080,38 @@ Player.prototype.handleInput = function(input) {
                 if (map.round >= 4) {
                     Enemy.prototype.activateZigzag();
                 }
-                // Clouds and a second burrower will appear on the 5th round:
+                // Clouds and a Burrower 2 will appear on the 5th round:
                 if (map.round === 5) {
-                    addClouds(3);
+                    map.addClouds(2);
                     allEnemies.push(new Burrower(2));
                 }
-                // Add another borrower 2 on the 6th round:
+                // Add another BUrrower 2 on the 6th round:
                 if (map.round === 6) {
                     allEnemies.push(new Burrower(2));
                 }
                 // Clouds will be added starting on the fifth round:
                 if (allClouds.length <= 15 && map.round >= 5) {
-                    addClouds(1);
+                    map.addClouds(1);
                 }
                 map.powerUpsLeft = 5;
+                // Make sure all new added Entities are paused:
                 this.blurPause();
             }
-            this.freeze = 0;
-            this.shield = 0;
-            this.lasso = 0;
-            this.water = 0;
-            this.enemySpeedTime = 0;
+            this.resetTimers();
             this.ouch = false;
             this.drowned = false;
+            // Unpause all Entities:
             this.togglePause();
+            // Clouds had been set to keepMoving() prior to this:
             Cloud.prototype.moveNormally();
+            // Prevents player from spawnning on top of an enemy and repeatedly
+            // dying:
             Burrower.prototype.resetBurrow();
             // Back to starting position of game:
             this.sprite = this.charOptions[this.selection];
             this.resetStart();
         }
-    } 
+    }
     // Assume the game is paused by the player/due to a 'blur' event and allow 
     // the player to unpause it:
     else {
@@ -2097,53 +2134,17 @@ var allCorn = [];
 var allKeys = [];
 var allPowerUps = [];
 var allClouds = [];
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-
-function addClouds(count) {
-    for (var i = 0; i < count; i++) {
-        allClouds.push(new Cloud());
-    }
-}
-
-function addEnemies(count) {
-    for (var i = 0; i < count; i++) {
-        allEnemies.push(new Enemy());
-    }
-}
-
-function addCorn() {
-    // Add first row of corn:
-    for (var i = 0; i < 4; i++) {
-        allCorn.push(new Corn(2, (map.tileWidth * 3.5 * i) - map.tileWidth, map.slowCorn));
-    } // Add second row of corn:
-    for (i = 0; i < 3; i++) {
-        allCorn.push(new Corn(3, map.tileWidth * 5 * i, map.medCorn));
-    } // Add third row of corn:
-    for (i = 0; i < 3; i++) {
-        allCorn.push(new Corn(4, map.tileWidth * 4.5 * i, map.fastCorn));
-    }
-}
 
 function inherit(subClass, superClass) {
     subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
     subClass.prototype.constructor = subClass; // set constructor on prototype
 }
 
-function setEnemies(count) {
-    allEnemies.length = 0;
-    addEnemies(count);
-}
 // Pick a number of enemies:
-addEnemies(8);
+map.addEnemies(8);
 
 // Generate Corn:
-addCorn();
+map.addCorn();
 
 
 // This listens for key presses and sends the keys to the Player.handleInput()
