@@ -933,19 +933,28 @@ Player.prototype.update = function(dt) {
     // Victory conditions:
     if (this.keysHeld === 3 && !this.victory) {
         map.playSFX('trumpet');
+        // Reset for next round:
         this.keysHeld = 0;
+        // Initiates other behaviour:
         this.victory = true;
+        // Position from which the player will be jumping up and down:
         this.victorySpot = this.y;
         this.sprite = this.charHappy[this.selection];
-
+        // Gain points based on the amount of time that is still left on the 
+        // countdown clock. If timeLeft is 0, gain 100 points:
         this.winPoints(100 + (Math.ceil(this.timeLeft) * 10), 'victory');
+        // Pause all Entities:
         this.blurPause();
     }
 
+    // If the orange text depicting the latest points won is still onscreen, 
+    // make sure it is moving offscreen:
     if (this.pointsY > -200) {
         this.pointsY -= 150 * dt;
     }
 
+    // As long as the game has gone beyond the character selection screen, pause 
+    // the game if the window is ever navigated away from:
     if (this.charSelected) {
         // Pause game if window is not active:
         window.addEventListener('blur', function() {
@@ -955,10 +964,15 @@ Player.prototype.update = function(dt) {
 
     // Enemies are fast/slow:
     if (this.enemySpeedTime >= 0) {
+        // Keep counting down the timer:
         this.enemySpeedTime -= dt * this.moving;
     } else if (this.enemySpeedTime <= 0 && this.enemySpeedTime >= -1) {
+        // Set timer well below the minimum required to run the following set of 
+        // instructions to ensure they only have to get run once:
         this.enemySpeedTime -= 2;
+        // Reset the player's speed on the corn:
         this.gemSpeed = 1.0;
+        // Reset the speed of enemies and of the corn themselves:
         for (var q = 0; q < numEnemies; q++) {
             allEnemies[q].gemSpeed = 1.0;
         }
@@ -967,9 +981,11 @@ Player.prototype.update = function(dt) {
         }
     }
 
-    // Player with water gem buff ignores floating:
+    // Lasso PowerUp allows extended reach when grabbing keys:
     if (this.lasso > 0) {
+        // Countdown timer:
         this.lasso -= dt * this.moving;
+        // As long as the player is not 
         if (this.lasso > 0.1 && !this.ouch) {
             if (this.shield <= 0.09 && this.water <= 0.09) {
                 this.sprite = this.charLasso[this.selection];
@@ -1262,10 +1278,11 @@ Player.prototype.render = function() {
     if (this.victory === true) {
         // Show appropriate messages for victory
         Player.prototype.victory();
-    } else if (this.victory === false && this.paused === true &&
-        this.ouch === false && this.isDead === false) {
-        // If the game is paused due to pressing pause button, show pause message
-        this.pauseMessage();
+    } else if (this.isDead === true) {
+        Cloud.prototype.keepMoving();
+        this.deadOverlay();
+        this.deadMessage();
+        this.playAgainMessage();
     } else if (this.drowned === true) {
         Cloud.prototype.keepMoving();
         this.drownMessage();
@@ -1273,11 +1290,8 @@ Player.prototype.render = function() {
         Cloud.prototype.keepMoving();
         this.hitMessage();
         this.hitOverlay();
-    } else if (this.isDead === true) {
-        Cloud.prototype.keepMoving();
-        this.deadOverlay();
-        this.deadMessage();
-        this.playAgainMessage();
+    } else if (this.paused === true) {
+        this.pauseMessage();
     }
 };
 
@@ -1574,39 +1588,42 @@ Player.prototype.gemReverse = function() {
 Player.prototype.hit = function() {
     if (this.paused === false && this.shield <= 0) {
         map.playSFX('thud');
-        this.freeze = 0;
-        this.blurPause();
-        // Allows user to reset game using enter button through this.handleInput
-        this.ouch = true;
-        // Change to dead sprite
-        this.sprite = this.charHurt[this.selection];
-        // Reduce lives:
-        this.livesLeft--;
-        if (this.livesLeft < 1) {
-            map.playSFX('gong');
-            this.isDead = true;
-            this.ouch = false;
-        }
+        this.resetTimers();
+        this.loseLife();
     }
 };
 
 Player.prototype.drown = function() {
     if (this.paused === false && this.water <= 0) {
         map.playSFX('splash');
-        this.freeze = 0;
-        this.blurPause();
         this.drowned = true;
-        // Allows user to reset game using enter button through this.handleInput
-        this.ouch = true;
-        // Change to dead sprite
-        this.sprite = this.charHurt[this.selection];
-        // Reduce lives:
-        this.livesLeft--;
-        if (this.livesLeft < 1) {
-            map.playSFX('gong');
-            this.isDead = true;
-            this.ouch = false;
-        }
+        this.resetTimers();
+        this.loseLife();
+    }
+};
+
+Player.prototype.resetTimers = function() {
+    this.enemySpeedTime = 0;
+    this.freeze = 0;
+    this.shield = 0;
+    this.water = 0;
+    this.lasso = 0;
+};
+
+Player.prototype.loseLife = function() {
+    // Everything should pause:
+    this.blurPause();
+    // Allows user to reset game using enter button through this.handleInput():
+    this.ouch = true;
+    // Change to hurt sprite:
+    this.sprite = this.charHurt[this.selection];
+    // Reduce lives:
+    this.livesLeft--;
+    // Once player has 0 lives left, the game is over:
+    if (this.livesLeft < 1) {
+        map.playSFX('gong');
+        // Causes specific final message actions to occur:
+        this.isDead = true;
     }
 };
 
