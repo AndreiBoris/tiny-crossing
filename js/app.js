@@ -2284,6 +2284,8 @@ Player.prototype.handleInput = function(input) {
                     this.xCoord--;
                 }
             }
+            this.move();
+            return;
         } else if (input === 'up') {
             // Check if the tile is available:
             if (map.canGo(this.xCoord, this.yCoord - 1)) {
@@ -2297,6 +2299,8 @@ Player.prototype.handleInput = function(input) {
                     return;
                 }
             }
+            this.move();
+            return;
         } else if (input === 'right') {
             // If on water, just move a tile width over, don't use coordinates:
             if (this.floating) {
@@ -2315,6 +2319,8 @@ Player.prototype.handleInput = function(input) {
                     this.xCoord++;
                 }
             }
+            this.move();
+            return;
         } else if (input === 'down') {
             // Check if the tile is available:
             if (map.canGo(this.xCoord, this.yCoord + 1)) {
@@ -2326,6 +2332,8 @@ Player.prototype.handleInput = function(input) {
                     // this if-tree:
                     return;
                 }
+                this.move();
+                return;
             }
         }
         // Pause will work whenever the game is playing normally, (i.e. not 
@@ -2337,10 +2345,6 @@ Player.prototype.handleInput = function(input) {
             // on the corn, floating;
             return;
         }
-
-        // Handles the move for all the possible changes in the if statements 
-        // above that are not followed by return statements:
-        this.move();
     }
     // 'enter' can be used to reset the game:
     else if (this.victory === true || this.ouch === true || this.isDead === true ||
@@ -2504,3 +2508,5 @@ document.addEventListener('keyup', function(e) {
 // TODO: Display information off of the canvas (like the timers);
 // TODO: display Enemy slow/speed
 // TODO: PowerUp menu
+// TODO: Option to mute music only
+// TODO: Fix bug where changing volume on laptop cause move() to occur
