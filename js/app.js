@@ -2381,9 +2381,8 @@ Player.prototype.handleInput = function(input) {
 
                 map.makeKeys();
                 // More enemies each round:
-                if (allEnemies.length <= 40) {
-                    map.addEnemies(1);
-                }
+                map.addEnemies(1);
+                
                 // Add ducks every second round:
                 if (map.round % 2 === 0) {
                     map.addDucks(1);
@@ -2400,16 +2399,15 @@ Player.prototype.handleInput = function(input) {
                 }
                 // Clouds and a Burrower 2 will appear on the 5th round:
                 if (map.round === 5) {
-                    map.addClouds(2);
                     allEnemies.push(new Burrower(2));
                 }
-                // Add another BUrrower 2 on the 6th round:
-                if (map.round === 6) {
-                    allEnemies.push(new Burrower(2));
-                }
-                // Clouds will be added starting on the fifth round:
-                if (allClouds.length <= 15 && map.round >= 5) {
+                // Clouds will be added starting on the sixth round:
+                if (allClouds.length <= 15 && map.round >= 6) {
                     map.addClouds(1);
+                }
+                // Add another Burrower 2 on the 8th round:
+                if (map.round === 8) {
+                    allEnemies.push(new Burrower(2));
                 }
                 map.powerUpsLeft = 4;
                 // Make sure all new added Entities are paused:
