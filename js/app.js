@@ -270,6 +270,12 @@ Map.prototype.addEnemies = function(count) {
     }
 };
 
+Map.prototype.addDucks = function(count) {
+    for (var i = 0; i < count; i++) {
+        allDucks.push(new Duck());
+    }
+};
+
 Map.prototype.addCorn = function() {
     // Add first row of corn:
     for (var i = 0; i < 4; i++) {
@@ -666,7 +672,7 @@ Enemy.prototype.handleZigzag = function(dt) {
     // If enemy is not paused, the countdown until a change of direction will 
     // continue:
     if (this.moving === 1) {
-        this.alterDirCount -= dt;
+        this.alterDirCount -= dt * this.frozen;
     }
     // When countdown is 0, change direction:
     if (this.alterDirCount <= 0) {
@@ -913,7 +919,7 @@ var Duck = function() {
 
     // How long the duck will wait until its next strike. Initial is 5, then it 
     // it randomized:
-    this.duckWait = 5;
+    this.duckWait = 5 + 10 * Math.random();
     // Pause control:
     this.moving = 1;
     this.frozen = 1;
@@ -1023,11 +1029,11 @@ Duck.prototype.strike = function() {
     this.quacked2 = false;
     this.quackWarning = 4;
     var xOptions = ['left', 'right'],
-        yOptions = [2, 3, 4];
-    this.duckWait = 5 + 5 * Math.random();
+        yOptions = [1, 2, 3, 4];
+    this.duckWait = 5 + 20 * Math.random();
 
     var xChoice = xOptions[Math.floor(Math.random() * 2)],
-        yChoice = yOptions[Math.floor(Math.random() * 3)];
+        yChoice = yOptions[Math.floor(Math.random() * 4)];
 
     if (xChoice === 'left') {
         this.sprite = map.enemySprites[6];
@@ -2316,6 +2322,8 @@ Player.prototype.handleInput = function(input) {
                 map.makeKeys();
                 // Back to round 1.
                 map.round = 1;
+                // Delete ducks:
+                allDucks.length = 0;
                 map.setEnemies(8);
                 // Pause the enemies only, so that the new ones generated don't 
                 // begin the next game paused:
@@ -2332,9 +2340,9 @@ Player.prototype.handleInput = function(input) {
                 if (allEnemies.length <= 40) {
                     map.addEnemies(1);
                 }
-                if (map.round === 2) {
-                    // Extra add in for round 2:
-                    map.addEnemies(5);
+                // Add ducks every second round:
+                if (map.round >= 2) {
+                    map.addDucks(1);
                 }
                 // Add a burrower starting on the third round:
                 if (map.round === 3) {
@@ -2403,8 +2411,6 @@ var allPowerUps = [];
 var allClouds = [];
 var allDucks = [];
 
-allDucks.push(new Duck());
-
 // Shorthand for Class inheritance:
 function inherit(subClass, superClass) {
     subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
@@ -2455,12 +2461,7 @@ document.addEventListener('keyup', function(e) {
 // TODO: Edit intro with Sarah's suggestions
 
 // TODO: display Enemy slow/speed
-// TODO: 2 lane monster
-// TODO: Slow down regular enemies and add FAST one
-// TODO: Wakka Wakka monster on the water
 // TODO: Make a function that handles all sprite changes due to buffs
-// TODO: Stop the alterDirection timer on enemies when the game is paused/when
-// they are frozen (this is when the problem happens)
 // TODO: Make it possible to see several points announcements if many PowerUps
 // are picked up
 // TODO: get enemies to bump into each other!
