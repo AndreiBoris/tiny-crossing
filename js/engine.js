@@ -169,13 +169,13 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
+        allCorn.forEach(function(corn) {
+            corn.render();
+        });
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
 
-        allCorn.forEach(function(corn) {
-            corn.render();
-        });
         allKeys.forEach(function(key) {
             key.render();
         });
@@ -265,7 +265,12 @@ var Engine = (function(global) {
         'images/cloud6.png',
         'images/cloud7.png',
         'images/Arrows.png',
-        'images/Mute.png'
+        'images/Mute.png',
+        'images/DuckRight.png',
+        'images/DuckRightEat.png',
+        'images/DuckLeft.png',
+        'images/DuckLeftEat.png'
+
     ];
 
     Resources.load(loadMe);

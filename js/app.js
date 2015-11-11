@@ -81,7 +81,11 @@ var Map = function() {
         'images/enemy-bug-up.png',
         'images/enemy-bug-down.png',
         'images/enemy-bug-burrow-1.png',
-        'images/enemy-bug-burrow-2.png'
+        'images/enemy-bug-burrow-2.png',
+        'images/DuckRight.png',
+        'images/DuckRightEat.png',
+        'images/DuckLeft.png',
+        'images/DuckLeftEat.png'
     ];
     this.playerChars = [
         'images/char-boy.png',
@@ -159,7 +163,9 @@ var Map = function() {
         gong: new Audio('audio/gong.mp3'),
         key: new Audio('audio/key.mp3'),
         music: new Audio('audio/music.mp3'),
+        nom: new Audio('audio/nom.mp3'),
         powerdown: new Audio('audio/powerdown.mp3'),
+        quack: new Audio('audio/quack.mp3'),
         run: new Audio('audio/run.mp3'),
         shield: new Audio('audio/shield.mp3'),
         splash: new Audio('audio/splash.mp3'),
@@ -884,24 +890,110 @@ Burrower.prototype.resetBurrow = function() {
     }
 };
 
-var Eater = function() {
-    this.sprite = map.enemySprites[4];
-    // Burrowers start off screen until the unburrow:
-    this.x = -100;
-    this.y = -100;
-    // Determines behavior of the Burrower:
-    this.type = type;
-    // Used to keep track of movements of unburrow by determining which hole the
-    // burrower unburrowed from last:
-    this.lastBurrow = 5;
-    this.burrowWait = 5;
-    this.unburrowed = 0;
-    // When the game is paused and this.moving is set to 0, the burrowWait timer 
-    // will stop counting down:
+var Duck = function() {
+    this.sprite = map.enemySprites[6];
+    // Ducks start way offscreen:
+    this.x = -300;
+    this.y = -300;
+
+    // Where the quack warning will appear:
+    this.quackX = -100;
+    this.quackY = -100;
+
+    // Timer determining whether quacks should appear to warn player:
+    this.quackWarning = 0;
+
+    // Determines if the warning quacks had already been given or not:
+    this.quacked1 = true;
+    this.quacked2 = true;
+
+    // How long the duck will wait until its next strike. Initial is 5, then it 
+    // it randomized:
+    this.duckWait = 5;
+    // Pause control:
     this.moving = 1;
+    this.frozen = 1;
 };
 
-inherit(Eater, Entity);
+inherit(Duck, Entity);
+
+Duck.prototype.update = function(dt) {
+    if (this.duckWait <= 0) {
+        this.strike();
+    }
+
+    if (this.duckWait > 0 && player.charSelected) {
+        this.duckWait -= dt * this.moving * this.frozen;
+    }
+
+    if (this.quackWarning > 0) {
+        this.quackWarning -= dt * this.moving * this.frozen;
+    }
+
+    if (this.quackX < map.totalWidth / 2) {
+        this.x += 350 * dt * this.moving * this.frozen;
+    } else {
+        this.x -= 350 * dt * this.moving * this.frozen;
+    }
+
+    if (this.quackWarning < 3.9 && !this.quacked1) {
+        this.quacked1 = true;
+        map.playSFX('quack');
+    }
+    if (this.quackWarning < 2.5 && !this.quacked2) {
+        this.quacked2 = true;
+        map.playSFX('quack');
+    }
+};
+
+Duck.prototype.render = function() {
+    if (player.charSelected === true) {
+        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+    }
+
+    if (this.quackWarning > 0) {
+        console.log('should be rendering some stuff');
+        if (this.quackX < map.totalWidth / 2) {
+            ctx.textAlign = 'left';
+        } else {
+            ctx.textAlign = 'right';
+        }
+        ctx.font = '20px Impact';
+        ctx.fillStyle = 'yellow';
+        ctx.strokeStyle = 'black';
+        if (this.quackWarning <= 3.9 && this.quackWarning >= 3) {
+            ctx.fillText('Quack!', this.quackX, this.quackY);
+            ctx.strokeText('Quack!', this.quackX, this.quackY);
+        } else if (this.quackWarning <= 2.5 && this.quackWarning >= 1) {
+            ctx.fillText('Quack!', this.quackX, this.quackY);
+            ctx.strokeText('Quack!', this.quackX, this.quackY);
+        }
+    }
+};
+
+Duck.prototype.strike = function() {
+    this.quacked1 = false;
+    this.quacked2 = false;
+    this.quackWarning = 4;
+    var xOptions = ['left', 'right'],
+        yOptions = [2, 3, 4];
+    this.duckWait = 5 + 5 * Math.random();
+
+    var xChoice = xOptions[Math.floor(Math.random() * 2)],
+        yChoice = yOptions[Math.floor(Math.random() * 3)];
+
+    if (xChoice === 'left') {
+        this.sprite = map.enemySprites[6];
+        this.x = -1300;
+        this.quackX = 10;
+    } else if (xChoice === 'right') {
+        this.sprite = map.enemySprites[8];
+        this.x = map.totalWidth + 1300;
+        this.quackX = map.totalWidth - 10;
+    }
+    this.y = map.yValues[yChoice];
+    this.quackY = this.y + 65;
+};
 
 var Player = function() {
     // this.sprite, this.x, this.y, this.xCoord and this.yCoord are all 
@@ -2170,6 +2262,8 @@ var allCorn = [];
 var allKeys = [];
 var allPowerUps = [];
 var allClouds = [];
+
+allEnemies.push(new Duck());
 
 // Shorthand for Class inheritance:
 function inherit(subClass, superClass) {
