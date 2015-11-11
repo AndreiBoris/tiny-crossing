@@ -527,8 +527,8 @@ Key.prototype.update = function(dt) {
         else {
             if (this.x < map.xValues[map.numColumns - 4] + this.collectedOffset) {
                 this.x = this.x + 100 * dt *
-                // Slow down the x-movement as time goes on for a smoother animation:
-                (map.xValues[map.numColumns - 2] / this.x) * this.moving;
+                    // Slow down the x-movement as time goes on for a smoother animation:
+                    (map.xValues[map.numColumns - 2] / this.x) * this.moving;
             }
             if (this.y < map.yValues[map.numRows - 2]) {
                 this.y = this.y + 300 * dt * this.moving;
@@ -933,69 +933,89 @@ var Duck = function() {
     // Timer until the duck is back to its normal orientation after performing 
     // duckEat():
     this.reassignSprite = 0;
+
+    // Holds the value determining which way the duck is travelling:
+    this.goingRight = true;
 };
 
 inherit(Duck, Entity);
 
 Duck.prototype.update = function(dt) {
+
+    // Count down the timer until the duck's head is back to normal orientation:
     if (this.reassignSprite > 0) {
         this.reassignSprite -= dt;
     }
 
+    // When the timer reaches an appropriate point, set the head back to its 
+    // appropriate orientation:
     if (this.reassignSprite > 0 && this.reassignSprite < 0.1) {
-        if (this.quackXGoal < map.totalWidth / 2) {
+        if (this.goingRight) {
             this.sprite = map.enemySprites[6];
         } else {
             this.sprite = map.enemySprites[8];
         }
     }
 
+    // If the wait between strikes is over, the duck should strike again:
     if (this.duckWait <= 0) {
         this.strike();
     }
 
-    if (this.duckWait > 0 && player.charSelected) {
+    // Count down the timer between duck strikes:
+    if (this.duckWait > 0) {
         this.duckWait -= dt * this.moving * this.frozen;
     }
 
+    // Count down the timer during which the duck warning is sounded:
     if (this.quackWarning > 0) {
-        this.quackWarning -= dt * this.moving * this.frozen;
+        this.quackWarning -= dt * this.moving;
     }
 
-    if (this.quackX < map.totalWidth / 2) {
+    if (this.goingRight) {
+        // Move right as long as the game is not paused and the blue gem is not
+        // activated:
         this.x += 350 * dt * this.moving * this.frozen;
+        // If the quack warning is not fully off screen and it not currently 
+        // coming out of the screen, it should be going further off screen. This
+        // is the warning that tells the player that a duck is coming:
         if (this.quackX > -100 && this.notOpposed) {
-            this.quackX -= 150 * dt * this.moving * this.frozen;
+            this.quackX -= 150 * dt * this.moving;
         }
-    } else {
+    } // The duck must be going left:
+    else {
+        // Move left:
         this.x -= 350 * dt * this.moving * this.frozen;
+        // Opposite action to the duck warning when the duck is moving right:
         if (this.quackX < map.totalWidth + 100 && this.notOpposed) {
-            this.quackX += 150 * dt * this.moving * this.frozen;
+            this.quackX += 150 * dt * this.moving;
         }
     }
 
+    // Affirm that the duck warning is not currently moving in onto the screen.
+    // The following if statements could change this to false, in which case the 
+    // regular action of moving the quack statements off screen will be 
+    // suspended until the quackWarning timer reaches appropriate counts:
     this.notOpposed = true;
 
+    // Between 3.6 and 4 seconds on the timer, the quack warning should be 
+    // coming in onto the screen:
     if (this.quackWarning > 3.6 && this.quackWarning < 4.0) {
-        if (this.quackX < this.quackXGoal) {
-            this.quackX += 350 * dt * this.moving * this.frozen;
-        } else if (this.quackX > this.quackXGoal) {
-            this.quackX -= 350 * dt * this.moving * this.frozen;
-        }
-        this.notOpposed = false;
+        this.duckWarn(dt);
     }
+
+    // First duck warning quack:
     if (this.quackWarning < 3.9 && !this.quacked1) {
         this.quacked1 = true;
         map.playSFX('quack');
     }
+
+    // Between 2.2 and 2.6 seconds on the timer, the quack warning should be 
+    // coming in onto the screen:
     if (this.quackWarning > 2.2 && this.quackWarning < 2.6) {
-        if (this.quackX < this.quackXGoal) {
-            this.quackX += 350 * dt * this.moving * this.frozen;
-        } else if (this.quackX > this.quackXGoal) {
-            this.quackX -= 350 * dt * this.moving * this.frozen;
-        }
-        this.notOpposed = false;
+        this.duckWarn(dt);
     }
+    // Second duck warning quack:
     if (this.quackWarning < 2.5 && !this.quacked2) {
         this.quacked2 = true;
         map.playSFX('quack');
@@ -1003,12 +1023,15 @@ Duck.prototype.update = function(dt) {
 };
 
 Duck.prototype.render = function() {
-    if (player.charSelected === true) {
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
-    }
+    // Draw Duck:
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 
+    // This draws the messages that warn the player that a duck is coming and 
+    // specifies where it is going to arrive from:
     if (this.quackWarning > 0) {
-        if (this.quackX < map.totalWidth / 2) {
+        // These textAlign assignments insure that the quack messages come out 
+        // to equally far distances on both sides of the screen:
+        if (this.goingRight) {
             ctx.textAlign = 'left';
         } else {
             ctx.textAlign = 'right';
@@ -1017,51 +1040,80 @@ Duck.prototype.render = function() {
         ctx.fillStyle = 'yellow';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 1;
-        if (this.quackWarning <= 4) {
-            ctx.fillText('Quack!', this.quackX, this.quackY);
-            ctx.strokeText('Quack!', this.quackX, this.quackY);
-        }
+        // quackX and quackY are initially appried after strike() and then 
+        // quackX is adjusted in update():
+        ctx.fillText('Quack!', this.quackX, this.quackY);
+        ctx.strokeText('Quack!', this.quackX, this.quackY);
     }
 };
 
 Duck.prototype.strike = function() {
+    // Each strike is announced by two warnings:
     this.quacked1 = false;
     this.quacked2 = false;
+    // This timer controls the behaviour of the warnings, with certain events 
+    // happening at various points during this timer:
     this.quackWarning = 4;
+    // Ducks strikes can come from the left or right, from any of the top 4 
+    // water rows:
     var xOptions = ['left', 'right'],
         yOptions = [1, 2, 3, 4];
-    this.duckWait = 5 + 20 * Math.random();
+    // The time between strikes can vary greatly:
+    this.duckWait = 8 + 17 * Math.random();
 
     var xChoice = xOptions[Math.floor(Math.random() * 2)],
         yChoice = yOptions[Math.floor(Math.random() * 4)];
 
     if (xChoice === 'left') {
         this.sprite = map.enemySprites[6];
-        console.log(this.sprite);
+        // Ducks move really fast, so they have to start a fair way off screen 
+        // to allow for the quack warnings to happen before they arrive:
         this.x = -1300;
+        // This is the position of the quack warning at its most visible point:
         this.quackXGoal = 40;
+        // This the default, invisible position of the quack warning. This is 
+        // where it starts and it moves out from this position during certain
+        // parts of the quackWarning timer:
         this.quackX = -100;
-        console.log(this.quackXGoal);
+        this.goingRight = true;
     } else if (xChoice === 'right') {
         this.sprite = map.enemySprites[8];
-        console.log(this.sprite);
         this.x = map.totalWidth + 1300;
         this.quackXGoal = map.totalWidth - 40;
         this.quackX = map.totalWidth + 100;
-        console.log(this.quackXGoal);
+        this.goingRight = false;
     }
     this.y = map.yValues[yChoice];
+    // Since quackY is determining where text will appear, the 65 pixels are 
+    // there to account for alpha/transparent buffer zone on the Duck .pngs:
     this.quackY = this.y + 65;
 };
 
+// This plays when the duck eats the player. It changes the Duck's sprite in a 
+// way to suggest that the duck has opened its mouth to eat the player:
 Duck.prototype.duckEat = function() {
     map.playSFX('nom');
-    if (this.quackXGoal < map.totalWidth / 2) {
+    if (this.goingRight) {
         this.sprite = map.enemySprites[7];
     } else {
         this.sprite = map.enemySprites[9];
     }
+    // This is the time left in seconds before the duck goes back to its
+    // original sprite:
     this.reassignSprite = 0.25;
+};
+
+Duck.prototype.duckWarn = function(dt) {
+    // If the quack warning is coming from offscreen left:
+    if (this.goingRight) {
+        this.quackX += 350 * dt * this.moving * this.frozen;
+
+    }
+    // If the quack warning is coming from offscreen right:
+    else if (this.quackX > this.quackXGoal) {
+        this.quackX -= 350 * dt * this.moving * this.frozen;
+    }
+    this.notOpposed = false;
 };
 
 var Player = function() {
@@ -1973,7 +2025,7 @@ Player.prototype.gems = {
         map.playSFX('chime');
         this.winPoints(100);
         // How long the effects will last in seconds:
-        this.water = 4;
+        this.water = 5;
     }),
     // Yellow PowerUp, gives the player extra reach when grabbing keys:
     lasso: (function gemLasso() {
@@ -2477,3 +2529,4 @@ document.addEventListener('keyup', function(e) {
 // are picked up
 // TODO: get enemies to bump into each other!
 // TODO: PowerUp menu
+// TODO: Freeze ducks
