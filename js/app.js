@@ -1281,55 +1281,30 @@ Player.prototype.update = function(dt) {
         }
     }
 
+    // Normally the player doesn't have any extention with which to grab keys 
+    // from far away:
+    this.extention = 0;
+
     // Lasso PowerUp allows extended reach when grabbing keys:
     if (this.lasso > 0) {
         // Count down timer:
         this.lasso -= dt * this.moving;
-        // There is still some time left on the lasso countdown:
-        if (this.lasso > 0.1) {
-            // Shield and water sprites would take priority over the lasso 
-            // sprite if they have not almost completely run out as well:
-            if (this.shield <= 0.09 && this.water <= 0.09) {
-                this.sprite = this.charLasso[this.selection];
-            }
-            // This gives the player an extended influence over the keys. The  
-            // value written is the number of pixels that this reach is extended 
-            // by:
-            this.extention = 100;
-        } // If all the countdowns are really low, go back to the regular 
-        // sprite:
-        else if (this.lasso < 0.09) {
-            // If no timer is about 0.1, set sprite back to normal:
-            this.resetSprite();
-            // Remove extention:
-            this.extention = 0;
-        }
+        // Give the player extended reach with which to grab keys:
     }
 
     // Player with water gem buff doesn't die when this.drown() is run:
     if (this.water > 0) {
         // Count down timer:
         this.water -= dt * this.moving;
-        // Shield would take priority over water, but otherwise, as long as 
-        // there is sufficient time on the countodnw timer, apply water sprite:
-        if (this.water > 0.1 && this.shield <= 0.09) {
-            this.sprite = this.charWater[this.selection];
-        }
-        // If no timer is about 0.1, set sprite back to normal:
-        this.resetSprite();
     }
 
     // Player with shield gem buff doesn't die when this.hit() is run:
     if (this.shield > 0) {
-        // Count down timer:
         this.shield -= dt * this.moving;
-        // Shield takes priority over other buffs in determining sprite:
-        if (this.shield > 0.1) {
-            this.sprite = this.charShield[this.selection];
-        }
-        // If no timer is about 0.1, set sprite back to normal:
-        this.resetSprite();
     }
+
+    // Handle all changes of sprite due to various PowerUps:
+    this.changeSprite();
 
     // Player is on top of corn:
     if (this.floating) {
@@ -1541,6 +1516,18 @@ Player.prototype.update = function(dt) {
     // this.victorySpot is determined once the player reaches the objective:
     if (this.victory === true) {
         this.victoryBounce(this.victorySpot, dt);
+    }
+};
+
+Player.prototype.changeSprite = function() {
+    if (this.shield > 0){
+        this.sprite = this.charShield[this.selection];
+    } else if (this.water > 0 ){
+        this.sprite = this.charWater[this.selection];
+    } else if (this.lasso > 0 ){
+        this.sprite = this.charLasso[this.selection];
+    } else if (!this.victory && !this.ouch) {
+        this.sprite = this.charOptions[this.selection];
     }
 };
 
@@ -2525,8 +2512,4 @@ document.addEventListener('keyup', function(e) {
 
 // TODO: display Enemy slow/speed
 // TODO: Make a function that handles all sprite changes due to buffs
-// TODO: Make it possible to see several points announcements if many PowerUps
-// are picked up
-// TODO: get enemies to bump into each other!
 // TODO: PowerUp menu
-// TODO: Freeze ducks
