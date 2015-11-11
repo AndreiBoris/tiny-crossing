@@ -930,8 +930,9 @@ var Duck = function() {
     // each other:
     this.notOpposed = true;
 
+    // Timer until the duck is back to its normal orientation after performing 
+    // duckEat():
     this.reassignSprite = 0;
-    this.notNomming = true;
 };
 
 inherit(Duck, Entity);
@@ -947,7 +948,6 @@ Duck.prototype.update = function(dt) {
         } else {
             this.sprite = map.enemySprites[8];
         }
-        this.notNomming = true;
     }
 
     if (this.duckWait <= 0) {
@@ -1025,7 +1025,6 @@ Duck.prototype.render = function() {
 };
 
 Duck.prototype.strike = function() {
-    this.notNomming = true;
     this.quacked1 = false;
     this.quacked2 = false;
     this.quackWarning = 4;
@@ -1056,7 +1055,6 @@ Duck.prototype.strike = function() {
 };
 
 Duck.prototype.duckEat = function() {
-    this.notNomming = false;
     map.playSFX('nom');
     if (this.quackXGoal < map.totalWidth / 2) {
         this.sprite = map.enemySprites[7];
