@@ -2341,8 +2341,9 @@ Player.prototype.handleInput = function(input) {
                     map.addEnemies(1);
                 }
                 // Add ducks every second round:
-                if (map.round >= 2) {
+                if (map.round % 2 === 0) {
                     map.addDucks(1);
+                    console.log(allDucks.length);
                 }
                 // Add a burrower starting on the third round:
                 if (map.round === 3) {
@@ -2423,10 +2424,20 @@ map.addEnemies(8);
 // Generate Corn:
 map.addCorn();
 
+// Prevent scrolling using cursor keys:
+// Thanks to Zeta:
+// http://stackoverflow.com/questions/8916620/disable-arrow-key-scrolling-in-users-browser
+window.addEventListener("keydown", function(e) {
+    // space and arrow keys
+    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+        e.preventDefault();
+    }
+}, false);
 
 // This listens for key presses and sends the keys to the Player.handleInput()
 // method:
 document.addEventListener('keyup', function(e) {
+
     var allowedKeys = {
         37: 'left',
         65: 'left',
@@ -2467,3 +2478,6 @@ document.addEventListener('keyup', function(e) {
 // TODO: get enemies to bump into each other!
 // TODO: Make less enemies appear (no more second round huge boost)
 // TODO: Max 2 powerups at any one time
+
+// TODO fix scrolling on up and down movements on smaller browser sizes
+// TODO: PowerUp menu
