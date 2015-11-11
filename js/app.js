@@ -520,8 +520,8 @@ Key.prototype.update = function(dt) {
         else {
             if (this.x < map.xValues[map.numColumns - 4] + this.collectedOffset) {
                 this.x = this.x + 100 * dt *
-                    // Slow down the x-movement as time goes on for a smoother animation:
-                    (map.xValues[map.numColumns - 2] / this.x) * this.moving;
+                // Slow down the x-movement as time goes on for a smoother animation:
+                (map.xValues[map.numColumns - 2] / this.x) * this.moving;
             }
             if (this.y < map.yValues[map.numRows - 2]) {
                 this.y = this.y + 300 * dt * this.moving;
@@ -892,6 +892,10 @@ Burrower.prototype.resetBurrow = function() {
 
 var Duck = function() {
     this.sprite = map.enemySprites[6];
+
+    // Helps to determine if there duckEat() should be played in event of a 
+    // collision with the player:
+    this.isDuck = true;
     // Ducks start way offscreen:
     this.x = -300;
     this.y = -300;
@@ -914,12 +918,31 @@ var Duck = function() {
     this.moving = 1;
     this.frozen = 1;
 
+    // Determines if the quack message is being sent in to be displayed, or out 
+    // away from where it can be seen so that the two directions don't oppose
+    // each other:
     this.notOpposed = true;
+
+    this.reassignSprite = 0;
+    this.notNomming = true;
 };
 
 inherit(Duck, Entity);
 
 Duck.prototype.update = function(dt) {
+    if (this.reassignSprite > 0) {
+        this.reassignSprite -= dt;
+    }
+
+    if (this.reassignSprite > 0 && this.reassignSprite < 0.1) {
+        if (this.quackXGoal < map.totalWidth / 2) {
+            this.sprite = map.enemySprites[6];
+        } else {
+            this.sprite = map.enemySprites[8];
+        }
+        this.notNomming = true;
+    }
+
     if (this.duckWait <= 0) {
         this.strike();
     }
@@ -995,6 +1018,7 @@ Duck.prototype.render = function() {
 };
 
 Duck.prototype.strike = function() {
+    this.notNomming = true;
     this.quacked1 = false;
     this.quacked2 = false;
     this.quackWarning = 4;
@@ -1022,6 +1046,17 @@ Duck.prototype.strike = function() {
     }
     this.y = map.yValues[yChoice];
     this.quackY = this.y + 65;
+};
+
+Duck.prototype.duckEat = function() {
+    this.notNomming = false;
+    map.playSFX('nom');
+    if (this.quackXGoal < map.totalWidth / 2) {
+        this.sprite = map.enemySprites[7];
+    } else {
+        this.sprite = map.enemySprites[9];
+    }
+    this.reassignSprite = 0.25;
 };
 
 var Player = function() {
@@ -1107,6 +1142,8 @@ var Player = function() {
     this.pointsScreen = false;
 
     this.musicNotStarted = true;
+
+    this.isFood = false;
 };
 
 // Until the player has selected a character, this gets rendered over the game:
@@ -1132,6 +1169,7 @@ Player.prototype.update = function(dt) {
     // hit boxes:
     var numCorn = allCorn.length,
         numEnemies = allEnemies.length,
+        numDucks = allDucks.length,
         numKeys = allKeys.length,
         numPowerUps = allPowerUps.length;
 
@@ -1259,6 +1297,11 @@ Player.prototype.update = function(dt) {
             // when determining the enemy's movement across the map:
             allEnemies[t].frozen = 0;
         }
+        for (t = 0; t < numDucks; t++) {
+            // enemy.frozen gets multiplied by enemy.xSpeed and enemy.ySpeed 
+            // when determining the enemy's movement across the map:
+            allDucks[t].frozen = 0;
+        }
     }
 
     // If the first enemy is frozen, assume all enemies are. If the freeze timer 
@@ -1266,6 +1309,9 @@ Player.prototype.update = function(dt) {
     if (this.freeze <= 0 && allEnemies[0].frozen === 0) {
         for (var r = 0; r < numEnemies; r++) {
             allEnemies[r].frozen = 1;
+        }
+        for (r = 0; r < numDucks; r++) {
+            allDucks[r].frozen = 1;
         }
     }
 
@@ -1412,6 +1458,28 @@ Player.prototype.update = function(dt) {
             this.hit();
         }
     }
+
+    // Holds current positions of all ducks:
+    var duckSpots = [];
+
+    // Push all current duck position values to the array:
+    for (i = 0; i < numDucks; i++) {
+        var xD = allDucks[i].x;
+        var yD = allDucks[i].y;
+        duckSpots.push([xD, yD]);
+    }
+    // Check to see if the player is close enough to any of the enemies to
+    // trigger a colission
+    for (k = 0; k < numDucks; k++) {
+        if ((this.x - map.tileWidth / 2 < duckSpots[k][0] &&
+                this.x > duckSpots[k][0] + map.tileWidth / 4) &&
+            (this.y - map.tileHeight / 2 < duckSpots[k][1] &&
+                this.y + map.tileHeight / 2 > duckSpots[k][1])) {
+            // Collision detected:
+            this.eaten(allDucks[k]);
+        }
+    }
+
     // If player reached the end objective, character does a little bounce,
     // this.victorySpot is determined once the player reaches the objective:
     if (this.victory === true) {
@@ -1501,7 +1569,9 @@ Player.prototype.render = function() {
     // When the character sprite is chosen, the game has begun:
     if (this.charSelected === true) {
         // Draw current position of appropriate player.sprite:
-        ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        if (!this.isFood) {
+            ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+        }
         // Draw the HUD at the top of the screen:
         this.displayTimer();
         this.displayPoints();
@@ -1552,6 +1622,8 @@ Player.prototype.render = function() {
         this.victoryScreen();
     } else if (this.isDead === true) {
         this.deadScreen();
+    } else if (this.isFood){
+        this.foodMessage();
     }
     // Has to be above this.ouch === true, since if drowned is true, ouch is
     // true as well:
@@ -1735,6 +1807,14 @@ Player.prototype.drownMessage = function() {
     this.continueMessage();
 };
 
+Player.prototype.foodMessage = function() {
+    // Sends clouds to keep moving and sets font style:
+    this.loseLifeMsgStyle();
+    ctx.fillText('You fed the duck!', canvas.width / 2, canvas.height - 140);
+    ctx.strokeText('You fed the duck!', canvas.width / 2, canvas.height - 140);
+    this.continueMessage();
+};
+
 Player.prototype.loseLifeMsgStyle = function() {
     // If clouds are present, their speed will be doubled so that they move 
     // offscreen and allow the text below them to be read:
@@ -1764,6 +1844,7 @@ Player.prototype.togglePause = function() {
     var numEnemies = allEnemies.length,
         numCorn = allCorn.length,
         numKeys = allKeys.length,
+        numDucks = allDucks.length,
         numClouds = allClouds.length,
         numPowerUps = allPowerUps.length;
     for (var i = 0; i < numEnemies; i++) {
@@ -1774,6 +1855,9 @@ Player.prototype.togglePause = function() {
     }
     for (i = 0; i < numKeys; i++) {
         allKeys[i].togglePause();
+    }
+    for (i = 0; i < numDucks; i++) {
+        allDucks[i].togglePause();
     }
     for (i = 0; i < numPowerUps; i++) {
         allPowerUps[i].togglePause();
@@ -1799,6 +1883,7 @@ Player.prototype.blurPause = function() {
     var numEnemies = allEnemies.length,
         numCorn = allCorn.length,
         numKeys = allKeys.length,
+        numDucks = allDucks.length,
         numClouds = allClouds.length,
         numPowerUps = allPowerUps.length;
     // Pause all enemies:
@@ -1810,6 +1895,9 @@ Player.prototype.blurPause = function() {
     }
     for (i = 0; i < numKeys; i++) {
         allKeys[i].blurPause();
+    }
+    for (i = 0; i < numDucks; i++) {
+        allDucks[i].blurPause();
     }
     for (i = 0; i < numPowerUps; i++) {
         allPowerUps[i].blurPause();
@@ -1930,6 +2018,20 @@ Player.prototype.hit = function() {
         this.loseLife();
     }
 };
+
+// Handles player colliding with ducks:
+Player.prototype.eaten = function(duck) {
+    // This will not run if the player has the shield PowerUp:
+    if (this.paused === false && this.shield <= 0) {
+        map.playSFX('nom');
+        duck.duckEat();
+        this.isFood = true;
+        // All PowerUp effects go away:
+        this.resetTimers();
+        this.loseLife();
+    }
+};
+
 
 // Handles player stepping onto water:
 Player.prototype.drown = function() {
@@ -2262,6 +2364,7 @@ Player.prototype.handleInput = function(input) {
             }
             this.resetTimers();
             this.ouch = false;
+            this.isFood = false;
             this.drowned = false;
             // Unpause all Entities:
             this.togglePause();
@@ -2298,8 +2401,9 @@ var allCorn = [];
 var allKeys = [];
 var allPowerUps = [];
 var allClouds = [];
+var allDucks = [];
 
-allEnemies.push(new Duck());
+allDucks.push(new Duck());
 
 // Shorthand for Class inheritance:
 function inherit(subClass, superClass) {

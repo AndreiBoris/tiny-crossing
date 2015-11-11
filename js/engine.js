@@ -110,6 +110,9 @@ var Engine = (function(global) {
         });
         map.update(dt);
         player.update(dt);
+        allDucks.forEach(function(duck) {
+            duck.update(dt);
+        });
         allClouds.forEach(function(cloud) {
             cloud.update(dt);
         });
@@ -175,7 +178,6 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
-
         allKeys.forEach(function(key) {
             key.render();
         });
@@ -183,6 +185,9 @@ var Engine = (function(global) {
             power.render();
         });
         player.render();
+        allDucks.forEach(function(duck) {
+            duck.render();
+        });
         allClouds.forEach(function(cloud) {
             cloud.render();
         });
@@ -269,7 +274,8 @@ var Engine = (function(global) {
         'images/DuckRight.png',
         'images/DuckRightEat.png',
         'images/DuckLeft.png',
-        'images/DuckLeftEat.png'
+        'images/DuckLeftEat.png',
+        'images/Nothing.png'
 
     ];
 
