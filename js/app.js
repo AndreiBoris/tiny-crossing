@@ -932,13 +932,21 @@ Duck.prototype.update = function(dt) {
 
     if (this.quackX < map.totalWidth / 2) {
         this.x += 350 * dt * this.moving * this.frozen;
+        this.quackX -= 120 * dt * this.moving * this.frozen;
     } else {
         this.x -= 350 * dt * this.moving * this.frozen;
+        this.quackX += 120 * dt * this.moving * this.frozen;
     }
 
+    if (this.quackWarning > 3.9 && this.quackWarning < 4.0){
+        this.quackX = this.quackXGoal;
+    }
     if (this.quackWarning < 3.9 && !this.quacked1) {
         this.quacked1 = true;
         map.playSFX('quack');
+    }
+    if (this.quackWarning > 2.5 && this.quackWarning < 3){
+        this.quackX = this.quackXGoal;
     }
     if (this.quackWarning < 2.5 && !this.quacked2) {
         this.quacked2 = true;
@@ -985,11 +993,11 @@ Duck.prototype.strike = function() {
     if (xChoice === 'left') {
         this.sprite = map.enemySprites[6];
         this.x = -1300;
-        this.quackX = 10;
+        this.quackXGoal = 40;
     } else if (xChoice === 'right') {
         this.sprite = map.enemySprites[8];
         this.x = map.totalWidth + 1300;
-        this.quackX = map.totalWidth - 10;
+        this.quackXGoal = map.totalWidth - 40;
     }
     this.y = map.yValues[yChoice];
     this.quackY = this.y + 65;
