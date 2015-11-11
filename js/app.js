@@ -1290,6 +1290,7 @@ Player.prototype.update = function(dt) {
         // Count down timer:
         this.lasso -= dt * this.moving;
         // Give the player extended reach with which to grab keys:
+        this.extention = 100;
     }
 
     // Player with water gem buff doesn't die when this.drown() is run:
