@@ -913,6 +913,8 @@ var Duck = function() {
     // Pause control:
     this.moving = 1;
     this.frozen = 1;
+
+    this.notOpposed = true;
 };
 
 inherit(Duck, Entity);
@@ -932,21 +934,37 @@ Duck.prototype.update = function(dt) {
 
     if (this.quackX < map.totalWidth / 2) {
         this.x += 350 * dt * this.moving * this.frozen;
-        this.quackX -= 120 * dt * this.moving * this.frozen;
+        if (this.quackX > -100 && this.notOpposed) {
+            this.quackX -= 150 * dt * this.moving * this.frozen;
+        }
     } else {
         this.x -= 350 * dt * this.moving * this.frozen;
-        this.quackX += 120 * dt * this.moving * this.frozen;
+        if (this.quackX < map.totalWidth + 100 && this.notOpposed) {
+            this.quackX += 150 * dt * this.moving * this.frozen;
+        }
     }
 
-    if (this.quackWarning > 3.9 && this.quackWarning < 4.0){
-        this.quackX = this.quackXGoal;
+    this.notOpposed = true;
+
+    if (this.quackWarning > 3.6 && this.quackWarning < 4.0) {
+        if (this.quackX < this.quackXGoal) {
+            this.quackX += 350 * dt * this.moving * this.frozen;
+        } else if (this.quackX > this.quackXGoal) {
+            this.quackX -= 350 * dt * this.moving * this.frozen;
+        }
+        this.notOpposed = false;
     }
     if (this.quackWarning < 3.9 && !this.quacked1) {
         this.quacked1 = true;
         map.playSFX('quack');
     }
-    if (this.quackWarning > 2.5 && this.quackWarning < 3){
-        this.quackX = this.quackXGoal;
+    if (this.quackWarning > 2.2 && this.quackWarning < 2.6) {
+        if (this.quackX < this.quackXGoal) {
+            this.quackX += 350 * dt * this.moving * this.frozen;
+        } else if (this.quackX > this.quackXGoal) {
+            this.quackX -= 350 * dt * this.moving * this.frozen;
+        }
+        this.notOpposed = false;
     }
     if (this.quackWarning < 2.5 && !this.quacked2) {
         this.quacked2 = true;
@@ -960,7 +978,6 @@ Duck.prototype.render = function() {
     }
 
     if (this.quackWarning > 0) {
-        console.log('should be rendering some stuff');
         if (this.quackX < map.totalWidth / 2) {
             ctx.textAlign = 'left';
         } else {
@@ -969,10 +986,8 @@ Duck.prototype.render = function() {
         ctx.font = '20px Impact';
         ctx.fillStyle = 'yellow';
         ctx.strokeStyle = 'black';
-        if (this.quackWarning <= 3.9 && this.quackWarning >= 3) {
-            ctx.fillText('Quack!', this.quackX, this.quackY);
-            ctx.strokeText('Quack!', this.quackX, this.quackY);
-        } else if (this.quackWarning <= 2.5 && this.quackWarning >= 1) {
+        ctx.lineWidth = 1;
+        if (this.quackWarning <= 4) {
             ctx.fillText('Quack!', this.quackX, this.quackY);
             ctx.strokeText('Quack!', this.quackX, this.quackY);
         }
@@ -992,12 +1007,18 @@ Duck.prototype.strike = function() {
 
     if (xChoice === 'left') {
         this.sprite = map.enemySprites[6];
+        console.log(this.sprite);
         this.x = -1300;
         this.quackXGoal = 40;
+        this.quackX = -100;
+        console.log(this.quackXGoal);
     } else if (xChoice === 'right') {
         this.sprite = map.enemySprites[8];
+        console.log(this.sprite);
         this.x = map.totalWidth + 1300;
         this.quackXGoal = map.totalWidth - 40;
+        this.quackX = map.totalWidth + 100;
+        console.log(this.quackXGoal);
     }
     this.y = map.yValues[yChoice];
     this.quackY = this.y + 65;
@@ -1571,6 +1592,7 @@ Player.prototype.announcePoints = function(points) {
     ctx.strokeStyle = 'black';
     ctx.font = '56px Impact';
     ctx.textAlign = 'center';
+    ctx.lineWidth = 2;
     ctx.fillText('+' + points, map.totalWidth - map.tileWidth * 1.5, this.pointsY);
     ctx.strokeText('+' + points, map.totalWidth - map.tileWidth * 1.5, this.pointsY);
 };
@@ -1653,6 +1675,7 @@ Player.prototype.victoryMessage = function() {
     ctx.fillStyle = 'lime';
     ctx.strokeStyle = 'black';
     ctx.textAlign = 'center';
+    ctx.lineWidth = 2;
 
     ctx.fillText('Good job!', canvas.width / 2, canvas.height / 2);
     ctx.strokeText('Good job!', canvas.width / 2, canvas.height / 2);
@@ -1663,6 +1686,7 @@ Player.prototype.continueMessage = function() {
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'black';
     ctx.textAlign = 'center';
+    ctx.lineWidth = 2;
 
     ctx.fillText('Press enter to continue', canvas.width / 2, canvas.height - 60);
     ctx.strokeText('Press enter to continue', canvas.width / 2, canvas.height - 60);
@@ -1673,6 +1697,7 @@ Player.prototype.playAgainMessage = function() {
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'black';
     ctx.textAlign = 'center';
+    ctx.lineWidth = 2;
 
     ctx.fillText('Press enter to play again!', canvas.width / 2, canvas.height - 60);
     ctx.strokeText('Press enter to play again!', canvas.width / 2, canvas.height - 60);
@@ -1682,6 +1707,7 @@ Player.prototype.bwMsgStyle = function() {
     ctx.font = '40px Impact';
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'black';
+    ctx.lineWidth = 2;
 };
 
 Player.prototype.pauseMessage = function() {
@@ -1713,6 +1739,7 @@ Player.prototype.loseLifeMsgStyle = function() {
     // If clouds are present, their speed will be doubled so that they move 
     // offscreen and allow the text below them to be read:
     Cloud.prototype.keepMoving();
+    ctx.lineWidth = 2;
     ctx.font = '56px Impact';
     ctx.fillStyle = 'white';
     ctx.strokeStyle = 'red';
@@ -1726,6 +1753,7 @@ Player.prototype.deadMessage = function() {
     ctx.fillStyle = 'black';
     ctx.strokeStyle = 'red';
     ctx.textAlign = 'center';
+    ctx.lineWidth = 2;
     ctx.fillText(this.points + ' points!', canvas.width / 2, canvas.height - 140);
     ctx.strokeText(this.points + ' points!', canvas.width / 2, canvas.height - 140);
 };
