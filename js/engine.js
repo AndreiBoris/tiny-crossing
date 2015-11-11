@@ -275,7 +275,7 @@ var Engine = (function(global) {
         'images/DuckRightEat.png',
         'images/DuckLeft.png',
         'images/DuckLeftEat.png',
-        'images/Nothing.png'
+        'images/Enter.png'
 
     ];
 

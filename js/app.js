@@ -73,7 +73,8 @@ var Map = function() {
         'images/White.png',
         'images/Red.png',
         'images/Arrows.png',
-        'images/Mute.png'
+        'images/Mute.png',
+        'images/Enter.png'
     ];
     this.enemySprites = [
         'images/enemy-bug-right.png',
@@ -1628,7 +1629,7 @@ Player.prototype.render = function() {
         this.victoryScreen();
     } else if (this.isDead === true) {
         this.deadScreen();
-    } else if (this.isFood){
+    } else if (this.isFood) {
         this.foodMessage();
     }
     // Has to be above this.ouch === true, since if drowned is true, ouch is
@@ -1726,6 +1727,7 @@ Player.prototype.charSelection = function() {
     ctx.strokeText('Select a character', map.totalWidth / 2, map.tileHeight * 8.6);
     ctx.fillText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 13.2);
     ctx.strokeText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 13.2);
+    ctx.drawImage(Resources.get(map.variousImages[16]), map.totalWidth / 2.5, map.tileHeight * 13);
     // Box to contain the characters
     ctx.fillStyle = 'silver';
     ctx.fillRect(0, map.tileHeight * 8.6, map.totalWidth, 140);
@@ -2429,7 +2431,7 @@ map.addCorn();
 // http://stackoverflow.com/questions/8916620/disable-arrow-key-scrolling-in-users-browser
 window.addEventListener("keydown", function(e) {
     // space and arrow keys
-    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+    if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
         e.preventDefault();
     }
 }, false);
@@ -2476,8 +2478,4 @@ document.addEventListener('keyup', function(e) {
 // TODO: Make it possible to see several points announcements if many PowerUps
 // are picked up
 // TODO: get enemies to bump into each other!
-// TODO: Make less enemies appear (no more second round huge boost)
-// TODO: Max 2 powerups at any one time
-
-// TODO fix scrolling on up and down movements on smaller browser sizes
 // TODO: PowerUp menu
