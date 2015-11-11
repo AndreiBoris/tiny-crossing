@@ -1520,11 +1520,11 @@ Player.prototype.update = function(dt) {
 };
 
 Player.prototype.changeSprite = function() {
-    if (this.shield > 0){
+    if (this.shield > 0) {
         this.sprite = this.charShield[this.selection];
-    } else if (this.water > 0 ){
+    } else if (this.water > 0) {
         this.sprite = this.charWater[this.selection];
-    } else if (this.lasso > 0 ){
+    } else if (this.lasso > 0) {
         this.sprite = this.charLasso[this.selection];
     } else if (!this.victory && !this.ouch) {
         this.sprite = this.charOptions[this.selection];
@@ -2500,16 +2500,7 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-
-// TODO: Change sprites to make a unique look
-
 // TODO: menu
-
-// TODO: Level editor to move rocks
-
 // TODO: Display information off of the canvas (like the timers);
-// TODO: Edit intro with Sarah's suggestions
-
 // TODO: display Enemy slow/speed
-// TODO: Make a function that handles all sprite changes due to buffs
 // TODO: PowerUp menu
