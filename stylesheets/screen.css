@@ -67,7 +67,44 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   display: block;
 }
 
-/* line 8, ../sass/screen.scss */
+/* line 9, ../sass/screen.scss */
 body {
   text-align: center;
+}
+
+/* line 13, ../sass/screen.scss */
+p,
+li {
+  text-align: left;
+  font-size: 1.75em;
+}
+
+/* line 19, ../sass/screen.scss */
+li {
+  margin-top: 0.5em;
+  list-style: disc;
+}
+
+/* line 24, ../sass/screen.scss */
+.container {
+  margin: 0 2em 0 2em;
+  width: 100%;
+}
+
+/* line 29, ../sass/screen.scss */
+.title {
+  text-align: center;
+  font-size: 2.1em;
+  margin: 0.5em 0 0.5em 0;
+}
+
+/* line 35, ../sass/screen.scss */
+.green {
+  color: #393;
+}
+
+/* line 39, ../sass/screen.scss */
+.imgFlex {
+  display: flex;
+  justify-content: space-around;
 }

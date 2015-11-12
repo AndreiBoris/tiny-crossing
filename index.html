@@ -1,14 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <title>Effective JavaScript: Frogger</title>
-  <link rel="stylesheet" href="stylesheets/screen.css">
+    <meta charset="UTF-8">
+    <title>Effective JavaScript: Frogger</title>
+    <link rel="stylesheet" href="css/build/bootstrap.css">
+    <link rel="stylesheet" href="css/build/style.min.css">
 </head>
 
 <body>
-  <script src="/js/build/script.min.js"></script>
+    <div class='container'>
+        <div class="row">
+            <div class='col-md-3'>
+                <h1 class="title text-uppercase green">Tiny Crossing</h2>
+                <p class="paragraph1">Welcome to <span class="green">Tiny Crossing</span>, a game developed by Andrei Borissenko as part of the Udacity Front-End Web Developer Nanodegree.</p>
+                <h2 class="title">Instructions</h3>
+                <ul>
+                    <li>Use cursor keys to choose an icon and press enter to select it. Then use cursor keys to move the icon around the map.</li>
+                    <div class="imgFlex">
+                        <img class="img-responsive" src="images/Arrows.png"></img>
+                        <img class="img-responsive" src="images/Enter.png"></img>
+                    </div>
+                    <li>Avoid the enemies.</li>
+                    <div class="imgFlex">
+                        <img class="img-responsive" src="images/enemy-bug-right.png"></img>
+                        <img class="img-responsive" src="images/DuckRight.png"></img>
+                    </div>
+                    <li>Avoid the water by stepping on corn.</li>
+                    <div class="imgFlex">
+                        <img class="img-responsive" src="images/corn.png"></img>
+                    </div>
+                    <li>Collect gems for various effects.</li>
+                    <div class="imgFlex">
+                        <img class="img-responsive" src="images/Blue.png"></img>
+                        <img class="img-responsive" src="images/Orange.png"></img>
+                        <img class="img-responsive" src="images/Purple.png"></img>
+                    </div>
+                    <li>Collect three keys to advance to a new round.</li>
+                    <div class="imgFlex">
+                        <img class="img-responsive" src="images/Key.png"></img>
+                        <img class="img-responsive" src="images/Key.png"></img>
+                        <img class="img-responsive" src="images/Key.png"></img>
+                    </div>
+                </ul>
+            </div>
+            <div class='col-md-6' id='gameDiv'>
+            </div>
+            <div class='col-md-3'>
+            	<h2 class="title text-uppercase">Top Scores</h2>
+            </div>
+        </div>
+        <script src="js/build/jquery-1.11.3.min.js"></script>
+        <script src="js/build/script.min.js"></script>
+    </div>
 </body>
 
 </html>

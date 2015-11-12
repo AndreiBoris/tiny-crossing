@@ -27,12 +27,8 @@ var Engine = (function(global) {
 
     canvas.width = map.totalWidth;
     canvas.height = map.totalHeight;
-    doc.body.appendChild(canvas);
-
-    // These text options are used in all messages in the game
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'bottom';
-    ctx.lineWidth = 2;
+    console.log(doc.getElementById('topRow'));
+    doc.getElementById('gameDiv').appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
      * and handles properly calling the update and render methods.

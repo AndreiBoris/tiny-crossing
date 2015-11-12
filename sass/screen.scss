@@ -4,7 +4,39 @@
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
 
 @import "compass/reset";
+$base-color: #393;
 
 body {
     text-align: center;
+}
+
+p,
+li {
+    text-align: left;
+    font-size: 1.75em;
+}
+
+li {
+	margin-top: 0.5em;
+	list-style: disc;
+}
+
+.container {
+	margin: 0 2em 0 2em;
+	width: 100%;
+}
+
+.title {
+    text-align: center;
+    font-size: 2.1em;
+    margin: 0.5em 0 0.5em 0;
+}
+
+.green {
+	color: $base-color;
+}
+
+.imgFlex {
+	display: flex;
+	justify-content: space-around;
 }

@@ -3,6 +3,17 @@ var imageminOptipng = require('imagemin-optipng');
 module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        cssmin: {
+            options: {
+                shorthandCompacting: false,
+                roundingPrecision: -1
+            },
+            target: {
+                files: {
+                    'css/build/style.min.css': ['stylesheets/screen.css'],
+                },
+            },
+        },
         responsive_images: {
             dev: {
                 options: {
@@ -48,10 +59,23 @@ module.exports = function(grunt) {
                 }]
             }
         },
+        compass: {
+            dist: {
+                options: {
+                    sassDir: 'sass',
+                    cssDir: 'stylesheets',
+                    environment: 'development'
+                }
+            }
+        },
         jshint: {
             all: ['gruntfile.js', 'js/*.js'],
         },
         watch: {
+            css: {
+                files: ['sass/*.scss'],
+                tasks: ['compass', 'cssmin']
+            },
             scripts: {
                 files: ['js/*.js', 'gruntfile.js'],
                 tasks: ['jshint', 'uglify']
@@ -66,8 +90,12 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-jsbeautifier');
     grunt.loadNpmTasks('grunt-responsive-images');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
+    grunt.loadNpmTasks('grunt-contrib-compass');
 
-    grunt.registerTask('default', ['jshint', 'jsbeautifier', 'uglify', 'watch']);
+    grunt.registerTask('default', ['jshint', 'jsbeautifier', 'uglify', 'compass', 'cssmin',
+        'watch'
+    ]);
     grunt.registerTask('mini', ['imagemin']);
     grunt.registerTask('newpics', ['responsive_images']);
 };

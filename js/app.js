@@ -2527,3 +2527,7 @@ document.addEventListener('keyup', function(e) {
 // TODO: Instruction in Browser
 // TODO: Scoreboard
 // TODO: Minify production code
+
+// TODO: Fix bug to do with missing collecting gems
+// TODO: Fix spacing on the intro message
+// TODO: Round counter
