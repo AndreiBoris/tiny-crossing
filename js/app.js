@@ -2482,25 +2482,6 @@ var allPowerUps = [];
 var allClouds = [];
 var allDucks = [];
 
-allDucks.push(new Duck());
-allDucks.push(new Duck());
-allDucks.push(new Duck());
-allDucks.push(new Duck());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-allPowerUps.push(new PowerUp());
-
-
 // Shorthand for Class inheritance:
 function inherit(subClass, superClass) {
     subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
@@ -2542,6 +2523,7 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-// TODO: menu
-// TODO: Display information off of the canvas (like the timers);
 // TODO: PowerUp menu
+// TODO: Instruction in Browser
+// TODO: Scoreboard
+// TODO: Minify production code

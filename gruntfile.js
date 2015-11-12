@@ -24,6 +24,13 @@ module.exports = function(grunt) {
             files: ['js/*.js', 'gruntfile.js'],
             options: {}
         },
+        uglify: {
+            my_target: {
+                files: {
+                    'js/build/script.min.js': ['js/resources.js', 'js/app.js', 'js/engine.js'],
+                }
+            }
+        },
         imagemin: { // Task
             dynamic: {
                 options: { // Target options
@@ -47,7 +54,7 @@ module.exports = function(grunt) {
         watch: {
             scripts: {
                 files: ['js/*.js', 'gruntfile.js'],
-                tasks: ['jshint']
+                tasks: ['jshint', 'uglify']
             }
         }
 
@@ -58,8 +65,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-imagemin');
     grunt.loadNpmTasks('grunt-jsbeautifier');
     grunt.loadNpmTasks('grunt-responsive-images');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('default', ['jshint', 'jsbeautifier', 'watch']);
+    grunt.registerTask('default', ['jshint', 'jsbeautifier', 'uglify', 'watch']);
     grunt.registerTask('mini', ['imagemin']);
     grunt.registerTask('newpics', ['responsive_images']);
 };
