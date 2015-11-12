@@ -823,7 +823,7 @@ Burrower.prototype.update = function(dt) {
 
     // Countdown timer until Burrower stops being unburrowed:
     if (this.unburrowed > 0) {
-        this.unburrowed -= dt * this.moving  * this.frozen;
+        this.unburrowed -= dt * this.moving * this.frozen;
     }
 
     // When the timer is 0, the burrower burrows again and a new timer is set 
@@ -939,6 +939,9 @@ var Duck = function() {
 
     // Holds the value determining which way the duck is travelling:
     this.goingRight = true;
+
+    // Slows down or speeds up duck movement when player picks up certain gems:
+    this.gemSpeed = 1.0;
 };
 
 inherit(Duck, Entity);
@@ -967,31 +970,31 @@ Duck.prototype.update = function(dt) {
 
     // Count down the timer between duck strikes:
     if (this.duckWait > 0) {
-        this.duckWait -= dt * this.moving * this.frozen;
+        this.duckWait -= dt * this.moving * this.frozen * this.gemSpeed;
     }
 
     // Count down the timer during which the duck warning is sounded:
     if (this.quackWarning > 0) {
-        this.quackWarning -= dt * this.moving;
+        this.quackWarning -= dt * this.moving * this.gemSpeed;
     }
 
     if (this.goingRight) {
         // Move right as long as the game is not paused and the blue gem is not
         // activated:
-        this.x += 350 * dt * this.moving * this.frozen;
+        this.x += 350 * dt * this.moving * this.frozen * this.gemSpeed;
         // If the quack warning is not fully off screen and it not currently 
         // coming out of the screen, it should be going further off screen. This
         // is the warning that tells the player that a duck is coming:
         if (this.quackX > -100 && this.notOpposed) {
-            this.quackX -= 150 * dt * this.moving;
+            this.quackX -= 150 * dt * this.moving * this.gemSpeed;
         }
     } // The duck must be going left:
     else {
         // Move left:
-        this.x -= 350 * dt * this.moving * this.frozen;
+        this.x -= 350 * dt * this.moving * this.frozen * this.gemSpeed;
         // Opposite action to the duck warning when the duck is moving right:
         if (this.quackX < map.totalWidth + 100 && this.notOpposed) {
-            this.quackX += 150 * dt * this.moving;
+            this.quackX += 150 * dt * this.moving * this.gemSpeed;
         }
     }
 
@@ -1109,12 +1112,12 @@ Duck.prototype.duckEat = function() {
 Duck.prototype.duckWarn = function(dt) {
     // If the quack warning is coming from offscreen left:
     if (this.goingRight) {
-        this.quackX += 350 * dt * this.moving * this.frozen;
+        this.quackX += 350 * dt * this.moving * this.frozen * this.gemSpeed;
 
     }
     // If the quack warning is coming from offscreen right:
     else if (this.quackX > this.quackXGoal) {
-        this.quackX -= 350 * dt * this.moving * this.frozen;
+        this.quackX -= 350 * dt * this.moving * this.frozen * this.gemSpeed;
     }
     this.notOpposed = false;
 };
@@ -1278,6 +1281,9 @@ Player.prototype.update = function(dt) {
         // Reset the speed of enemies and of the corn themselves:
         for (var q = 0; q < numEnemies; q++) {
             allEnemies[q].gemSpeed = 1.0;
+        }
+        for (q = 0; q < numDucks; q++) {
+            allDucks[q].gemSpeed = 1.0;
         }
         for (q = 0; q < numCorn; q++) {
             allCorn[q].gemSpeed = 1.0;
@@ -1986,10 +1992,14 @@ Player.prototype.gems = {
         // Increase the speed of the player when the player is floating on corn:
         this.gemSpeed = 1.5;
         var numEnemies = allEnemies.length,
+            numDucks = allDucks.length,
             numCorn = allCorn.length;
         // Increase speed of enemies and the corn:
         for (var i = 0; i < numEnemies; i++) {
             allEnemies[i].gemSpeed = 1.5;
+        }
+        for (i = 0; i < numDucks; i++) {
+            allDucks[i].gemSpeed = 1.5;
         }
         for (i = 0; i < numCorn; i++) {
             allCorn[i].gemSpeed = 1.5;
@@ -2038,9 +2048,13 @@ Player.prototype.gems = {
         // Decrease the speed of the player when the player is floating on corn:
         this.gemSpeed = 0.5;
         var numEnemies = allEnemies.length,
+            numDucks = allDucks.length,
             numCorn = allCorn.length;
         for (var i = 0; i < numEnemies; i++) {
             allEnemies[i].gemSpeed = 0.5;
+        }
+        for (i = 0; i < numDucks; i++) {
+            allDucks[i].gemSpeed = 0.5;
         }
         for (i = 0; i < numCorn; i++) {
             allCorn[i].gemSpeed = 0.5;
@@ -2456,6 +2470,25 @@ var allKeys = [];
 var allPowerUps = [];
 var allClouds = [];
 var allDucks = [];
+
+allDucks.push(new Duck());
+allDucks.push(new Duck());
+allDucks.push(new Duck());
+allDucks.push(new Duck());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+allPowerUps.push(new PowerUp());
+
 
 // Shorthand for Class inheritance:
 function inherit(subClass, superClass) {
