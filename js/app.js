@@ -784,6 +784,9 @@ var Burrower = function(type) {
     // When the game is paused and this.moving is set to 0, the burrowWait timer 
     // will stop counting down:
     this.moving = 1;
+
+    // Set to 0 when time PowerUp is picked up:
+    this.frozen = 1.0;
 };
 
 inherit(Burrower, Entity);
@@ -792,7 +795,7 @@ Burrower.prototype.update = function(dt) {
 
     // Count down timer until the next time unburrow will happen:
     if (this.burrowWait >= 0) {
-        this.burrowWait -= dt * this.moving;
+        this.burrowWait -= dt * this.moving * this.frozen;
     }
 
     // Controls animation of unburrowed sprite:
@@ -820,7 +823,7 @@ Burrower.prototype.update = function(dt) {
 
     // Countdown timer until Burrower stops being unburrowed:
     if (this.unburrowed > 0) {
-        this.unburrowed -= dt * this.moving;
+        this.unburrowed -= dt * this.moving  * this.frozen;
     }
 
     // When the timer is 0, the burrower burrows again and a new timer is set 
@@ -2382,7 +2385,7 @@ Player.prototype.handleInput = function(input) {
                 map.makeKeys();
                 // More enemies each round:
                 map.addEnemies(1);
-                
+
                 // Add ducks every second round:
                 if (map.round % 2 === 0) {
                     map.addDucks(1);
@@ -2508,4 +2511,4 @@ document.addEventListener('keyup', function(e) {
 // TODO: display Enemy slow/speed
 // TODO: PowerUp menu
 // TODO: Option to mute music only
-// TODO: Fix bug where changing volume on laptop cause move() to occur
+// TODO: Freeze burrowers
