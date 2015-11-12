@@ -1659,6 +1659,17 @@ Player.prototype.render = function() {
             map.tileHeight * 1.8);
     }
 
+    // Speed PowerUp timer appears when it is active:
+    if (this.enemySpeedTime > 0) {
+        if (allEnemies[0].gemSpeed > 1.0) {
+            ctx.fillStyle = 'orange';
+        } else {
+            ctx.fillStyle = 'gray';
+        }
+        ctx.fillText('Speed: ' + Math.ceil(this.enemySpeedTime), xText - 100,
+            map.tileHeight * 2.4);
+    }
+
     // Lasso PowerUp timer appears when it is active:
     if (this.lasso > 0) {
         ctx.fillStyle = 'yellow';
@@ -2221,7 +2232,7 @@ Player.prototype.victoryBounce = function(startingY, dt) {
 
 // Actions to perform when the user presses keys:
 Player.prototype.handleInput = function(input) {
-    // This can be implemented at any time:
+    // This can be done at any time:
     if (input === 'mute') {
         // No more sounds will be played:
         map.audio.muted = !map.audio.muted;
@@ -2518,17 +2529,9 @@ document.addEventListener('keyup', function(e) {
 
     var allowedKeys = {
         37: 'left',
-        65: 'left',
-        72: 'left',
         38: 'up',
-        87: 'up',
-        75: 'up',
         39: 'right',
-        68: 'right',
-        76: 'right',
         40: 'down',
-        83: 'down',
-        74: 'down',
         13: 'enter',
         32: 'enter',
         80: 'pause',
@@ -2541,7 +2544,4 @@ document.addEventListener('keyup', function(e) {
 
 // TODO: menu
 // TODO: Display information off of the canvas (like the timers);
-// TODO: display Enemy slow/speed
 // TODO: PowerUp menu
-// TODO: Option to mute music only
-// TODO: Freeze burrowers
