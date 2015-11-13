@@ -8,6 +8,7 @@ $title-color: #393;
 $points-color: orange;
 body {
     text-align: center;
+    font-family: Arial, sans-serif;
 }
 
 p,
@@ -18,11 +19,10 @@ li {
 
 li {
     margin-top: 0.5em;
-    list-style: disc;
 }
 
 .container {
-    margin: 0 2em 0 2em;
+    padding: 0 2em 0 2em;
     width: 100%;
 }
 
@@ -44,7 +44,7 @@ li {
 }
 
 .gemsInfo {
-	margin: 1em 0 0 0.25em;
+    margin: 1em 0 0 0.25em;
 }
 
 .imgFlex {
@@ -53,21 +53,81 @@ li {
 }
 
 .gemsFlex {
-	display: flex;
-	align-items: center;
+    display: flex;
+    align-items: center;
 }
 
+.mainFlex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.infoColumn {
+    order: 0;
+    -webkit-order: 0;
+}
+
+.gameColumn {
+    order: 1;
+    -webkit-order: 1;
+}
+
+.tableColumn {
+    order: 2;
+    -webkit-order: 2;
+}
+
+@media screen and (max-width: 992px) {
+  .infoColumn {
+    order: 1;
+    -webkit-order: 1;
+}
+
+.gameColumn {
+    order: 0;
+    -webkit-order: 0;
+}
+  }
+
 .gemImg {
-	height: 85px;
-	width: 50px;
+    height: 85px;
+    width: 50px;
 }
 
 .powerUpRow {
-	margin: 1em 0 1em 0;
+    margin: 1em 0 1em 0;
 }
 
 #nameInput {
-	margin-top: 2em;
-	font-size: 2em;
-	text-align: center;
+    margin-top: 2em;
+    font-size: 2em;
+    text-align: center;
+}
+
+.lboardHead {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+#leaderboardTable {
+    width: 100%;
+    tbody td {
+        padding-top: 1em;
+    }
+    tbody tr:nth-child(2) td {
+        padding-top: 0.5em;
+        font-size: 2em;
+    }
+    tbody tr:nth-child(3) td {
+        padding-top: 0.66em;
+        font-size: 1.75em;
+    }
+    tbody tr:nth-child(4) td {
+        padding-top: 0.75em;
+        font-size: 1.50em;
+    }
+    tbody tr:nth-child(5) td {
+        padding-top: 0.88em;
+        font-size: 1.25em;
+    }
 }

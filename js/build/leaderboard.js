@@ -59,21 +59,5 @@ var changedCallback = function(scoreSnapshot, prevScoreName) {
 scoreListView.on('child_moved', changedCallback);
 scoreListView.on('child_changed', changedCallback);
 
-// When the user presses enter on scoreInput, add the score, and update the 
-// highest score.
-$("#scoreInput").keypress(function(e) {
-    var newScore = player.points;
-    var name = player.playerName;
 
-    if (name.length === 0)
-        return;
-
-    var userScoreRef = scoreListRef.child(name);
-
-    // Use setWithPriority to put the name / score in Firebase, and set the 
-    // priority to be the score.
-    userScoreRef.setWithPriority({
-        name: name,
-        score: newScore
-    }, newScore);
-});
+// Here is the start of my app:

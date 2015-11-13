@@ -1,66 +1,4 @@
-// All of this code is taken from the example of a leaderboard from the Firebase
-// website and can be found here:
-// https://www.firebase.com/tutorial/#session/t5uwrbfod5q
 
-var LEADERBOARD_SIZE = 12;
-
-// Create our Firebase reference
-var scoreListRef = new Firebase('https://t5uwrbfod5q.firebaseio-demo.com//scoreList');
-
-// Keep a mapping of firebase locations to HTML elements, so we can move / 
-// remove elements as necessary.
-var htmlForPath = {};
-
-// Helper function that takes a new score snapshot and adds an appropriate row 
-// to our leaderboard table.
-function handleScoreAdded(scoreSnapshot, prevScoreName) {
-    var newScoreRow = $("<tr/>");
-    newScoreRow.append($("<td/>").append($("<em/>").text(scoreSnapshot.val().name)));
-    newScoreRow.append($("<td/>").text(scoreSnapshot.val().score));
-
-    // Store a reference to the table row so we can get it again later.
-    htmlForPath[scoreSnapshot.key()] = newScoreRow;
-
-    // Insert the new score in the appropriate place in the table.
-    if (prevScoreName === null) {
-        $("#leaderboardTable").append(newScoreRow);
-    } else {
-        var lowerScoreRow = htmlForPath[prevScoreName];
-        lowerScoreRow.before(newScoreRow);
-    }
-}
-
-// Helper function to handle a score object being removed; just removes the 
-// corresponding table row.
-function handleScoreRemoved(scoreSnapshot) {
-    var removedScoreRow = htmlForPath[scoreSnapshot.key()];
-    removedScoreRow.remove();
-    delete htmlForPath[scoreSnapshot.key()];
-}
-
-// Create a view to only receive callbacks for the last LEADERBOARD_SIZE scores
-var scoreListView = scoreListRef.limitToLast(LEADERBOARD_SIZE);
-
-// Add a callback to handle when a new score is added.
-scoreListView.on('child_added', function(newScoreSnapshot, prevScoreName) {
-    handleScoreAdded(newScoreSnapshot, prevScoreName);
-});
-
-// Add a callback to handle when a score is removed
-scoreListView.on('child_removed', function(oldScoreSnapshot) {
-    handleScoreRemoved(oldScoreSnapshot);
-});
-
-// Add a callback to handle when a score changes or moves positions.
-var changedCallback = function(scoreSnapshot, prevScoreName) {
-    handleScoreRemoved(scoreSnapshot);
-    handleScoreAdded(scoreSnapshot, prevScoreName);
-};
-scoreListView.on('child_moved', changedCallback);
-scoreListView.on('child_changed', changedCallback);
-
-
-// Here is the start of my app:
 
 var Map = function() {
     this.tileWidth = 50;
@@ -246,6 +184,8 @@ var Map = function() {
     // Holds the current audio object that is acting as the backing track for
     // game:
     this.currentMusic = this.audio.music;
+
+    this.disallowedKeys = [37, 38, 39, 40];
 };
 
 // Play game sound effects
@@ -1686,7 +1626,7 @@ Player.prototype.render = function() {
             map.tileHeight + 20);
     }
 
-    // Always display the latest points won. Except unless the points where won
+    // Always display the latest points won. Unless the points were won
     // just recently, the display will occur off the canvas and won't be seen,
     // and once points are won and the display is back on canvas, the
     // this.pointsY property that determines the current position of 
@@ -1862,7 +1802,7 @@ Player.prototype.charSelection = function() {
     ctx.fillText('Select a character', map.totalWidth / 2, map.tileHeight * 8.4);
     ctx.strokeText('Select a character', map.totalWidth / 2, map.tileHeight * 8.4);
     ctx.fillText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 12.9);
-    ctx.strokeText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 12);
+    ctx.strokeText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 12.9);
     ctx.drawImage(Resources.get(map.variousImages[16]), map.totalWidth / 2.5, map.tileHeight * 13);
     // Box to contain the characters
     ctx.fillStyle = 'silver';
@@ -2608,7 +2548,7 @@ map.addCorn();
 // http://stackoverflow.com/questions/8916620/disable-arrow-key-scrolling-in-users-browser
 window.addEventListener("keydown", function(e) {
     // space and arrow keys
-    if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+    if (map.disallowedKeys.indexOf(e.keyCode) > -1) {
         e.preventDefault();
     }
 }, false);
@@ -2623,7 +2563,6 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down',
         13: 'enter',
-        32: 'enter',
         80: 'pause',
         19: 'pause',
         77: 'mute'
@@ -2643,3 +2582,7 @@ document.addEventListener('keyup', function(e) {
 // TODO: Mouse can choose character (would need to refactor the character
 // selection thing to depend on this.selection rather than be independent'
 // in regard to the selection marker)
+// TODO: Cap the number of characters in the input field
+// TODO: Add a button that stops spacebar from doing bad things
+// TODO: Indicate that a player doesn't need to enter a name
+// TODO: p to pause and m to mute on browser

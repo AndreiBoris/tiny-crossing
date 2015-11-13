@@ -12,10 +12,12 @@
 
 <body>
     <div class='container'>
-        <div class="row">
-            <div class='col-md-3'>
+        <div class="row mainFlex">
+            <div class='col-md-3 col-sm-12 infoColumn'>
                 <h1 class="title text-uppercase green">Tiny Crossing</h1>
-                <p>Welcome to <span class="green">Tiny Crossing</span>, a game developed by Andrei Borissenko as part of the Udacity Front-End Web Developer Nanodegree.</p>
+                <p>Welcome to <span class="green">Tiny Crossing</span>, a game 
+                developed by Andrei Borissenko as part of the Udacity Front-End 
+                Web Developer Nanodegree.</p>
                 <h2 class="title">Instructions</h3>
                 <ul>
                     <li>Use cursor keys to choose an icon and press enter to 
@@ -23,112 +25,131 @@
                     the map.</li>
                     <div class="imgFlex">
                         <img class="img-responsive" 
-                        src="images/Arrows.png"></img>
+                        src="images/Arrows.png"
+                        alt="Cursor keys"></img>
                         <img class="img-responsive" 
-                        src="images/Enter.png"></img>
+                        src="images/Enter.png"
+                        alt="The enter key"></img>
                     </div>
                     <li>Avoid the enemies.</li>
                     <div class="imgFlex">
                         <img class="img-responsive" 
-                        src="images/enemy-bug-right.png"></img>
+                        src="images/enemy-bug-right.png"
+                        alt="A cartoon bug, an enemy in the game"></img>
                         <img class="img-responsive" 
-                        src="images/DuckRight.png"></img>
+                        src="images/DuckRight.png"
+                        alt="The head of a duck, an enemy in the game"></img>
                     </div>
                     <li>Avoid the water by stepping on corn.</li>
                     <div class="imgFlex">
                         <img class="img-responsive" 
-                        src="images/corn.png"></img>
+                        src="images/corn.png"
+                        alt="A cob of corn"></img>
                     </div>
                     <li>Collect gems for various effects.</li>
                     <div class="imgFlex">
                         <img class="img-responsive" 
-                        src="images/Blue.png"></img>
+                        src="images/Blue.png"
+                        alt="A blue gem"></img>
                         <img class="img-responsive" 
-                        src="images/Orange.png"></img>
+                        src="images/Orange.png"
+                        alt="An orange gem"></img>
                         <img class="img-responsive" 
-                        src="images/Purple.png"></img>
+                        src="images/Purple.png"
+                        alt="A purple gem"></img>
                     </div>
                     <li>Collect three keys to advance to a new round.</li>
                     <div class="imgFlex">
                         <img class="img-responsive" 
-                        src="images/Key.png"></img>
+                        src="images/Key.png"
+                        alt="A gold key"></img>
                         <img class="img-responsive" 
-                        src="images/Key.png"></img>
+                        src="images/Key.png"
+                        alt="A gold key"></img>
                         <img class="img-responsive" 
-                        src="images/Key.png"></img>
+                        src="images/Key.png"
+                        alt="A gold key"></img>
                     </div>
                 </ul>
             </div>
-            <div class='col-md-6'>
+            <div class='col-md-6 col-sm-12 gameColumn'>
                 <input type="text" id="nameInput" placeholder="Enter a name">
                 <div id='gameDiv'></div>
                 <h2 class="title">Power Up Menu</h3>
 
                 <div class="row powerUpRow">
-                    <div class="col-md-6 gemsFlex">
+                    <div class="col-md-6 col-xs-6 gemsFlex">
                         <span class="plusPoints"> +100 </span>
-                        <img class="gemImg" src="images/Green.png"></img>
+                        <img class="gemImg" src="images/Green.png"
+                        alt="A green gem"></img>
                         <p class="gemsInfo">Immune to enemies!</p>
                     </div>
                     <div class="col-md-6 gemsFlex">
                         <span class="plusPoints"> +100 </span>
-                        <img class="gemImg" src="images/White.png"></img>
+                        <img class="gemImg" src="images/White.png"
+                        alt="An off-white gem"></img>
                         <p class="gemsInfo">Slow enemies!</p>
                     </div>
                 </div>
 
                 <div class="row powerUpRow">
-                    <div class="col-md-6 gemsFlex">
+                    <div class="col-md-6 col-xs-6 gemsFlex">
                             <span class="plusPoints"> +100 </span>
-                        <img class="gemImg" src="images/Blue.png"></img>
+                        <img class="gemImg" src="images/Blue.png"
+                        alt="A blue gem"></img>
                         <p class="gemsInfo">Freeze time!</p>
                     </div>
-                    <div class="col-md-6 gemsFlex">
+                    <div class="col-md-6 col-xs-6 gemsFlex">
                         <span class="plusPoints"> +150 </span>
-                        <img class="gemImg" src="images/Orange.png"></img>
+                        <img class="gemImg" src="images/Orange.png"
+                        alt="An orange gem"></img>
                         <p class="gemsInfo">Speed enemies!</p>
                     </div>
                 </div>
 
                 <div class="row powerUpRow">
-                    <div class="col-md-6 gemsFlex">
+                    <div class="col-md-6 col-xs-6 gemsFlex">
                         <span class="plusPoints"> +100 </span>
-                        <img class="gemImg" src="images/Purple.png"></img>
+                        <img class="gemImg" src="images/Purple.png"
+                        alt="A purple gem"></img>
                         <p class="gemsInfo">Walk on water!</p>
                     </div>
-                    <div class="col-md-6 gemsFlex">
+                    <div class="col-md-6 col-xs-6 gemsFlex">
                         <span class="plusPoints"> +100 </span>
-                        <img class="gemImg" src="images/Yellow.png"></img>
+                        <img class="gemImg" src="images/Yellow.png"
+                        alt="A yellow gem"></img>
                         <p class="gemsInfo">Lasso keys!</p>
                     </div>
                 </div>
 
                 <div class="row powerUpRow">
-                    <div class="col-md-6 gemsFlex">
+                    <div class="col-md-6 col-xs-6 gemsFlex">
                         <span class="plusPoints"> +100 </span>
-                        <img class="gemImg" src="images/Red.png"></img>
+                        <img class="gemImg" src="images/Red.png"
+                        alt="A red gem"></img>
                         <p class="gemsInfo">Reverse corn!</p>
                     </div>
-                    <div class="col-md-6 gemsFlex">
+                    <div class="col-md-6 col-xs-6 gemsFlex">
                         <span class="plusPoints"> +300 </span>
-                        <img class="gemImg" src="images/Black.png"></img>
+                        <img class="gemImg" src="images/Black.png"
+                        alt="A black gem"></img>
                         <p class="gemsInfo">Gain points!</p>
                     </div>
                 </div>
 
             </div>
-            <div class='col-md-3'>
+            <div class='col-md-3 col-sm-12 tableColumn'>
                 <h2 class="title text-uppercase">Top Scores</h2>
                 <table id="leaderboardTable">
                     <tr>
-                        <th>Player</th>
-                        <th>Score</th>
+                        <th class="lboardHead">Player</th>
+                        <th class="lboardHead">Score</th>
                     </tr>
                 </table>
             </div>
         </div>
-        <script src="js/build/script.min.js"></script>
-        <!--<script src="js/build/leaderboard.js"></script>-->
+        <script src="js/build/leaderboard.js"></script>
+        <script src="js/build/script.min.js"></script>    
     </div>
 </body>
 
