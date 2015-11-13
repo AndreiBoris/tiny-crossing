@@ -2410,11 +2410,11 @@ Player.prototype.handleInput = function(input) {
                 // Delete ducks:
                 allDucks.length = 0;
                 map.setEnemies(8);
-                // Pause the enemies only, so that the new ones generated don't 
-                // begin the next game paused:
+                // Pause everything to make sure that new enemies don't get 
+                // unpaused in the togglePause below:
                 this.blurPause();
 
-                // Enter the score into the scoreboard if it is high enough:
+                // Enter the score into the scoreboard:
 
                 var newScore = player.points;
                 var nameOfPlayer = player.playerName;
@@ -2566,5 +2566,4 @@ document.addEventListener('keyup', function(e) {
 // in regard to the selection marker)
 // TODO: Cap the number of characters in the input field
 // TODO: Add a button that stops spacebar from doing bad things
-// TODO: Indicate that a player doesn't need to enter a name
-// TODO: p to pause and m to mute on browser
+// TODO: Make scores not replace old scores by the same player

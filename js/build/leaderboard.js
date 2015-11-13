@@ -58,6 +58,3 @@ var changedCallback = function(scoreSnapshot, prevScoreName) {
 };
 scoreListView.on('child_moved', changedCallback);
 scoreListView.on('child_changed', changedCallback);
-
-
-// Here is the start of my app:

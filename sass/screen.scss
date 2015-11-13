@@ -4,8 +4,12 @@
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
 
 @import "compass/reset";
+
+
 $title-color: #393;
 $points-color: orange;
+$standard-border: 6px solid $title-color;
+
 body {
     text-align: center;
     font-family: Arial, sans-serif;
@@ -25,6 +29,37 @@ li {
     padding: 0 2em 0 2em;
     width: 100%;
 }
+
+.aboutRow {
+    border-bottom: $standard-border;
+    border-left: $standard-border;
+    padding: 0 0 0.5em 0.5em;
+}
+
+.instructRow {
+    border-right: $standard-border;
+    padding-right: 0.5em;
+}
+
+.gameColumn {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.gameRow {
+    margin: 0;
+}
+
+.gameColumn {
+    padding: 0;
+}
+
+.controlRow {
+    border-top: $standard-border;
+    border-right: $standard-border;
+    margin-top: 2em;
+    flex-grow: 2;
+;}
 
 .title {
     font-family: Impact, Arial, sans-serif;
