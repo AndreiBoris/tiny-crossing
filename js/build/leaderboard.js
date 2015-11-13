@@ -1,3 +1,7 @@
+// All of this code is taken from the example of a leaderboard from the Firebase
+// website and can be found here:
+// https://www.firebase.com/tutorial/#session/t5uwrbfod5q
+
 var LEADERBOARD_SIZE = 12;
 
 // Create our Firebase reference
@@ -58,21 +62,18 @@ scoreListView.on('child_changed', changedCallback);
 // When the user presses enter on scoreInput, add the score, and update the 
 // highest score.
 $("#scoreInput").keypress(function(e) {
-    if (e.keyCode == 13) {
-        var newScore = Number($("#scoreInput").val());
-        var name = $("#nameInput").val();
-        $("#scoreInput").val("");
+    var newScore = player.points;
+    var name = player.playerName;
 
-        if (name.length === 0)
-            return;
+    if (name.length === 0)
+        return;
 
-        var userScoreRef = scoreListRef.child(name);
+    var userScoreRef = scoreListRef.child(name);
 
-        // Use setWithPriority to put the name / score in Firebase, and set the 
-        // priority to be the score.
-        userScoreRef.setWithPriority({
-            name: name,
-            score: newScore
-        }, newScore);
-    }
+    // Use setWithPriority to put the name / score in Firebase, and set the 
+    // priority to be the score.
+    userScoreRef.setWithPriority({
+        name: name,
+        score: newScore
+    }, newScore);
 });

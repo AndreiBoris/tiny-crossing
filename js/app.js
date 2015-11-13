@@ -1,3 +1,67 @@
+// All of this code is taken from the example of a leaderboard from the Firebase
+// website and can be found here:
+// https://www.firebase.com/tutorial/#session/t5uwrbfod5q
+
+var LEADERBOARD_SIZE = 12;
+
+// Create our Firebase reference
+var scoreListRef = new Firebase('https://t5uwrbfod5q.firebaseio-demo.com//scoreList');
+
+// Keep a mapping of firebase locations to HTML elements, so we can move / 
+// remove elements as necessary.
+var htmlForPath = {};
+
+// Helper function that takes a new score snapshot and adds an appropriate row 
+// to our leaderboard table.
+function handleScoreAdded(scoreSnapshot, prevScoreName) {
+    var newScoreRow = $("<tr/>");
+    newScoreRow.append($("<td/>").append($("<em/>").text(scoreSnapshot.val().name)));
+    newScoreRow.append($("<td/>").text(scoreSnapshot.val().score));
+
+    // Store a reference to the table row so we can get it again later.
+    htmlForPath[scoreSnapshot.key()] = newScoreRow;
+
+    // Insert the new score in the appropriate place in the table.
+    if (prevScoreName === null) {
+        $("#leaderboardTable").append(newScoreRow);
+    } else {
+        var lowerScoreRow = htmlForPath[prevScoreName];
+        lowerScoreRow.before(newScoreRow);
+    }
+}
+
+// Helper function to handle a score object being removed; just removes the 
+// corresponding table row.
+function handleScoreRemoved(scoreSnapshot) {
+    var removedScoreRow = htmlForPath[scoreSnapshot.key()];
+    removedScoreRow.remove();
+    delete htmlForPath[scoreSnapshot.key()];
+}
+
+// Create a view to only receive callbacks for the last LEADERBOARD_SIZE scores
+var scoreListView = scoreListRef.limitToLast(LEADERBOARD_SIZE);
+
+// Add a callback to handle when a new score is added.
+scoreListView.on('child_added', function(newScoreSnapshot, prevScoreName) {
+    handleScoreAdded(newScoreSnapshot, prevScoreName);
+});
+
+// Add a callback to handle when a score is removed
+scoreListView.on('child_removed', function(oldScoreSnapshot) {
+    handleScoreRemoved(oldScoreSnapshot);
+});
+
+// Add a callback to handle when a score changes or moves positions.
+var changedCallback = function(scoreSnapshot, prevScoreName) {
+    handleScoreRemoved(scoreSnapshot);
+    handleScoreAdded(scoreSnapshot, prevScoreName);
+};
+scoreListView.on('child_moved', changedCallback);
+scoreListView.on('child_changed', changedCallback);
+
+
+// Here is the start of my app:
+
 var Map = function() {
     this.tileWidth = 50;
     this.tileHeight = 41; // 83/101 to be more precise
@@ -1238,7 +1302,7 @@ Player.prototype.update = function(dt) {
     if (this.nameDelay > 0) {
         this.nameDelay -= dt;
     }
-    if (this.nameDelay <= 0 ){
+    if (this.nameDelay <= 0) {
         this.hasName = true;
     }
 
@@ -1798,7 +1862,7 @@ Player.prototype.charSelection = function() {
     ctx.fillText('Select a character', map.totalWidth / 2, map.tileHeight * 8.4);
     ctx.strokeText('Select a character', map.totalWidth / 2, map.tileHeight * 8.4);
     ctx.fillText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 12.9);
-    ctx.strokeText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 12.9);
+    ctx.strokeText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 12);
     ctx.drawImage(Resources.get(map.variousImages[16]), map.totalWidth / 2.5, map.tileHeight * 13);
     // Box to contain the characters
     ctx.fillStyle = 'silver';
@@ -2247,7 +2311,7 @@ Player.prototype.victoryBounce = function(startingY, dt) {
 // Actions to perform when the user presses keys:
 Player.prototype.handleInput = function(input) {
     if (!this.hasName) {
-        if (input === 'enter'){
+        if (input === 'enter') {
             this.nameChosen = true;
             var theName = $("#nameInput").val();
             this.playerName = theName;
@@ -2425,8 +2489,28 @@ Player.prototype.handleInput = function(input) {
                 // Pause the enemies only, so that the new ones generated don't 
                 // begin the next game paused:
                 this.blurPause();
+
+                // Enter the score into the scoreboard if it is high enough:
+
+                var newScore = player.points;
+                var nameOfPlayer = player.playerName;
+
+                if (nameOfPlayer.length === 0)
+                    return;
+
+                var userScoreRef = scoreListRef.child(nameOfPlayer);
+
+                // Use setWithPriority to put the name / score in Firebase, and set the 
+                // priority to be the score.
+                userScoreRef.setWithPriority({
+                    name: nameOfPlayer,
+                    score: newScore
+                }, newScore);
+
                 // Reset score:
                 this.points = 0;
+
+
             } else if (this.victory === true) {
                 this.victory = false;
                 // Make the game harder:
