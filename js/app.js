@@ -1207,6 +1207,13 @@ var Player = function() {
     this.musicNotStarted = true;
 
     this.isFood = false;
+
+    this.hasName = false;
+    this.nameChosen = false;
+    this.playerName = "";
+    // How long to wait after choosing a name and allowing the player to choose 
+    // a character:
+    this.nameDelay = 0.5;
 };
 
 // Until the player has selected a character, this gets rendered over the game:
@@ -1227,6 +1234,13 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function(dt) {
+
+    if (this.nameDelay > 0) {
+        this.nameDelay -= dt;
+    }
+    if (this.nameDelay <= 0 ){
+        this.hasName = true;
+    }
 
     // Store the number of corn, enemies, keys, and PowerUps to use in scanning 
     // hit boxes:
@@ -1616,7 +1630,7 @@ Player.prototype.render = function() {
     this.announcePoints(this.latestPoints);
 
     // Show character selection at start of game:
-    if (this.charSelected === false) {
+    if (this.charSelected === false && this.nameChosen) {
         this.character();
     }
 
@@ -1781,10 +1795,10 @@ Player.prototype.instructionsText = function() {
 Player.prototype.charSelection = function() {
     this.bwMsgStyle();
     ctx.textAlign = 'center';
-    ctx.fillText('Select a character', map.totalWidth / 2, map.tileHeight * 8.6);
-    ctx.strokeText('Select a character', map.totalWidth / 2, map.tileHeight * 8.6);
-    ctx.fillText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 13.2);
-    ctx.strokeText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 13.2);
+    ctx.fillText('Select a character', map.totalWidth / 2, map.tileHeight * 8.4);
+    ctx.strokeText('Select a character', map.totalWidth / 2, map.tileHeight * 8.4);
+    ctx.fillText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 12.9);
+    ctx.strokeText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 12.9);
     ctx.drawImage(Resources.get(map.variousImages[16]), map.totalWidth / 2.5, map.tileHeight * 13);
     // Box to contain the characters
     ctx.fillStyle = 'silver';
@@ -2232,6 +2246,16 @@ Player.prototype.victoryBounce = function(startingY, dt) {
 
 // Actions to perform when the user presses keys:
 Player.prototype.handleInput = function(input) {
+    if (!this.hasName) {
+        if (input === 'enter'){
+            this.nameChosen = true;
+            var theName = $("#nameInput").val();
+            this.playerName = theName;
+            $("#nameInput").hide();
+        }
+    }
+
+
     // This can be done at any time:
     if (input === 'mute') {
         // No more sounds will be played:
@@ -2252,7 +2276,8 @@ Player.prototype.handleInput = function(input) {
     }
 
     // Character-selection screen controls
-    if (!this.charSelected) {
+    if (!this.charSelected && this.hasName) {
+        this.hasName = true;
         if (input === 'left') {
             // Leftmost selection:
             if (this.selection === 0) {
