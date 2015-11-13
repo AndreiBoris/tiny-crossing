@@ -2532,5 +2532,5 @@ document.addEventListener('keyup', function(e) {
 // TODO: Fix spacing on the intro message
 // TODO: Round counter
 // TODO: Mouse can choose character (would need to refactor the character
-    // selection thing to depend on this.selection rather than be independent'
-    // in regard to the selection marker)
+// selection thing to depend on this.selection rather than be independent'
+// in regard to the selection marker)
