@@ -4,8 +4,8 @@
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
 
 @import "compass/reset";
-$base-color: #393;
-
+$title-color: #393;
+$points-color: orange;
 body {
     text-align: center;
 }
@@ -17,13 +17,13 @@ li {
 }
 
 li {
-	margin-top: 0.5em;
-	list-style: disc;
+    margin-top: 0.5em;
+    list-style: disc;
 }
 
 .container {
-	margin: 0 2em 0 2em;
-	width: 100%;
+    margin: 0 2em 0 2em;
+    width: 100%;
 }
 
 .title {
@@ -33,10 +33,35 @@ li {
 }
 
 .green {
-	color: $base-color;
+    color: $title-color;
+}
+
+.plusPoints {
+    color: $points-color;
+    font-size: 2.25em;
+    margin: 1em 0.25em 0 0;
+    text-shadow: -0.5px 0 black, 0 0 black, 0.5px 0 black, 0 0 black;
+}
+
+.gemsInfo {
+	margin: 1em 0 0 0.25em;
 }
 
 .imgFlex {
+    display: flex;
+    justify-content: space-around;
+}
+
+.gemsFlex {
 	display: flex;
-	justify-content: space-around;
+	align-items: center;
+}
+
+.gemImg {
+	height: 85px;
+	width: 50px;
+}
+
+.powerUpRow {
+	margin: 1em 0 1em 0;
 }
