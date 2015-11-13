@@ -1,5 +1,3 @@
-
-
 var Map = function() {
     this.tileWidth = 50;
     this.tileHeight = 41; // 83/101 to be more precise
@@ -2247,7 +2245,7 @@ Player.prototype.handleInput = function(input) {
 
 
     // This can be done at any time:
-    if (input === 'mute') {
+    if (input === 'mute' && this.nameChosen) {
         // No more sounds will be played:
         map.audio.muted = !map.audio.muted;
         if (map.audio.muted) {
@@ -2421,19 +2419,18 @@ Player.prototype.handleInput = function(input) {
                 var newScore = player.points;
                 var nameOfPlayer = player.playerName;
 
-                if (nameOfPlayer.length === 0)
-                    return;
+                if (nameOfPlayer.length > 0) {
 
-                var userScoreRef = scoreListRef.child(nameOfPlayer);
+                    var userScoreRef = scoreListRef.child(nameOfPlayer);
 
-                // Use setWithPriority to put the name / score in Firebase, and set the 
-                // priority to be the score.
-                userScoreRef.setWithPriority({
-                    name: nameOfPlayer,
-                    score: newScore
-                }, newScore);
+                    // Use setWithPriority to put the name / score in Firebase, and set the 
+                    // priority to be the score.
+                    userScoreRef.setWithPriority({
+                        name: nameOfPlayer,
+                        score: newScore
+                    }, newScore);
+                }
 
-                // Reset score:
                 this.points = 0;
 
 
@@ -2449,7 +2446,6 @@ Player.prototype.handleInput = function(input) {
                 // Add ducks every second round:
                 if (map.round % 2 === 0) {
                     map.addDucks(1);
-                    console.log(allDucks.length);
                 }
                 // Add a burrower starting on the third round:
                 if (map.round === 3) {

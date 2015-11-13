@@ -27,7 +27,6 @@ var Engine = (function(global) {
 
     canvas.width = map.totalWidth;
     canvas.height = map.totalHeight;
-    console.log(doc.getElementById('topRow'));
     doc.getElementById('gameDiv').appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
