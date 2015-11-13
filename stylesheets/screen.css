@@ -138,3 +138,10 @@ li {
 .powerUpRow {
   margin: 1em 0 1em 0;
 }
+
+/* line 69, ../sass/screen.scss */
+#nameInput {
+  margin-top: 2em;
+  font-size: 2em;
+  text-align: center;
+}
