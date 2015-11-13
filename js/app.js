@@ -1228,8 +1228,6 @@ Player.prototype.character = function() {
     }
     // Display game goal instructions in the white space at the top:
     this.topIntroText();
-    // Display instructions about movement controls and how to mute the game:
-    this.instructionsText();
     // Display the box holding the characters and the accompanying text:
     this.charSelection();
     // Draw the character sprites that can be selected:
@@ -1781,18 +1779,6 @@ Player.prototype.topIntroText = function() {
     ctx.fillText('Collect the keys,', map.totalWidth / 2, map.tileHeight);
     ctx.fillText('Collect the gems,', map.totalWidth / 2, map.tileHeight * 1.75);
     ctx.fillText('Beat the clock!', map.totalWidth / 2, map.tileHeight * 2.5);
-};
-
-// Display during character selection screen:
-Player.prototype.instructionsText = function() {
-    ctx.fillStyle = 'white';
-    ctx.textAlign = 'left';
-
-    ctx.fillText('Use ', (map.totalWidth / 6), map.tileHeight * 5);
-    // Display arrow keys:
-    ctx.drawImage(Resources.get(map.variousImages[14]), (map.totalWidth / 5) + 30, map.tileHeight * 3);
-    ctx.fillText(' to move. ', (map.totalWidth / 2) + 10, map.tileHeight * 5);
-    ctx.fillText('Use \'m\' to mute sound.', map.totalWidth / 6, map.tileHeight * 6.3);
 };
 
 // Display during character selection screen:
