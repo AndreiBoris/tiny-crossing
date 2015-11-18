@@ -4,13 +4,14 @@
 
 var LEADERBOARD_SIZE = 3;
 
-// Create our Firebase reference
+// This links to my firebase data account:
 var scoreListRef = new Firebase('https://burning-fire-615.firebaseio.com//scoreList');
 
 // Keep a mapping of firebase locations to HTML elements, so we can move / 
-// remove elements as necessary.
+// remove elements as necessary:
 var htmlForPath = {};
 
+var counter = 0;
 // Helper function that takes a new score snapshot and adds an appropriate row 
 // to our leaderboard table.
 function handleScoreAdded(scoreSnapshot, prevScoreName) {

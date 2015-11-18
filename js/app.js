@@ -1145,7 +1145,7 @@ var Player = function() {
     this.drowned = false;
     // Determines if the game should restart:
     this.isDead = false;
-    this.livesLeft = 5;
+    this.livesLeft = 1;
     // This value is used in anchoring the victory jumps the player does upon 
     // collecting all the keys:
     this.victorySpot = 0;
@@ -2398,7 +2398,7 @@ Player.prototype.handleInput = function(input) {
                 // When dead you lose all keys collected:
                 this.keysHeld = 0;
                 this.isDead = false;
-                this.livesLeft = 5;
+                this.livesLeft = 1;
                 map.powerUpCount = 0;
                 map.powerUpsLeft = 4;
                 // Delete existing Clouds and PowerUps:
@@ -2416,7 +2416,10 @@ Player.prototype.handleInput = function(input) {
                 this.blurPause();
 
                 // Enter the score into the scoreboard:
-
+                var newScore = player.points;
+                var nameOfPlayer = player.playerName;
+                scoreBoard.adder(nameOfPlayer, newScore);
+                /*
                 var newScore = player.points;
                 var nameOfPlayer = player.playerName;
 
@@ -2431,7 +2434,7 @@ Player.prototype.handleInput = function(input) {
                         score: newScore
                     }, newScore);
                 }
-
+                */
                 this.points = 0;
 
 
@@ -2572,3 +2575,5 @@ document.addEventListener('keyup', function(e) {
 // TODO: Cap the number of characters in the input field
 // TODO: Add a button that stops spacebar from doing bad things
 // TODO: Make scores not replace old scores by the same player
+// TODO: Fix bug where after starting a new game you don't get moved and die 
+// against instantly.
