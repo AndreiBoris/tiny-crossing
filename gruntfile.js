@@ -36,6 +36,9 @@ module.exports = function(grunt) {
             options: {}
         },
         uglify: {
+            options: {
+                mangle: true
+            },
             my_target: {
                 files: {
                     'js/build/script.min.js': ['js/resources.js', 'js/app.js', 'js/engine.js'],
