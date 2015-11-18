@@ -2,7 +2,7 @@
 // website and can be found here:
 // https://www.firebase.com/tutorial/#session/t5uwrbfod5q
 
-var LEADERBOARD_SIZE = 12;
+var LEADERBOARD_SIZE = 3;
 
 // Create our Firebase reference
 var scoreListRef = new Firebase('https://burning-fire-615.firebaseio.com//scoreList');

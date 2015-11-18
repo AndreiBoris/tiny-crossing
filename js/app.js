@@ -2240,6 +2240,7 @@ Player.prototype.handleInput = function(input) {
             var theName = $("#nameInput").val();
             this.playerName = theName;
             $("#nameInput").hide();
+            $("#gameDiv").show();
         }
     }
 
@@ -2496,6 +2497,10 @@ Player.prototype.handleInput = function(input) {
         }
     }
 };
+
+// Until the player has gone through the name selection screen, the game 
+// canvas-holding div will not display:
+$("#gameDiv").hide();
 
 // Instantiation of all objects:
 
