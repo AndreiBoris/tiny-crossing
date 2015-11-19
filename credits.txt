@@ -4,3 +4,7 @@ Bryan Weiser
 Rhyan Mahazudin
 Sarah Chahley
 Jonathan Mercurio
+
+Credit to all the people I got the sounds from (see credit file in audio folder)
+
+Credit to jQuery creators!

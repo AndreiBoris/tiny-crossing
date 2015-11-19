@@ -1606,7 +1606,7 @@ Player.prototype.render = function() {
     // If the game is muted, the muted symbol should be displaying under the 
     // hearts:
     if (map.audio.muted) {
-        ctx.drawImage(Resources.get(map.variousImages[15]), 10,
+        ctx.drawImage(Resources.get(map.variousImages[15]), 110,
             map.tileHeight + 20);
     }
 
@@ -2527,3 +2527,5 @@ document.addEventListener('keyup', function(e) {
 // selection thing to depend on this.selection rather than be independent'
 // in regard to the selection marker)
 // TODO: Add mouse selection
+// TODO: Mute music only feature
+// TODO: Sliding in and out for the information on either side of the game!

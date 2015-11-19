@@ -1,6 +1,7 @@
-frontend-nanodegree-arcade-game
+Tiny Crossing
 ===============================
 
-Students should use this rubric: https://www.udacity.com/course/viewer#!/c-ud015/l-3072058665/m-3072588797
-
-for self-checking their submission.
+This is based on the classic arcade game Frogger. Upon choosing a character 
+sprite, you move around with the arrow keys, avoid enemies, collect gems and 
+keys to earn points and advance harder levels. To play, all you have to do is
+click here.
