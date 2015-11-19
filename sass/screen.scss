@@ -36,6 +36,7 @@ li {
     border-right: $standard-border;
     padding-right: 0.5em;
     padding-bottom: 39px;
+    flex-grow: 1;
 }
 
 .gameColumn {
@@ -47,6 +48,10 @@ li {
 
 .gameRow {
     margin: 0;
+}
+
+.rowWithMargin {
+    margin: 1em 0 3em 0;
 }
 
 .gameColumn {
@@ -96,8 +101,14 @@ li {
 }
 
 .infoColumn {
+    display: flex;
+    flex-flow: column nowrap;
     order: 0;
     -webkit-order: 0;
+}
+
+.infoColumn > * {
+    flex-shrink: 0;
 }
 
 .gameColumn {
@@ -105,7 +116,8 @@ li {
     -webkit-order: 1;
 }
 
-.tableColumn {
+.extraColumn {
+    border-left: $standard-border;
     order: 2;
     -webkit-order: 2;
 }
