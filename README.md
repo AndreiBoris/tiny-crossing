@@ -1,11 +1,23 @@
 Tiny Crossing
 ===============================
 
+## Table of Contents
+
+1. [Play](https://github.com/AndreiCommunication/tiny-crossing#play)
+2. [Compatibility](https://github.com/AndreiCommunication/tiny-crossing#compatibility)
+3. [Game Objective and Tips](https://github.com/AndreiCommunication/tiny-crossing#game-objective-and-tips)
+4. [Controls](https://github.com/AndreiCommunication/tiny-crossing#controls)
+5. [Planned features](https://github.com/AndreiCommunication/tiny-crossing#planned-features)
+6. [Issues](https://github.com/AndreiCommunication/tiny-crossing#issues)
+7. [Credits and Acknowledgements](https://github.com/AndreiCommunication/tiny-crossing#credits-and-acknowledgments)
+8. [License](https://github.com/AndreiCommunication/tiny-crossing#license)
+
+## Play
+
 This is based on the classic arcade game Frogger. To play, all you have to do is
 [click here.](http://andreicommunication.github.io/tiny-crossing) This was
 developed as part of Udacity's Front End Web Developer Nanodegree and is a 
-project designed to assist me as I learn JavaScript and using object oriented 
-principles using [pseudoclassical classes.](https://docs.google.com/document/d/1F9DY2TtWbI29KSEIot1WXRqqao7OCd7OOC2W3oubSmc/pub?embedded=true#h.lf0pgel7i8pr)
+project designed to assist me as I learn JavaScript and using [pseudoclassical classes.](https://docs.google.com/document/d/1F9DY2TtWbI29KSEIot1WXRqqao7OCd7OOC2W3oubSmc/pub?embedded=true#h.lf0pgel7i8pr)
 
 ## Compatibility
 
@@ -60,6 +72,10 @@ list of the planned changes:
 - Sliding menus for the information on either side of the game inside the 
 browser. 
 - Fix occasional corn bunching at start up.
+
+I'm happy to receive suggestions on how best to implement these planned
+features. If you feel there is a great solution that I ought to include, please 
+contact me at Andrei.Borissenko@gmail.com
 
 ## Issues
 
