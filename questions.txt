@@ -1,5 +1,0 @@
-Q. When I tab away from the window and the bugs all go to the end of their track, how
-can I make it so tehy continue moving even if it is not my active window (to prevent
-cheating).
-
-A. Research non-active window.requestAnimationFrame()!

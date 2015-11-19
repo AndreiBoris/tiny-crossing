@@ -1773,7 +1773,6 @@ Player.prototype.charSelection = function() {
     ctx.strokeText('Select a character', map.totalWidth / 2, map.tileHeight * 8.4);
     ctx.fillText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 12.9);
     ctx.strokeText('Press enter to choose', map.totalWidth / 2, map.tileHeight * 12.9);
-    ctx.drawImage(Resources.get(map.variousImages[16]), map.totalWidth / 2.5, map.tileHeight * 13);
     // Box to contain the characters
     ctx.fillStyle = 'silver';
     ctx.fillRect(0, map.tileHeight * 8.6, map.totalWidth, 140);

@@ -4,9 +4,18 @@
  * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
 
 @import "compass/reset";
+
+/***** Variables: *****/
+
+// This is the color for game's title:
 $title-color: #393;
+// This color is used on the points in the Power Up Menu:
 $points-color: orange;
+// Border used around certain divs for style:
 $standard-border: 6px solid $title-color;
+
+/***** General styles: *****/
+
 body {
     text-align: center;
     font-family: Arial, sans-serif;
@@ -26,6 +35,8 @@ li {
     width: 100%;
 }
 
+/***** Left side styles: *****/
+
 .aboutRow {
     border-bottom: $standard-border;
     border-left: $standard-border;
@@ -39,25 +50,23 @@ li {
     flex-grow: 1;
 }
 
-.gameColumn {
+// Make first letters of main title larger:
+.biggerText {
+    font-size: 1.75em;
+}
+
+// Control how groups of pictures behave:
+.imgFlex {
     display: flex;
-    flex-flow: column nowrap;
-    // Centers the name input box:
-    align-items: center;
+    justify-content: space-around;
 }
 
-.gameRow {
-    margin: 0;
+// Control picture sizes:
+.cappedHeight {
+    max-height: 40px;
 }
 
-.rowWithMargin {
-    margin: 1em 0 3em 0;
-}
-
-.gameColumn {
-    padding: 0;
-}
-
+// Apply to all titles/subtitles:
 .title {
     font-family: Impact, Arial, sans-serif;
     text-align: center;
@@ -65,34 +74,38 @@ li {
     margin: 0.5em 0 0.5em 0;
 }
 
-.biggerText {
-    font-size: 1.75em;
-}
-
-.cappedHeight {
-    max-height: 40px;
-}
-
 .green {
     color: $title-color;
 }
 
-.imgFlex {
+/***** Center styles: *****/
+
+.gameColumn {
     display: flex;
-    justify-content: space-around;
+    flex-flow: column nowrap;
+    // Centers the name input box:
+    align-items: center;
+    padding: 0;
 }
 
-.imgFlexOne {
-    display: flex;
-    justify-content: center;
+.gameRow {
+    margin: 0;
 }
 
+/***** Right side styles: *****/
+
+.rowWithMargin {
+    margin: 1em 0 3em 0;
+}
+
+// Style a timer to approximate the ingame timer:
 .exampleTimer {
     font-family: Impact, Arial, sans-serif;
     font-size: 40px;
     color: white;
     text-shadow: -2px 0 black, 2px 0 black, 0 2px black, 0 -2px black;
     margin-top: 20px;
+    text-align: center;
 }
 
 .mainFlex {
@@ -102,8 +115,6 @@ li {
 }
 
 .infoColumn {
-    display: flex;
-    flex-flow: column nowrap;
     order: 0;
     -webkit-order: 0;
 }
@@ -139,7 +150,7 @@ li {
     .instructRow {
         border: none;
     }
-    .extraColumn{
+    .extraColumn {
         margin-top: 1.5em;
     }
 }
