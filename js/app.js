@@ -183,7 +183,9 @@ var Map = function() {
     // game:
     this.currentMusic = this.audio.music;
 
-    this.disallowedKeys = [37, 38, 39, 40];
+    // These keys, (space bar and arrow keys) will have their defaults 
+    // disabled so they don't pan the browser window during game play:
+    this.disallowedKeys = [32, 37, 38, 39, 40];
 };
 
 // Play game sound effects
@@ -1145,7 +1147,7 @@ var Player = function() {
     this.drowned = false;
     // Determines if the game should restart:
     this.isDead = false;
-    this.livesLeft = 1;
+    this.livesLeft = 5;
     // This value is used in anchoring the victory jumps the player does upon 
     // collecting all the keys:
     this.victorySpot = 0;
@@ -1630,6 +1632,7 @@ Player.prototype.render = function() {
         this.displayTimer();
         this.displayPoints();
         this.displayHearts();
+        this.displayRound();
     }
 
     // Set all common features of the following PowerUp time displays:
@@ -2172,6 +2175,15 @@ Player.prototype.displayPoints = function() {
     ctx.strokeText(this.points, map.totalWidth - (5 + map.tileWidth), 100);
 };
 
+// Runs in render() to show the current round count:
+Player.prototype.displayRound = function() {
+    this.bwMsgStyle();
+    ctx.font = '30px Impact';
+    ctx.textAlign = 'left';
+    ctx.fillText('Round: ' + map.round, 10, 85);
+    ctx.strokeText('Round: ' + map.round, 10, 85);
+};
+
 // Display red see-through overlay over player when player is hit:
 Player.prototype.hitOverlay = function() {
     // Center gradient around current position of player:
@@ -2372,7 +2384,7 @@ Player.prototype.handleInput = function(input) {
                 // When dead you lose all keys collected:
                 this.keysHeld = 0;
                 this.isDead = false;
-                this.livesLeft = 1;
+                this.livesLeft = 5;
                 map.powerUpCount = 0;
                 map.powerUpsLeft = 4;
                 // Delete existing Clouds and PowerUps:
@@ -2510,19 +2522,8 @@ document.addEventListener('keyup', function(e) {
     player.handleInput(allowedKeys[e.keyCode]);
 });
 
-// TODO: PowerUp menu
-// TODO: Instruction in Browser
-// TODO: Scoreboard
-// TODO: Minify production code
-
 // TODO: Fix bug to do with missing collecting gems
-// TODO: Fix spacing on the intro message
 // TODO: Round counter
 // TODO: Mouse can choose character (would need to refactor the character
 // selection thing to depend on this.selection rather than be independent'
 // in regard to the selection marker)
-// TODO: Cap the number of characters in the input field
-// TODO: Add a button that stops spacebar from doing bad things
-// TODO: Make scores not replace old scores by the same player
-// TODO: Fix bug where after starting a new game you don't get moved and die 
-// against instantly.
