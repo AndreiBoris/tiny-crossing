@@ -58,7 +58,7 @@ browser.
 
 ## Credits and Acknowledgements
 
-See [this file](https://github.com/AndreiCommunication/tiny-crossing/blob/master/credits.txt) 
+See [this file](https://github.com/AndreiCommunication/tiny-crossing/blob/master/credits.md) 
 for full credits. Thank you to all those who contributed!
 
 ## License 
