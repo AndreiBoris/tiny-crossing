@@ -9,6 +9,9 @@ feedback!
 
 And to everyone who took the time to check it out!
 
+I used [Bootstrap](http://getbootstrap.com/) to help with styling. Which is 
+covered under the [MIT License.](https://github.com/twbs/bootstrap/blob/master/LICENSE)
+
 I used sounds from www.freesound.org, here is a list of where I got each of the 
 files:
 
