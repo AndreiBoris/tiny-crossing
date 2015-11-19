@@ -2523,7 +2523,7 @@ document.addEventListener('keyup', function(e) {
 });
 
 // TODO: Fix bug to do with missing collecting gems
-// TODO: Round counter
 // TODO: Mouse can choose character (would need to refactor the character
 // selection thing to depend on this.selection rather than be independent'
 // in regard to the selection marker)
+// TODO: Add mouse selection
