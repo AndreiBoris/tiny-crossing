@@ -9,7 +9,7 @@ Tiny Crossing
 4. [Controls](https://github.com/AndreiCommunication/tiny-crossing#controls)
 5. [Planned features](https://github.com/AndreiCommunication/tiny-crossing#planned-features)
 6. [Issues](https://github.com/AndreiCommunication/tiny-crossing#issues)
-7. [Credits and Acknowledgements](https://github.com/AndreiCommunication/tiny-crossing#credits-and-acknowledgments)
+7. [Credits and Acknowledgments](https://github.com/AndreiCommunication/tiny-crossing#credits-and-acknowledgments)
 8. [License](https://github.com/AndreiCommunication/tiny-crossing#license)
 
 ## Play
@@ -82,7 +82,7 @@ contact me at Andrei.Borissenko@gmail.com
 Occasionally the corn will load incorrectly and bunch up into each other when 
 the game loads for the first time, this gets corrected by reloading the page.
 
-## Credits and Acknowledgements
+## Credits and Acknowledgments
 
 See [this file](https://github.com/AndreiCommunication/tiny-crossing/blob/master/credits.md) 
 for full credits. Thank you to all those who contributed!
