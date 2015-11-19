@@ -1250,7 +1250,7 @@ Player.prototype.update = function(dt) {
         this.sprite = this.charHappy[this.selection];
         // Gain points based on the amount of time that is still left on the 
         // countdown clock. If timeLeft is 0, gain 100 points:
-        this.winPoints(100 + (Math.ceil(this.timeLeft) * 10), 'victory');
+        this.winPoints(100 + (Math.ceil(this.timeLeft) * 20), 'victory');
         // Pause all Entities:
         this.blurPause();
     }
