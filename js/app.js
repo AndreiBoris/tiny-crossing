@@ -1763,9 +1763,9 @@ Player.prototype.topIntroText = function() {
     ctx.textAlign = 'center';
     ctx.font = '30px Impact';
 
-    ctx.fillText('Collect the keys,', map.totalWidth / 2, map.tileHeight);
-    ctx.fillText('Collect the gems,', map.totalWidth / 2, map.tileHeight * 1.75);
-    ctx.fillText('Beat the clock!', map.totalWidth / 2, map.tileHeight * 2.5);
+    ctx.fillText('Collect the gems,', map.totalWidth / 2, map.tileHeight);
+    ctx.fillText('Collect the keys,', map.totalWidth / 2, map.tileHeight * 1.75);
+    ctx.fillText('Advance to harder rounds!', map.totalWidth / 2, map.tileHeight * 2.5);
 };
 
 // Display during character selection screen:
