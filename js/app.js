@@ -1605,7 +1605,7 @@ Player.prototype.render = function() {
 
     // If the game is muted, the muted symbol should be displaying under the 
     // hearts:
-    if (map.audio.muted) {
+    if (map.audio.muted && this.charSelected) {
         ctx.drawImage(Resources.get(map.variousImages[15]), 110,
             map.tileHeight + 20);
     }
