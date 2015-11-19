@@ -1,10 +1,11 @@
 Tiny Crossing
 ===============================
 
-This is based on the classic arcade game Frogger. Upon choosing a character 
-sprite, you move around with the arrow keys, avoid enemies, collect gems and 
-keys to earn points and advance harder levels. To play, all you have to do is
-[click here.](http://andreicommunication.github.io/tiny-crossing)
+This is based on the classic arcade game Frogger. To play, all you have to do is
+[click here.](http://andreicommunication.github.io/tiny-crossing) This was
+developed as part of Udacity's Front End Web Developer Nanodegree and is a 
+project designed to assist me as I learn JavaScript and using object oriented 
+principles using [pseudoclassical classes.](https://docs.google.com/document/d/1F9DY2TtWbI29KSEIot1WXRqqao7OCd7OOC2W3oubSmc/pub?embedded=true#h.lf0pgel7i8pr)
 
 ## Compatibility
 
@@ -19,7 +20,9 @@ optimization problems present for these browsers. While these are issues I hope
 to address in time, Chrome and Firefox already give an optimal experience, so 
 please use these if they are available options for you!
 
-## Game Objective
+## Game Objective and Tips
+
+Select a character sprite using arrow keys and choose it by pressing **enter**.
 
 Avoid the enemies. Avoid the water. Collect the three keys at the top of the 
 screen to advance to the next round. Collect the keys before the timer on the 
@@ -37,7 +40,8 @@ power ups actually do.
 
 Use **arrow keys** to move around.
 
-Use **enter key** to advance past an announcement screen.
+Use **enter key** to advance past an announcement screen or to select a 
+character.
 
 Use **p key** to pause the game.
 
@@ -55,6 +59,12 @@ list of the planned changes:
 - Mouse controls at least for the player selection screen
 - Sliding menus for the information on either side of the game inside the 
 browser. 
+- Fix occasional corn bunching at start up.
+
+## Issues
+
+Occasionally the corn will load incorrectly and bunch up into each other when 
+the game loads for the first time, this gets corrected by reloading the page.
 
 ## Credits and Acknowledgements
 
