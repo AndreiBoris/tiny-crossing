@@ -35,6 +35,14 @@ li {
     width: 100%;
 }
 
+// A row that contains the first level of columns. These columns are rearranged
+// on smaller browser sizes:
+.mainFlex {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 /***** Left side styles: *****/
 
 .aboutRow {
@@ -48,6 +56,18 @@ li {
     padding-right: 0.5em;
     padding-bottom: 39px;
     flex-grow: 1;
+}
+
+// Apply to all titles/subtitles:
+.title {
+    font-family: Impact, Arial, sans-serif;
+    text-align: center;
+    font-size: 2.1em;
+    margin: 0.5em 0 0.5em 0;
+}
+
+.green {
+    color: $title-color;
 }
 
 // Make first letters of main title larger:
@@ -66,16 +86,14 @@ li {
     max-height: 40px;
 }
 
-// Apply to all titles/subtitles:
-.title {
+// Style a timer to approximate the ingame timer:
+.exampleTimer {
     font-family: Impact, Arial, sans-serif;
+    font-size: 40px;
+    color: white;
+    text-shadow: -2px 0 black, 2px 0 black, 0 2px black, 0 -2px black;
+    margin-top: 20px;
     text-align: center;
-    font-size: 2.1em;
-    margin: 0.5em 0 0.5em 0;
-}
-
-.green {
-    color: $title-color;
 }
 
 /***** Center styles: *****/
@@ -98,29 +116,40 @@ li {
     margin: 1em 0 3em 0;
 }
 
-// Style a timer to approximate the ingame timer:
-.exampleTimer {
-    font-family: Impact, Arial, sans-serif;
-    font-size: 40px;
-    color: white;
-    text-shadow: -2px 0 black, 2px 0 black, 0 2px black, 0 -2px black;
-    margin-top: 20px;
-    text-align: center;
+// Control position of information, generally allowing text to 
+// fit underneath pictures:
+.gemsFlex {
+    display: flex;
+    align-items: center;
+    flex-flow: row wrap;
 }
 
-.mainFlex {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+// Set the display size of the Power Up gems:
+$gemWidth: 30px;
+.gemImg {
+    height: $gemWidth * 1.7;
+    width: $gemWidth;
 }
+
+// Style text that indicates the point values of Power Up gems:
+.plusPoints {
+    color: $points-color;
+    font-size: $gemWidth;
+    margin: 0.5em 0.25em 0 0;
+    text-shadow: -0.5px 0 black, 0 0 black, 0.5px 0 black, 0 0 black;
+}
+
+// Make sure that the text is on its own line after the images. This is mainly important 
+// for the instructions about the pause and mute buttons:
+.picInfo {
+    width: 100%;
+}
+
+/***** Assert default flex ordering of major columns:: *****/
 
 .infoColumn {
     order: 0;
     -webkit-order: 0;
-}
-
-.infoColumn > * {
-    flex-shrink: 0;
 }
 
 .gameColumn {
@@ -134,6 +163,8 @@ li {
     -webkit-order: 2;
 }
 
+/***** Media query handling column ordering and border displays: *****/
+
 @media screen and (max-width: 1200px) {
     .infoColumn {
         order: 1;
@@ -143,6 +174,10 @@ li {
         order: 0;
         -webkit-order: 0;
     }
+    // Add some space between the game and the information in the columns:
+    .extraColumn {
+        margin-top: 1.5em;
+    }
     .aboutRow {
         border: none;
         margin-top: 1.5em;
@@ -150,32 +185,4 @@ li {
     .instructRow {
         border: none;
     }
-    .extraColumn {
-        margin-top: 1.5em;
-    }
-}
-
-.gemsFlex {
-    display: flex;
-    align-items: center;
-    flex-flow: row wrap;
-}
-
-$gemWidth: 30px;
-.gemImg {
-    height: $gemWidth * 1.7;
-    width: $gemWidth;
-}
-
-.plusPoints {
-    color: $points-color;
-    font-size: $gemWidth;
-    margin: 0.5em 0.25em 0 0;
-    text-shadow: -0.5px 0 black, 0 0 black, 0.5px 0 black, 0 0 black;
-}
-
-// Make sure that the text is on its own line after the images. This is mainly important 
-// for the instructions about the pause and mute buttons:
-.picInfo {
-    width: 100%;
 }
