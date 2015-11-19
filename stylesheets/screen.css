@@ -131,7 +131,7 @@ li {
 .title {
   font-family: Impact, Arial, sans-serif;
   text-align: center;
-  font-size: 1.8em;
+  font-size: 2.1em;
   margin: 0.5em 0 0.5em 0;
 }
 
@@ -175,9 +175,10 @@ li {
 .mainFlex {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
-/* line 103, ../sass/screen.scss */
+/* line 104, ../sass/screen.scss */
 .infoColumn {
   display: flex;
   flex-flow: column nowrap;
@@ -185,51 +186,67 @@ li {
   -webkit-order: 0;
 }
 
-/* line 110, ../sass/screen.scss */
+/* line 111, ../sass/screen.scss */
 .infoColumn > * {
   flex-shrink: 0;
 }
 
-/* line 114, ../sass/screen.scss */
+/* line 115, ../sass/screen.scss */
 .gameColumn {
   order: 1;
   -webkit-order: 1;
 }
 
-/* line 119, ../sass/screen.scss */
+/* line 120, ../sass/screen.scss */
 .extraColumn {
   border-left: 6px solid #393;
   order: 2;
   -webkit-order: 2;
 }
 
-@media screen and (max-width: 992px) {
-  /* line 126, ../sass/screen.scss */
+@media screen and (max-width: 1200px) {
+  /* line 127, ../sass/screen.scss */
   .infoColumn {
     order: 1;
     -webkit-order: 1;
   }
 
-  /* line 130, ../sass/screen.scss */
+  /* line 131, ../sass/screen.scss */
   .gameColumn {
     order: 0;
     -webkit-order: 0;
   }
+
+  /* line 135, ../sass/screen.scss */
+  .aboutRow {
+    border: none;
+    margin-top: 1.5em;
+  }
+
+  /* line 139, ../sass/screen.scss */
+  .instructRow {
+    border: none;
+  }
+
+  /* line 142, ../sass/screen.scss */
+  .extraColumn {
+    margin-top: 1.5em;
+  }
 }
-/* line 136, ../sass/screen.scss */
+/* line 147, ../sass/screen.scss */
 .gemsFlex {
   display: flex;
   align-items: center;
   flex-flow: row wrap;
 }
 
-/* line 143, ../sass/screen.scss */
+/* line 154, ../sass/screen.scss */
 .gemImg {
   height: 51px;
   width: 30px;
 }
 
-/* line 148, ../sass/screen.scss */
+/* line 159, ../sass/screen.scss */
 .plusPoints {
   color: orange;
   font-size: 30px;
@@ -237,50 +254,7 @@ li {
   text-shadow: -0.5px 0 black, 0 0 black, 0.5px 0 black, 0 0 black;
 }
 
-/* line 156, ../sass/screen.scss */
+/* line 168, ../sass/screen.scss */
 .picInfo {
   width: 100%;
-}
-
-/* line 160, ../sass/screen.scss */
-#nameInput {
-  margin-top: 2em;
-  font-size: 2em;
-  text-align: center;
-  width: 80%;
-}
-
-/* line 167, ../sass/screen.scss */
-.lboardHead {
-  font-size: 1.5em;
-  font-weight: bold;
-}
-
-/* line 172, ../sass/screen.scss */
-#leaderboardTable {
-  width: 100%;
-}
-/* line 174, ../sass/screen.scss */
-#leaderboardTable tbody td {
-  padding-top: 1em;
-}
-/* line 177, ../sass/screen.scss */
-#leaderboardTable tbody tr:nth-child(2) td {
-  padding-top: 0.5em;
-  font-size: 2em;
-}
-/* line 181, ../sass/screen.scss */
-#leaderboardTable tbody tr:nth-child(3) td {
-  padding-top: 0.66em;
-  font-size: 1.75em;
-}
-/* line 185, ../sass/screen.scss */
-#leaderboardTable tbody tr:nth-child(4) td {
-  padding-top: 0.75em;
-  font-size: 1.50em;
-}
-/* line 189, ../sass/screen.scss */
-#leaderboardTable tbody tr:nth-child(5) td {
-  padding-top: 0.88em;
-  font-size: 1.25em;
 }
