@@ -879,6 +879,7 @@ Burrower.prototype.unburrow2 = function() {
 
 // What Burrowers do when they are burrow after unburrowing:
 Burrower.prototype.hide = function(wait) {
+    map.audio.burrow.volume = 0.3;
     map.playSFX('burrow');
     this.x = -100;
     this.y = -100;
@@ -889,7 +890,6 @@ Burrower.prototype.hide = function(wait) {
         // Type 2 Burrowers wait a random time:
         this.burrowWait = (2 + 4 * Math.random());
     }
-
 };
 
 // This is run whenever the player respawns to avoid having the player spawn on
@@ -1606,7 +1606,7 @@ Player.prototype.render = function() {
     // If the game is muted, the muted symbol should be displaying under the 
     // hearts:
     if (map.audio.muted && this.charSelected) {
-        ctx.drawImage(Resources.get(map.variousImages[15]), 110,
+        ctx.drawImage(Resources.get(map.variousImages[15]), 120,
             map.tileHeight + 20);
     }
 
