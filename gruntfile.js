@@ -72,7 +72,7 @@ module.exports = function(grunt) {
             }
         },
         jshint: {
-            all: ['gruntfile.js', 'js/*.js', 'js/build/scoreboard.js'],
+            all: ['gruntfile.js', 'js/*.js', 'js/build/scoreboard2.js'],
         },
         watch: {
             css: {
@@ -80,7 +80,7 @@ module.exports = function(grunt) {
                 tasks: ['compass', 'cssmin']
             },
             scripts: {
-                files: ['js/*.js', 'gruntfile.js', 'js/build/scoreboard.js'],
+                files: ['js/*.js', 'gruntfile.js', 'js/build/scoreboard2.js'],
                 tasks: ['jshint', 'uglify']
             }
         }

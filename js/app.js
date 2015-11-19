@@ -1209,13 +1209,6 @@ var Player = function() {
     this.musicNotStarted = true;
 
     this.isFood = false;
-
-    this.hasName = false;
-    this.nameChosen = false;
-    this.playerName = "";
-    // How long to wait after choosing a name and allowing the player to choose 
-    // a character:
-    this.nameDelay = 0.5;
 };
 
 // Until the player has selected a character, this gets rendered over the game:
@@ -1234,13 +1227,6 @@ Player.prototype.character = function() {
 
 // This gets run for every frame of the game
 Player.prototype.update = function(dt) {
-
-    if (this.nameDelay > 0) {
-        this.nameDelay -= dt;
-    }
-    if (this.nameDelay <= 0) {
-        this.hasName = true;
-    }
 
     // Store the number of corn, enemies, keys, and PowerUps to use in scanning 
     // hit boxes:
@@ -1630,7 +1616,7 @@ Player.prototype.render = function() {
     this.announcePoints(this.latestPoints);
 
     // Show character selection at start of game:
-    if (this.charSelected === false && this.nameChosen) {
+    if (this.charSelected === false) {
         this.character();
     }
 
@@ -2234,19 +2220,9 @@ Player.prototype.victoryBounce = function(startingY, dt) {
 
 // Actions to perform when the user presses keys:
 Player.prototype.handleInput = function(input) {
-    if (!this.hasName) {
-        if (input === 'enter') {
-            this.nameChosen = true;
-            var theName = $("#nameInput").val();
-            this.playerName = theName;
-            $("#nameInput").hide();
-            $("#gameDiv").show();
-        }
-    }
-
 
     // This can be done at any time:
-    if (input === 'mute' && this.nameChosen) {
+    if (input === 'mute') {
         // No more sounds will be played:
         map.audio.muted = !map.audio.muted;
         if (map.audio.muted) {
@@ -2265,8 +2241,7 @@ Player.prototype.handleInput = function(input) {
     }
 
     // Character-selection screen controls
-    if (!this.charSelected && this.hasName) {
-        this.hasName = true;
+    if (!this.charSelected) {
         if (input === 'left') {
             // Leftmost selection:
             if (this.selection === 0) {
@@ -2414,27 +2389,6 @@ Player.prototype.handleInput = function(input) {
                 // Pause everything to make sure that new enemies don't get 
                 // unpaused in the togglePause below:
                 this.blurPause();
-
-                // Enter the score into the scoreboard:
-                var newScore = player.points;
-                var nameOfPlayer = player.playerName;
-                scoreBoard.adder(nameOfPlayer, newScore);
-                /*
-                var newScore = player.points;
-                var nameOfPlayer = player.playerName;
-
-                if (nameOfPlayer.length > 0) {
-
-                    var userScoreRef = scoreListRef.child(nameOfPlayer);
-
-                    // Use setWithPriority to put the name / score in Firebase, and set the 
-                    // priority to be the score.
-                    userScoreRef.setWithPriority({
-                        name: nameOfPlayer,
-                        score: newScore
-                    }, newScore);
-                }
-                */
                 this.points = 0;
 
 
@@ -2500,10 +2454,6 @@ Player.prototype.handleInput = function(input) {
         }
     }
 };
-
-// Until the player has gone through the name selection screen, the game 
-// canvas-holding div will not display:
-$("#gameDiv").hide();
 
 // Instantiation of all objects:
 
