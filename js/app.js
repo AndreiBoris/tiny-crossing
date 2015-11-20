@@ -245,6 +245,11 @@ Map.prototype.canGo = function(newX, newY) {
     return true;
 };
 
+// Picks a random row for an enemy out of an array defined in this object:
+Map.prototype.startY = function() {
+    return this.yValues[this.enemyRows[Math.floor(Math.random() * this.enemyRows.length)]];
+};
+
 // This is invoked at the start of every round. Keys always appear in the top
 // row and the number 1, 5, and 9 indicate the column positions of the keys:
 Map.prototype.makeKeys = function() {
@@ -457,9 +462,8 @@ var PowerUp = function() {
     })();
     // Finds the corresponding .png file from an array in the map object:
     this.sprite = map.variousImages[randomChoice];
-    // Use the method defined in Enemy class to choose one of the enemy lanes
-    // for the PowerUp to use:
-    this.y = this.startY();
+    // Determine a row for the PowerUp to spawn on:
+    this.y = map.startY();
     this.speed = 25 + Math.random() * 25;
     // Original position is either on the left or the right of the map:
     this.x = (function chooseSide() {
@@ -558,7 +562,7 @@ var Enemy = function() {
     // Random value for the start of any given enemy:
     this.x = this.startX();
     // Picks an appropriate column for the enemy type:
-    this.y = this.startY();
+    this.y = map.startY();
     // Speed is determined by which row an enemy is found in (positive/negative
     // speeds are used to find direction due to multi directional possibilities 
     // when this.zigzag = true:
@@ -585,11 +589,6 @@ inherit(Enemy, Entity);
 // Generate a start position for each enemy
 Enemy.prototype.startX = function() {
     return Math.random() * map.totalWidth * 1.0;
-};
-
-// Picks a random row for the enemy out of an array defined in the map object:
-Enemy.prototype.startY = function() {
-    return map.yValues[map.enemyRows[Math.floor(Math.random() * map.enemyRows.length)]];
 };
 
 // Update the enemy's position, required method for game
@@ -624,7 +623,7 @@ Enemy.prototype.update = function(dt) {
 
 Enemy.prototype.resetTrack = function() {
     // Pick a random, appropriate column for the enemy:
-    this.y = this.startY();
+    this.y = map.startY();
     // Certain rows have enemies initially traveling left in them:
     if (this.y === map.yValues[10] || this.y === map.yValues[7]) {
         this.x = map.totalWidth + 80;
@@ -1246,7 +1245,7 @@ Player.prototype.update = function(dt) {
     if (this.charSelected) {
         // Pause game if window is not active:
         window.addEventListener('blur', function() {
-            player.blurPause();
+            allPlayers[0].blurPause();
         });
     }
 
@@ -2478,6 +2477,7 @@ map.makeCoordinates();
 var player = new Player();
 
 // These arrays will be used in for loops throughout:
+var allPlayers = [];
 var allEnemies = [];
 var allCorn = [];
 var allKeys = [];
@@ -2490,6 +2490,8 @@ function inherit(subClass, superClass) {
     subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
     subClass.prototype.constructor = subClass; // set constructor on prototype
 }
+
+allPlayers.push(player);
 
 // Pick a number of enemies:
 map.addEnemies(8);
