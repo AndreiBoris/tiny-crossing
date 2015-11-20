@@ -197,8 +197,8 @@ Map.prototype.playSFX = function(SFX) {
         // Stores the current sound being played so that it can be muted by the 
         // 'm' button even if it has already begun:
         this.audio[SFX].play();
-        if (map.lastTwentySounds.length < 20) {
-            map.lastTwentySounds.push(this.audio[SFX]);
+        if (this.lastTwentySounds.length < 20) {
+            this.lastTwentySounds.push(this.audio[SFX]);
         }
     }
 };
@@ -1742,8 +1742,9 @@ Player.prototype.victoryScreen = function() {
     // Clouds speed up even though eveything else is paused to clear area where 
     // text appears:
     Cloud.prototype.keepMoving();
-    Player.prototype.victoryMessage();
-    Player.prototype.continueMessage();
+    this.victoryMessage();
+    this.continueMessage();
+    console.log('testing this change');
 };
 
 // Display when all lives are lost:
