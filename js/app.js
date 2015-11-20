@@ -356,21 +356,15 @@ inherit(Cloud, Entity);
 // the way so that the text on the screen can be read without being obscured.
 // They also stop respawning on the left side of the map:
 Cloud.prototype.keepMoving = function() {
-    var length = allClouds.length;
-    for (var i = 0; i < length; i++) {
-        allClouds[i].moving = 2;
-        allClouds[i].respawn = false;
-    }
+    this.moving = 2;
+    this.respawn = false;
 };
 
 // When all the other objects are unpaused, clouds return to moving at their
 // normal speed, and also start to respawn again:
 Cloud.prototype.moveNormally = function() {
-    var length = allClouds.length;
-    for (var i = 0; i < length; i++) {
-        allClouds[i].moving = 1;
-        allClouds[i].respawn = true;
-    }
+    this.moving = 1;
+    this.respawn = true;
 };
 
 Cloud.prototype.update = function(dt) {
@@ -895,13 +889,8 @@ Burrower.prototype.hide = function(wait) {
 // This is run whenever the player respawns to avoid having the player spawn on
 // top of a Burrower causing repeated deaths:
 Burrower.prototype.resetBurrow = function() {
-    var numEnemies = allEnemies.length;
-    for (var i = 0; i < numEnemies; i++) {
-        allEnemies[i].burrowWait = 5;
-        if (allEnemies[i] instanceof Burrower) {
-            allEnemies[i].x = -100;
-        }
-    }
+    this.burrowWait = 5;
+    this.x = -100;
 };
 
 var Duck = function() {
@@ -1741,10 +1730,12 @@ Player.prototype.announcePoints = function(points) {
 Player.prototype.victoryScreen = function() {
     // Clouds speed up even though eveything else is paused to clear area where 
     // text appears:
-    Cloud.prototype.keepMoving();
+    var numClouds = allClouds.length;
+    for (var i; i < numClouds; i++) {
+        allClouds[i].keepMoving();
+    }
     this.victoryMessage();
     this.continueMessage();
-    console.log('testing this change');
 };
 
 // Display when all lives are lost:
@@ -1752,7 +1743,10 @@ Player.prototype.deadScreen = function() {
     // Clouds speed up even though eveything else is paused to clear area where 
     // text appears, especially important here as final point count might 
     // otherwise be obscured:
-    Cloud.prototype.keepMoving();
+    var numClouds = allClouds.length;
+    for (var i; i < numClouds; i++) {
+        allClouds[i].keepMoving();
+    }
     this.deadOverlay();
     this.deadMessage();
     this.playAgainMessage();
@@ -1875,7 +1869,10 @@ Player.prototype.foodMessage = function() {
 Player.prototype.loseLifeMsgStyle = function() {
     // If clouds are present, their speed will be doubled so that they move 
     // offscreen and allow the text below them to be read:
-    Cloud.prototype.keepMoving();
+    var numClouds = allClouds.length;
+    for (var i; i < numClouds; i++) {
+        allClouds[i].keepMoving();
+    }
     ctx.lineWidth = 2;
     ctx.font = '56px Impact';
     ctx.fillStyle = 'white';
@@ -2449,10 +2446,18 @@ Player.prototype.handleInput = function(input) {
             // Unpause all Entities:
             this.togglePause();
             // Clouds had been set to keepMoving() prior to this:
-            Cloud.prototype.moveNormally();
+            var numClouds = allClouds.length;
+            for (var i; i < numClouds; i++) {
+                allClouds[i].moveNormally();
+            }
             // Prevents player from spawnning on top of an enemy and repeatedly
             // dying:
-            Burrower.prototype.resetBurrow();
+            var numEnemies = allEnemies.length;
+            for (var k = 0; k < numEnemies; k++) {
+                if (allEnemies[k] instanceof Burrower) {
+                    allEnemies[k].resetBurrow();
+                }
+            }
             // Back to starting position of game:
             this.sprite = this.charOptions[this.selection];
             this.resetStart();
