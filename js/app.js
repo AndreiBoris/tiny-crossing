@@ -459,7 +459,7 @@ var PowerUp = function() {
     this.sprite = map.variousImages[randomChoice];
     // Use the method defined in Enemy class to choose one of the enemy lanes
     // for the PowerUp to use:
-    this.y = Enemy.prototype.startY();
+    this.y = this.startY();
     this.speed = 25 + Math.random() * 25;
     // Original position is either on the left or the right of the map:
     this.x = (function chooseSide() {
