@@ -43,6 +43,7 @@ li {
     justify-content: center;
 }
 
+
 /***** Left side styles: *****/
 
 .aboutRow {
@@ -96,6 +97,7 @@ li {
     text-align: center;
 }
 
+
 /***** Center styles: *****/
 
 .gameColumn {
@@ -109,6 +111,7 @@ li {
 .gameRow {
     margin: 0;
 }
+
 
 /***** Right side styles: *****/
 
@@ -145,6 +148,7 @@ $gemWidth: 30px;
     width: 100%;
 }
 
+
 /***** Assert default flex ordering of major columns:: *****/
 
 .infoColumn {
@@ -162,6 +166,7 @@ $gemWidth: 30px;
     order: 2;
     -webkit-order: 2;
 }
+
 
 /***** Media query handling column ordering and border displays: *****/
 
