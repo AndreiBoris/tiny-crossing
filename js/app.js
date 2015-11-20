@@ -886,9 +886,6 @@ Burrower.prototype.resetBurrow = function() {
 var Duck = function() {
     this.sprite = map.enemySprites[6];
 
-    // Helps to determine if there duckEat() should be played in event of a 
-    // collision with the player:
-    this.isDuck = true;
     // Ducks start way offscreen:
     this.x = -300;
     this.y = -300;
