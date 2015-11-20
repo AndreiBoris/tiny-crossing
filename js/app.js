@@ -904,7 +904,7 @@ var Duck = function() {
     this.quacked1 = true;
     this.quacked2 = true;
 
-    // How long the duck will wait until its next strike. Initial is 5, then it 
+    // How long the duck will wait until its next attack. Initial is 5, then it 
     // it randomized:
     this.duckWait = 5 + 10 * Math.random();
     // Pause control:
@@ -946,12 +946,12 @@ Duck.prototype.update = function(dt) {
         }
     }
 
-    // If the wait between strikes is over, the duck should strike again:
+    // If the wait between attacks is over, the duck should attack again:
     if (this.duckWait <= 0) {
-        this.strike();
+        this.attack();
     }
 
-    // Count down the timer between duck strikes:
+    // Count down the timer between duck attacks:
     if (this.duckWait > 0) {
         this.duckWait -= dt * this.moving * this.frozen * this.gemSpeed;
     }
@@ -1029,25 +1029,25 @@ Duck.prototype.render = function() {
         ctx.fillStyle = 'yellow';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 1;
-        // quackX and quackY are initially appried after strike() and then 
+        // quackX and quackY are initially appried after attack() and then 
         // quackX is adjusted in update():
         ctx.fillText('Quack!', this.quackX, this.quackY);
         ctx.strokeText('Quack!', this.quackX, this.quackY);
     }
 };
 
-Duck.prototype.strike = function() {
-    // Each strike is announced by two warnings:
+Duck.prototype.attack = function() {
+    // Each attack is announced by two warnings:
     this.quacked1 = false;
     this.quacked2 = false;
     // This timer controls the behaviour of the warnings, with certain events 
     // happening at various points during this timer:
     this.quackWarning = 4;
-    // Ducks strikes can come from the left or right, from any of the top 4 
+    // Ducks attacks can come from the left or right, from any of the top 4 
     // water rows:
     var xOptions = ['left', 'right'],
         yOptions = [1, 2, 3, 4];
-    // The time between strikes can vary greatly:
+    // The time between attacks can vary greatly:
     this.duckWait = 8 + 17 * Math.random();
 
     var xChoice = xOptions[Math.floor(Math.random() * 2)],
