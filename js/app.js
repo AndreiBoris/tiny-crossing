@@ -697,15 +697,6 @@ Enemy.prototype.handleZigzag = function(dt) {
     }
 };
 
-// Causes all enemies to begin zigzag behaviour of sometimes changing directions
-// and occationally moving vertically:
-Enemy.prototype.activateZigzag = function() {
-    var numEnemies = allEnemies.length;
-    for (var i = 0; i < numEnemies; i++) {
-        allEnemies[i].zigzag = true;
-    }
-};
-
 // Handles situations where enemies are about to vertically go out of bounds and 
 // sends them left or right:
 Enemy.prototype.alterDirectionSide = function() {
@@ -2377,6 +2368,7 @@ Player.prototype.handleInput = function(input) {
     else if (this.victory === true || this.ouch === true || this.isDead === true ||
         this.drowned === true) {
         if (input === 'enter') {
+            var numEnemies = allEnemies.length;
             // Restart the whole game:
             if (this.isDead === true) {
                 // When dead you lose all keys collected:
@@ -2421,7 +2413,12 @@ Player.prototype.handleInput = function(input) {
                 // Enemies will be able to move in all 4 directions starting on the
                 // fourth round:
                 if (map.round >= 4) {
-                    Enemy.prototype.activateZigzag();
+                    for (var b = 0; b < numEnemies; b++) {
+                        // Does not apply this unnecessarily to Burrower class:
+                        if (allEnemies[b] instanceof Enemy) {
+                            allEnemies[b].zigzag = true;
+                        }
+                    }
                 }
                 // Clouds and a Burrower 2 will appear on the 5th round:
                 if (map.round === 5) {
@@ -2452,8 +2449,8 @@ Player.prototype.handleInput = function(input) {
             }
             // Prevents player from spawnning on top of an enemy and repeatedly
             // dying:
-            var numEnemies = allEnemies.length;
             for (var k = 0; k < numEnemies; k++) {
+                // Does not apply this unneccesairly to Enemy class:
                 if (allEnemies[k] instanceof Burrower) {
                     allEnemies[k].resetBurrow();
                 }
