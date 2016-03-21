@@ -1,3 +1,10 @@
+var utils = {
+    inherit: function(subClass, superClass) {
+        subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
+        subClass.prototype.constructor = subClass; // set constructor on prototype
+    }
+};
+
 var Map = function() {
     this.tileWidth = 50;
     this.tileHeight = 41; // 83/101 to be more precise
@@ -176,14 +183,14 @@ var Map = function() {
         unburrow: new Audio('audio/unburrow.mp3'),
         yeehaw: new Audio('audio/yeehaw.mp3')
     };
-    // Holds the last twenty sounds played so that they can all be muted once 
+    // Holds the last twenty sounds played so that they can all be muted once
     // the player presses the 'm' button:
     this.lastTwentySounds = [];
     // Holds the current audio object that is acting as the backing track for
     // game:
     this.currentMusic = this.audio.music;
 
-    // These keys, (space bar and arrow keys) will have their defaults 
+    // These keys, (space bar and arrow keys) will have their defaults
     // disabled so they don't pan the browser window during game play:
     this.disallowedKeys = [32, 37, 38, 39, 40];
 };
@@ -194,7 +201,7 @@ var Map = function() {
 Map.prototype.playSFX = function(SFX) {
     // Player can mute sounds by pressing 'm':
     if (!this.audio.muted) {
-        // Stores the current sound being played so that it can be muted by the 
+        // Stores the current sound being played so that it can be muted by the
         // 'm' button even if it has already begun:
         this.audio[SFX].play();
         if (this.lastTwentySounds.length < 20) {
@@ -354,7 +361,7 @@ var Cloud = function() {
     this.respawn = true;
 };
 
-inherit(Cloud, Entity);
+utils.inherit(Cloud, Entity);
 
 // When the player is hit/drowned/killed/has, won everything is paused except
 // for the clouds, which keepMoving(). This allows the clouds to get out of
@@ -410,7 +417,7 @@ var Corn = function(row, pos, speed) {
     this.gemSpeed = 1.0;
 };
 
-inherit(Corn, Entity);
+utils.inherit(Corn, Entity);
 
 Corn.prototype.update = function(dt) {
     // this.moving is changed to 0 when the game is paused.
@@ -430,7 +437,7 @@ Corn.prototype.cornRow = function(row) {
 };
 
 var PowerUp = function() {
-    // Picks a random number corresponding to an array map.variousImages 
+    // Picks a random number corresponding to an array map.variousImages
     // inside map object:
     var randomChoice = (function aChoice() {
         var options = [6, 7, 8, 9, 10, 11, 12, 13];
@@ -440,7 +447,7 @@ var PowerUp = function() {
     this.moving = 1;
     // Controls which way the PowerUp is currently moving, see .update:
     this.movingRight = false;
-    // Sets a name to the PowerUp to be used by the .pickUp method on player: 
+    // Sets a name to the PowerUp to be used by the .pickUp method on player:
     this.gem = (function randomGem() {
         if (randomChoice === 6) {
             return 'time';
@@ -472,7 +479,7 @@ var PowerUp = function() {
     })();
 };
 
-inherit(PowerUp, Entity);
+utils.inherit(PowerUp, Entity);
 
 // Runs on every requestAnimationFrame cycle engine.js:
 PowerUp.prototype.update = function(dt) {
@@ -505,7 +512,7 @@ var Key = function(pos) {
     // Short delay between player grabbing key and it flying to bottom of map,
     // this is just for aesthetic effect:
     this.throwDelay = 30;
-    // Keys all fly to slightly different spots at the bottom of the map so that 
+    // Keys all fly to slightly different spots at the bottom of the map so that
     // the player can tell whether 1 or two have been collected:
     this.collectedOffset = Math.floor(Math.random() * map.tileWidth * 3);
     // Key .png file:
@@ -516,7 +523,7 @@ var Key = function(pos) {
     this.y = map.yValues[1];
 };
 
-inherit(Key, Entity);
+utils.inherit(Key, Entity);
 
 Key.prototype.update = function(dt) {
     // this.collected gets activated by the Player.prototype.update method when
@@ -556,7 +563,7 @@ Key.prototype.update = function(dt) {
 
 // Enemies the player must avoid:
 var Enemy = function() {
-    // Enemy sprite changes depending on what direction the enemy is travelling 
+    // Enemy sprite changes depending on what direction the enemy is travelling
     // in:
     this.sprite = '';
     // Random value for the start of any given enemy:
@@ -564,15 +571,15 @@ var Enemy = function() {
     // Picks an appropriate column for the enemy type:
     this.y = map.startY();
     // Speed is determined by which row an enemy is found in (positive/negative
-    // speeds are used to find direction due to multi directional possibilities 
+    // speeds are used to find direction due to multi directional possibilities
     // when this.zigzag = true:
     this.xSpeed = 0;
     // This is used when zigzag is true and enemies are moving vertically:
     this.ySpeed = 0;
     // When gemSpeed or gemSlow is picked up, this increase and decreases
-    // respectively in order to modify speed of the enemy temporarily. 
+    // respectively in order to modify speed of the enemy temporarily.
     this.gemSpeed = 1.0;
-    // Gets turned on after several rounds to give regular enemies the ability 
+    // Gets turned on after several rounds to give regular enemies the ability
     // to move vertically:
     this.zigzag = false;
     // Timer between changes of direction for zigzagging enemies:
@@ -584,7 +591,7 @@ var Enemy = function() {
     this.frozen = 1;
 };
 
-inherit(Enemy, Entity);
+utils.inherit(Enemy, Entity);
 
 // Generate a start position for each enemy
 Enemy.prototype.startX = function() {
@@ -595,8 +602,8 @@ Enemy.prototype.startX = function() {
 // Parameter: dt, a time delta between rendererings of the canvas:
 Enemy.prototype.update = function(dt) {
 
-    // Update the current position of the enemy appropriately according to the 
-    // enemy's speed. this.moving is changed to 0 when the game is paused and 
+    // Update the current position of the enemy appropriately according to the
+    // enemy's speed. this.moving is changed to 0 when the game is paused and
     // this.gemSpeed determines a speed boost/handicap:
     this.x = this.x + this.xSpeed * dt * this.moving * this.gemSpeed * this.frozen;
     this.y = this.y + this.ySpeed * dt * this.moving * this.gemSpeed * this.frozen;
@@ -614,7 +621,7 @@ Enemy.prototype.update = function(dt) {
     // Update sprite depending on what direction the enemy is travelling in:
     this.updateSprite();
 
-    // If the enemy is too far left or right, reset the enemy's position on the 
+    // If the enemy is too far left or right, reset the enemy's position on the
     // row:
     if (this.x < -100 || this.x > map.totalWidth + 100) {
         this.resetTrack();
@@ -667,7 +674,7 @@ Enemy.prototype.updateSprite = function() {
 };
 
 Enemy.prototype.handleZigzag = function(dt) {
-    // If enemy is not paused, the countdown until a change of direction will 
+    // If enemy is not paused, the countdown until a change of direction will
     // continue:
     if (this.moving === 1) {
         this.alterDirCount -= dt * this.frozen;
@@ -676,7 +683,7 @@ Enemy.prototype.handleZigzag = function(dt) {
     if (this.alterDirCount <= 0) {
         this.alterDirection();
     }
-    // The next 4 if blocks deal with situations where enemies are moving 
+    // The next 4 if blocks deal with situations where enemies are moving
     // out of bounds, in which case they are redirected:
     // Enemies in top path moving too far up:
     if (this.y <= map.yValues[6] && this.ySpeed < 0) {
@@ -696,11 +703,11 @@ Enemy.prototype.handleZigzag = function(dt) {
     }
 };
 
-// Handles situations where enemies are about to vertically go out of bounds and 
+// Handles situations where enemies are about to vertically go out of bounds and
 // sends them left or right:
 Enemy.prototype.alterDirectionSide = function() {
     var options = ['left', 'right'];
-    // Get the magnitude to their current speed in order to maintain speed but 
+    // Get the magnitude to their current speed in order to maintain speed but
     // assign a new, horizontal direction:
     var speed = Math.abs(this.ySpeed);
     this.ySpeed = 0;
@@ -713,15 +720,15 @@ Enemy.prototype.alterDirectionSide = function() {
     }
 };
 
-// Changes the direction that an enemy is moving in randomly. This only works 
+// Changes the direction that an enemy is moving in randomly. This only works
 // when the enemies have this.zigzac activated using activateZigzag():
 Enemy.prototype.alterDirection = function() {
     // Reset countdown timer until the next time the direction will be altered:
     this.alterDirCount = 2 + Math.random() * 15;
     var options = ['left', 'up', 'down', 'right'];
     var speed;
-    // Get magnitude of the current speed. Enemies don't move diagonally so 
-    // either the vertical speed or the horizontal speed will represent the 
+    // Get magnitude of the current speed. Enemies don't move diagonally so
+    // either the vertical speed or the horizontal speed will represent the
     // current magnitude:
     if (this.xSpeed === 0) {
         speed = Math.abs(this.ySpeed);
@@ -769,7 +776,7 @@ var Burrower = function(type) {
     this.lastBurrow = 5;
     this.burrowWait = 5;
     this.unburrowed = 0;
-    // When the game is paused and this.moving is set to 0, the burrowWait timer 
+    // When the game is paused and this.moving is set to 0, the burrowWait timer
     // will stop counting down:
     this.moving = 1;
 
@@ -777,7 +784,7 @@ var Burrower = function(type) {
     this.frozen = 1.0;
 };
 
-inherit(Burrower, Entity);
+utils.inherit(Burrower, Entity);
 
 Burrower.prototype.update = function(dt) {
 
@@ -793,8 +800,8 @@ Burrower.prototype.update = function(dt) {
         this.sprite = map.enemySprites[5];
     }
 
-    // Unburrower type 1's behaviour upon the countdown timers reaching zero. 
-    // unburrow() sets this.umburrowed > 0 so this only runs once every few 
+    // Unburrower type 1's behaviour upon the countdown timers reaching zero.
+    // unburrow() sets this.umburrowed > 0 so this only runs once every few
     // seconds:
     if (this.type === 1) {
         if (this.burrowWait <= 0 && this.unburrowed <= 0) {
@@ -814,7 +821,7 @@ Burrower.prototype.update = function(dt) {
         this.unburrowed -= dt * this.moving * this.frozen;
     }
 
-    // When the timer is 0, the burrower burrows again and a new timer is set 
+    // When the timer is 0, the burrower burrows again and a new timer is set
     // until the next unburrow:
     if (this.unburrowed <= 0 && this.burrowWait <= 0) {
         this.hide();
@@ -826,7 +833,7 @@ Burrower.prototype.unburrow = function() {
     map.playSFX('unburrow');
     // Set timer until the Burrower will burrow again:
     this.unburrowed = 3;
-    // If the last unburrow happened at the final location (5), then go to the 
+    // If the last unburrow happened at the final location (5), then go to the
     // first location again:
     if (this.lastBurrow === 5) {
         this.lastBurrow = 1;
@@ -901,19 +908,19 @@ var Duck = function() {
     this.quacked1 = true;
     this.quacked2 = true;
 
-    // How long the duck will wait until its next attack. Initial is 5, then it 
+    // How long the duck will wait until its next attack. Initial is 5, then it
     // it randomized:
     this.duckWait = 5 + 10 * Math.random();
     // Pause control:
     this.moving = 1;
     this.frozen = 1;
 
-    // Determines if the quack message is being sent in to be displayed, or out 
+    // Determines if the quack message is being sent in to be displayed, or out
     // away from where it can be seen so that the two directions don't oppose
     // each other:
     this.notOpposed = true;
 
-    // Timer until the duck is back to its normal orientation after performing 
+    // Timer until the duck is back to its normal orientation after performing
     // duckEat():
     this.reassignSprite = 0;
 
@@ -924,7 +931,7 @@ var Duck = function() {
     this.gemSpeed = 1.0;
 };
 
-inherit(Duck, Entity);
+utils.inherit(Duck, Entity);
 
 Duck.prototype.update = function(dt) {
 
@@ -933,7 +940,7 @@ Duck.prototype.update = function(dt) {
         this.reassignSprite -= dt;
     }
 
-    // When the timer reaches an appropriate point, set the head back to its 
+    // When the timer reaches an appropriate point, set the head back to its
     // appropriate orientation:
     if (this.reassignSprite > 0 && this.reassignSprite < 0.1) {
         if (this.goingRight) {
@@ -962,7 +969,7 @@ Duck.prototype.update = function(dt) {
         // Move right as long as the game is not paused and the blue gem is not
         // activated:
         this.x += 350 * dt * this.moving * this.frozen * this.gemSpeed;
-        // If the quack warning is not fully off screen and it not currently 
+        // If the quack warning is not fully off screen and it not currently
         // coming out of the screen, it should be going further off screen. This
         // is the warning that tells the player that a duck is coming:
         if (this.quackX > -100 && this.notOpposed) {
@@ -979,12 +986,12 @@ Duck.prototype.update = function(dt) {
     }
 
     // Affirm that the duck warning is not currently moving in onto the screen.
-    // The following if statements could change this to false, in which case the 
-    // regular action of moving the quack statements off screen will be 
+    // The following if statements could change this to false, in which case the
+    // regular action of moving the quack statements off screen will be
     // suspended until the quackWarning timer reaches appropriate counts:
     this.notOpposed = true;
 
-    // Between 3.6 and 4 seconds on the timer, the quack warning should be 
+    // Between 3.6 and 4 seconds on the timer, the quack warning should be
     // coming in onto the screen:
     if (this.quackWarning > 3.6 && this.quackWarning < 4.0) {
         this.duckWarn(dt);
@@ -996,7 +1003,7 @@ Duck.prototype.update = function(dt) {
         map.playSFX('quack');
     }
 
-    // Between 2.2 and 2.6 seconds on the timer, the quack warning should be 
+    // Between 2.2 and 2.6 seconds on the timer, the quack warning should be
     // coming in onto the screen:
     if (this.quackWarning > 2.2 && this.quackWarning < 2.6) {
         this.duckWarn(dt);
@@ -1012,10 +1019,10 @@ Duck.prototype.render = function() {
     // Draw Duck:
     ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 
-    // This draws the messages that warn the player that a duck is coming and 
+    // This draws the messages that warn the player that a duck is coming and
     // specifies where it is going to arrive from:
     if (this.quackWarning > 0) {
-        // These textAlign assignments insure that the quack messages come out 
+        // These textAlign assignments insure that the quack messages come out
         // to equally far distances on both sides of the screen:
         if (this.goingRight) {
             ctx.textAlign = 'left';
@@ -1026,7 +1033,7 @@ Duck.prototype.render = function() {
         ctx.fillStyle = 'yellow';
         ctx.strokeStyle = 'black';
         ctx.lineWidth = 1;
-        // quackX and quackY are initially appried after attack() and then 
+        // quackX and quackY are initially appried after attack() and then
         // quackX is adjusted in update():
         ctx.fillText('Quack!', this.quackX, this.quackY);
         ctx.strokeText('Quack!', this.quackX, this.quackY);
@@ -1037,10 +1044,10 @@ Duck.prototype.attack = function() {
     // Each attack is announced by two warnings:
     this.quacked1 = false;
     this.quacked2 = false;
-    // This timer controls the behaviour of the warnings, with certain events 
+    // This timer controls the behaviour of the warnings, with certain events
     // happening at various points during this timer:
     this.quackWarning = 4;
-    // Ducks attacks can come from the left or right, from any of the top 4 
+    // Ducks attacks can come from the left or right, from any of the top 4
     // water rows:
     var xOptions = ['left', 'right'],
         yOptions = [1, 2, 3, 4];
@@ -1052,12 +1059,12 @@ Duck.prototype.attack = function() {
 
     if (xChoice === 'left') {
         this.sprite = map.enemySprites[6];
-        // Ducks move really fast, so they have to start a fair way off screen 
+        // Ducks move really fast, so they have to start a fair way off screen
         // to allow for the quack warnings to happen before they arrive:
         this.x = -1300;
         // This is the position of the quack warning at its most visible point:
         this.quackXGoal = 40;
-        // This the default, invisible position of the quack warning. This is 
+        // This the default, invisible position of the quack warning. This is
         // where it starts and it moves out from this position during certain
         // parts of the quackWarning timer:
         this.quackX = -100;
@@ -1070,12 +1077,12 @@ Duck.prototype.attack = function() {
         this.goingRight = false;
     }
     this.y = map.yValues[yChoice];
-    // Since quackY is determining where text will appear, the 65 pixels are 
+    // Since quackY is determining where text will appear, the 65 pixels are
     // there to account for alpha/transparent buffer zone on the Duck .pngs:
     this.quackY = this.y + 65;
 };
 
-// This plays when the duck eats the player. It changes the Duck's sprite in a 
+// This plays when the duck eats the player. It changes the Duck's sprite in a
 // way to suggest that the duck has opened its mouth to eat the player:
 Duck.prototype.duckEat = function() {
     map.playSFX('nom');
@@ -1103,8 +1110,9 @@ Duck.prototype.duckWarn = function(dt) {
 };
 
 var Player = function() {
-    // this.sprite, this.x, this.y, this.xCoord and this.yCoord are all 
-    // generated for the first time in Player.prototype.handleInput() when a 
+    var self = this;
+    // this.sprite, this.x, this.y, this.xCoord and this.yCoord are all
+    // generated for the first time in Player.prototype.handleInput() when a
     // player picks a character
     this.sprite = '';
     this.x = 0;
@@ -1124,7 +1132,7 @@ var Player = function() {
     // Determines if the game should restart:
     this.isDead = false;
     this.livesLeft = 5;
-    // This value is used in anchoring the victory jumps the player does upon 
+    // This value is used in anchoring the victory jumps the player does upon
     // collecting all the keys:
     this.victorySpot = 0;
     // This is used to help guide the victory jumps as they loop in
@@ -1135,7 +1143,7 @@ var Player = function() {
     // Used to determine how fast the player is moving when the player is on
     // floating corn:
     this.speed = null;
-    // Used to determine speed on the floating corn if the corn is moving faster 
+    // Used to determine speed on the floating corn if the corn is moving faster
     // or slower than usual due to a PowerUp:
     this.gemSpeed = 1.0;
     // Pause control on the floating corn:
@@ -1150,7 +1158,7 @@ var Player = function() {
     this.selectX = map.totalWidth / 2 - 260;
     this.selectY = map.tileHeight * 9;
     // The following six arrays all get used through
-    // Player.prototype.handleInput to choose the correct player.sprite in 
+    // Player.prototype.handleInput to choose the correct player.sprite in
     // various situations:
     this.charOptions = map.playerChars;
     this.charHappy = map.playerCharsHappy;
@@ -1206,7 +1214,7 @@ Player.prototype.character = function() {
 // This gets run for every frame of the game
 Player.prototype.update = function(dt) {
 
-    // Store the number of corn, enemies, keys, and PowerUps to use in scanning 
+    // Store the number of corn, enemies, keys, and PowerUps to use in scanning
     // hit boxes:
     var numCorn = allCorn.length,
         numEnemies = allEnemies.length,
@@ -1224,26 +1232,26 @@ Player.prototype.update = function(dt) {
         // Position from which the player will be jumping up and down:
         this.victorySpot = this.y;
         this.sprite = this.charHappy[this.selection];
-        // Gain points based on the amount of time that is still left on the 
+        // Gain points based on the amount of time that is still left on the
         // countdown clock. If timeLeft is 0, gain 100 points:
         this.winPoints(100 + (Math.ceil(this.timeLeft) * 20), 'victory');
         // Pause all Entities:
         this.blurPause();
     }
 
-    // If the orange text depicting the latest points won is still onscreen, 
+    // If the orange text depicting the latest points won is still onscreen,
     // make sure it is moving offscreen:
     if (this.pointsY > -200) {
         this.pointsY -= 150 * dt;
     }
 
-    // As long as the game has gone beyond the character selection screen, pause 
+    // As long as the game has gone beyond the character selection screen, pause
     // the game if the window is ever navigated away from:
     if (this.charSelected) {
-        // Pause game if window is not active:
+        // Pause game if window is not activekey: "value",
         window.addEventListener('blur', function() {
-            allPlayers[0].blurPause();
-        });
+            this.blurPause();
+        }.bind(this));
     }
 
     // Enemies are fast/slow:
@@ -1251,7 +1259,7 @@ Player.prototype.update = function(dt) {
         // Keep counting down the timer:
         this.enemySpeedTime -= dt * this.moving;
     } else if (this.enemySpeedTime <= 0 && this.enemySpeedTime >= -1) {
-        // Set timer well below the minimum required to run the following set of 
+        // Set timer well below the minimum required to run the following set of
         // instructions to ensure they only have to get run once:
         this.enemySpeedTime -= 2;
         // Reset the player's speed on the corn:
@@ -1268,7 +1276,7 @@ Player.prototype.update = function(dt) {
         }
     }
 
-    // Normally the player doesn't have any extention with which to grab keys 
+    // Normally the player doesn't have any extention with which to grab keys
     // from far away:
     this.extention = 0;
 
@@ -1313,18 +1321,18 @@ Player.prototype.update = function(dt) {
         this.freeze -= dt * this.moving;
         // Freeze all enemies:
         for (var t = 0; t < numEnemies; t++) {
-            // enemy.frozen gets multiplied by enemy.xSpeed and enemy.ySpeed 
+            // enemy.frozen gets multiplied by enemy.xSpeed and enemy.ySpeed
             // when determining the enemy's movement across the map:
             allEnemies[t].frozen = 0;
         }
         for (t = 0; t < numDucks; t++) {
-            // enemy.frozen gets multiplied by enemy.xSpeed and enemy.ySpeed 
+            // enemy.frozen gets multiplied by enemy.xSpeed and enemy.ySpeed
             // when determining the enemy's movement across the map:
             allDucks[t].frozen = 0;
         }
     }
 
-    // If the first enemy is frozen, assume all enemies are. If the freeze timer 
+    // If the first enemy is frozen, assume all enemies are. If the freeze timer
     // is at 0, unfreeze all enemies:
     if (this.freeze <= 0 && allEnemies[0].frozen === 0) {
         for (var r = 0; r < numEnemies; r++) {
@@ -1345,8 +1353,8 @@ Player.prototype.update = function(dt) {
         cornSpots.push([x, y]);
     }
 
-    // Reset this.floating to false. If the player is on top of the corn, this 
-    // value will be set to true in the following for-loop, otherwise, the 
+    // Reset this.floating to false. If the player is on top of the corn, this
+    // value will be set to true in the following for-loop, otherwise, the
     // player should not be floating:
     this.floating = false;
 
@@ -1356,8 +1364,8 @@ Player.prototype.update = function(dt) {
         // Check each position where the corn currently is to see if the player
         // is on the corn:
         for (var b = 0; b < numCorn; b++) {
-            // The width of the corn is equal to 2 * map.tileWidth. The reason 
-            // for adding 30 and 25 to this.x is in order to match where the 
+            // The width of the corn is equal to 2 * map.tileWidth. The reason
+            // for adding 30 and 25 to this.x is in order to match where the
             // character appears to be rendered with where the corn appears to
             // be rendered on the screen. The actual width of the player sprite
             // is buffered by transparent (alpha) space:
@@ -1366,7 +1374,7 @@ Player.prototype.update = function(dt) {
                 (this.y - map.tileHeight / 8 < cornSpots[b][1] &&
                     this.y + map.tileHeight / 8 > cornSpots[b][1])) {
                 // This will run if the player appears to be on the corn. When
-                // this.floating === true, the player will move at the speed of 
+                // this.floating === true, the player will move at the speed of
                 // the corn that's being stood on:
                 this.floating = true;
                 this.speed = allCorn[b].speed;
@@ -1374,13 +1382,13 @@ Player.prototype.update = function(dt) {
         }
         // If the player is not on any corn, the player must have drowned:
         if (this.floating === false) {
-            // this.drown will do nothing if the player still has time left on 
+            // this.drown will do nothing if the player still has time left on
             // the water gem buff counter:
             this.drown();
         }
     }
 
-    // If the player is in the top row and not on top of one of the three grass 
+    // If the player is in the top row and not on top of one of the three grass
     // patches, the player must be in the water and must therefore drown:
     if (this.yCoord === 1 && this.xCoord !== 1 && this.xCoord !== 5 &&
         this.xCoord !== 9) {
@@ -1391,7 +1399,7 @@ Player.prototype.update = function(dt) {
     var keySpots = [];
 
     // Push current key positions to the array. This is important when the lasso
-    // is in play as the keys might not necessarily be in their original spots 
+    // is in play as the keys might not necessarily be in their original spots
     // and still need to be picked up by the player in those instances:
     for (i = 0; i < numKeys; i++) {
         var xK = allKeys[i].x;
@@ -1399,7 +1407,7 @@ Player.prototype.update = function(dt) {
         keySpots.push([xK, yK]);
     }
 
-    // If the any key is within the this.extention range of the player, it 
+    // If the any key is within the this.extention range of the player, it
     // is grabbed by the lasso and will fly toward the player:
     for (var p = 0; p < numKeys; p++) {
         if ((this.x - this.extention < keySpots[p][0] &&
@@ -1407,7 +1415,7 @@ Player.prototype.update = function(dt) {
             (this.y - this.extention < keySpots[p][1] &&
                 this.y + this.extention > keySpots[p][1]) &&
             this.lasso > 0) {
-            // Key lassoed. Lassoed keys fly toward the player.x and player.y 
+            // Key lassoed. Lassoed keys fly toward the player.x and player.y
             // values:
             allKeys[p].lasso = true;
         }
@@ -1447,13 +1455,13 @@ Player.prototype.update = function(dt) {
                 this.x + map.tileWidth / 2 > powerSpots[p][0]) &&
             (this.y - map.tileHeight / 8 < powerSpots[p][1] &&
                 this.y + map.tileHeight / 8 > powerSpots[p][1])) {
-            // When a PowerUp is picked up, it adds its buff to the player, and 
+            // When a PowerUp is picked up, it adds its buff to the player, and
             // also gets removed from the allPowerUps array:
             this.pickUp(allPowerUps[p]);
-            // If the loop isn't broken at this point, it will continue running 
-            // through the previously established numPowerUps and might pickUp 
-            // PowerUps that are not actually at the correct location due to 
-            // powerSpots and allPowerUps indices no longer being matched after 
+            // If the loop isn't broken at this point, it will continue running
+            // through the previously established numPowerUps and might pickUp
+            // PowerUps that are not actually at the correct location due to
+            // powerSpots and allPowerUps indices no longer being matched after
             // the removal of the first PowerUp that was picked up:
             break;
         }
@@ -1519,7 +1527,7 @@ Player.prototype.changeSprite = function() {
     }
 };
 
-// When all the gem buff timers that change the sprite of the character are 
+// When all the gem buff timers that change the sprite of the character are
 // simultaneously slow, set the sprite to the original one:
 Player.prototype.resetSprite = function() {
     if (this.water < 0.1 && this.shield < 0.1 &&
@@ -1529,7 +1537,7 @@ Player.prototype.resetSprite = function() {
 };
 
 
-// This runs whenever the player is on the floating corn to determine where the 
+// This runs whenever the player is on the floating corn to determine where the
 // player should .move() to if the player moves off the floating corn area:
 Player.prototype.trackPosition = function() {
     // Run through all xCoodinate positions:
@@ -1550,8 +1558,8 @@ Player.prototype.move = function() {
     this.y = map.yValues[this.yCoord];
 };
 
-// This move the player sprite without regard for the coordinate system. This is 
-// used in conjunction with trackPosition() in order to make transitions from 
+// This move the player sprite without regard for the coordinate system. This is
+// used in conjunction with trackPosition() in order to make transitions from
 // waterMove()s to move()s (which use the coordinate system) seemless:
 Player.prototype.waterMove = function(direc) {
     if (direc === 'left') {
@@ -1579,7 +1587,7 @@ Player.prototype.resetStart = function() {
 // Draws each frame.
 Player.prototype.render = function() {
 
-    // If the game is muted, the muted symbol should be displaying under the 
+    // If the game is muted, the muted symbol should be displaying under the
     // hearts:
     if (map.audio.muted && this.charSelected) {
         ctx.drawImage(Resources.get(map.variousImages[15]), 120,
@@ -1589,7 +1597,7 @@ Player.prototype.render = function() {
     // Always display the latest points won. Unless the points were won
     // just recently, the display will occur off the canvas and won't be seen,
     // and once points are won and the display is back on canvas, the
-    // this.pointsY property that determines the current position of 
+    // this.pointsY property that determines the current position of
     // announcePoints will continue decreasing until it is once again offscreen:
     this.announcePoints(this.latestPoints);
 
@@ -1676,7 +1684,7 @@ Player.prototype.render = function() {
     } else if (this.ouch === true) {
         this.hitMessage();
     }
-    // Has to be lowest in chain since this.paused === true in all the above 
+    // Has to be lowest in chain since this.paused === true in all the above
     // situations as well:
     else if (this.paused === true) {
         this.pauseMessage();
@@ -1684,7 +1692,7 @@ Player.prototype.render = function() {
 };
 
 
-// Runs whenever points are awarded to the player. lastKey is an optional 
+// Runs whenever points are awarded to the player. lastKey is an optional
 // parameter that only need to be run when picking up the third key in a round:
 Player.prototype.winPoints = function(points, lastKey) {
     // Give player points:
@@ -1693,9 +1701,9 @@ Player.prototype.winPoints = function(points, lastKey) {
     this.pointsY = map.tileHeight * 5;
     // Make the points being displayed the points that were just acquired:
     this.latestPoints = points;
-    // If the last key parameter is included, the points shown will have 50 
-    // added to them to account for the 50 points getting that key awareded. 
-    // Otherwise, the more recent time bonus score will override the value 
+    // If the last key parameter is included, the points shown will have 50
+    // added to them to account for the 50 points getting that key awareded.
+    // Otherwise, the more recent time bonus score will override the value
     // of this.latestPoints completely:
     if (lastKey) {
         this.latestPoints = points + 50;
@@ -1715,7 +1723,7 @@ Player.prototype.announcePoints = function(points) {
 
 // Display when all keys are collected:
 Player.prototype.victoryScreen = function() {
-    // Clouds speed up even though eveything else is paused to clear area where 
+    // Clouds speed up even though eveything else is paused to clear area where
     // text appears:
     var numClouds = allClouds.length;
     for (var i; i < numClouds; i++) {
@@ -1727,8 +1735,8 @@ Player.prototype.victoryScreen = function() {
 
 // Display when all lives are lost:
 Player.prototype.deadScreen = function() {
-    // Clouds speed up even though eveything else is paused to clear area where 
-    // text appears, especially important here as final point count might 
+    // Clouds speed up even though eveything else is paused to clear area where
+    // text appears, especially important here as final point count might
     // otherwise be obscured:
     var numClouds = allClouds.length;
     for (var i; i < numClouds; i++) {
@@ -1854,7 +1862,7 @@ Player.prototype.foodMessage = function() {
 };
 
 Player.prototype.loseLifeMsgStyle = function() {
-    // If clouds are present, their speed will be doubled so that they move 
+    // If clouds are present, their speed will be doubled so that they move
     // offscreen and allow the text below them to be read:
     var numClouds = allClouds.length;
     for (var i; i < numClouds; i++) {
@@ -1867,7 +1875,7 @@ Player.prototype.loseLifeMsgStyle = function() {
     ctx.textAlign = 'center';
 };
 
-// Display when all lives are lost to show the player the number of points 
+// Display when all lives are lost to show the player the number of points
 // earned:
 Player.prototype.deadMessage = function() {
     ctx.font = '64px Impact';
@@ -1879,7 +1887,7 @@ Player.prototype.deadMessage = function() {
     ctx.strokeText(this.points + ' points!', canvas.width / 2, canvas.height - 140);
 };
 
-// This is used to in most circumstances to switch between having all entities 
+// This is used to in most circumstances to switch between having all entities
 // being paused and all entities being unpaused:
 Player.prototype.togglePause = function() {
     var numEnemies = allEnemies.length,
@@ -1907,7 +1915,7 @@ Player.prototype.togglePause = function() {
         allClouds[i].togglePause();
     }
     this.paused = !this.paused;
-    // This controls whether the player is moving while floating on top of the 
+    // This controls whether the player is moving while floating on top of the
     // corn:
     if (this.moving === 1) {
         this.moving = 0;
@@ -1916,9 +1924,9 @@ Player.prototype.togglePause = function() {
     }
 };
 
-// This is used in circumstances where we want to make sure that everything 
-// gets paused whether it is paused already or not. The primary use (and 
-// possibily only ever necessary use) is to pause the game when the game window 
+// This is used in circumstances where we want to make sure that everything
+// gets paused whether it is paused already or not. The primary use (and
+// possibily only ever necessary use) is to pause the game when the game window
 // is navigated away from such that the 'blur' event occurs on the window:
 Player.prototype.blurPause = function() {
     var numEnemies = allEnemies.length,
@@ -1953,9 +1961,9 @@ Player.prototype.blurPause = function() {
 // Runs whenever a PowerUp is picked up. It takes the picked-up PowerUp as an
 // argument:
 Player.prototype.pickUp = function(power) {
-    // Run the effects of picking up this PowerUp. power.gem returns a string 
-    // that identifies the kind of PowerUp that was picked up. It needs to be 
-    // run with .call(player) as otherwise the value of this in the effects will 
+    // Run the effects of picking up this PowerUp. power.gem returns a string
+    // that identifies the kind of PowerUp that was picked up. It needs to be
+    // run with .call(player) as otherwise the value of this in the effects will
     // be mapped as the Player.prototype.gems object:
     this.gems[power.gem].call(player);
     // If the powerUpMax number has been reached on the map, this frees a spot
@@ -2087,7 +2095,7 @@ Player.prototype.drown = function() {
     // This will not run if the player has the water PowerUp:
     if (this.paused === false && this.water <= 0) {
         map.playSFX('splash');
-        // Results in the drowned message being shown instead of the hit 
+        // Results in the drowned message being shown instead of the hit
         // message:
         this.drowned = true;
         // All PowerUp effects go away:
@@ -2142,7 +2150,7 @@ Player.prototype.displayTimer = function() {
         // Will display the rounded-up value of the number of seconds left:
         displayMe = Math.ceil(this.timeLeft);
     } else {
-        // Indicate to the player that they have lost a chance to get bonus 
+        // Indicate to the player that they have lost a chance to get bonus
         // points:
         displayMe = 'No bonus!';
     }
@@ -2154,7 +2162,7 @@ Player.prototype.displayTimer = function() {
 Player.prototype.displayPoints = function() {
     this.bwMsgStyle();
     ctx.textAlign = 'right';
-    // Draw a star next to the points: 
+    // Draw a star next to the points:
     ctx.drawImage(Resources.get(map.variousImages[1]), map.totalWidth - map.tileWidth, 52);
     ctx.fillText(this.points, map.totalWidth - (5 + map.tileWidth), 100);
     ctx.strokeText(this.points, map.totalWidth - (5 + map.tileWidth), 100);
@@ -2176,7 +2184,7 @@ Player.prototype.hitOverlay = function() {
         this.y + map.tileWidth, map.tileWidth / 2, this.x + map.tileWidth / 2,
         this.y + map.tileWidth, map.tileWidth);
 
-    // Fade gradient to become completely see-through as it moves away from the 
+    // Fade gradient to become completely see-through as it moves away from the
     // player:
     grd.addColorStop(0, 'rgba(255, 0, 0, 0.4)');
     grd.addColorStop(1, "rgba(255, 0, 0, 0)");
@@ -2195,10 +2203,10 @@ Player.prototype.deadOverlay = function() {
 
 // player.sprite jumps up and down upon collecting all the keys:
 Player.prototype.victoryBounce = function(startingY, dt) {
-    // Height of jumps is determined by the height of the tiles for easy 
+    // Height of jumps is determined by the height of the tiles for easy
     // scaling:
     var height = map.tileHeight / 4;
-    // The sprite be moving up if below the highest point and is currently in 
+    // The sprite be moving up if below the highest point and is currently in
     // ascend:
     if (this.y > startingY - height && this.movingUp === true) {
         // map.tileWidth here is used as a basis for a time measurement so that
@@ -2263,13 +2271,13 @@ Player.prototype.handleInput = function(input) {
         } else if (input === 'enter') {
             // Choose character
             this.charSelected = true;
-            // this.selection will not remain at its current value for the 
-            // duration of the game. It will be passed into various sprite 
+            // this.selection will not remain at its current value for the
+            // duration of the game. It will be passed into various sprite
             // arrays to have the chosen character appear in all the different
-            // ways throughout the game (ex. when hurt, when shield power up is 
+            // ways throughout the game (ex. when hurt, when shield power up is
             // picked up, etc.):
             this.sprite = this.charOptions[this.selection];
-            // Send the player to the bottom center and reset the countdown 
+            // Send the player to the bottom center and reset the countdown
             // timer to 30:
             this.resetStart();
             // Generate the three keys that are the objective of each round in
@@ -2284,7 +2292,7 @@ Player.prototype.handleInput = function(input) {
             // If on water, just move a tile width over, don't use coordinates:
             if (this.floating) {
                 this.waterMove('left');
-                // Need to return here or .move() will run at the bottom of this 
+                // Need to return here or .move() will run at the bottom of this
                 // if-tree:
                 return;
             } // Leftmost position:
@@ -2308,7 +2316,7 @@ Player.prototype.handleInput = function(input) {
                 // Avoid coordinates:
                 if (this.floating && this.yCoord !== 1) {
                     this.waterMove('up');
-                    // Need to return here or .move() will run at the bottom of 
+                    // Need to return here or .move() will run at the bottom of
                     // this if-tree:
                     return;
                 }
@@ -2319,7 +2327,7 @@ Player.prototype.handleInput = function(input) {
             // If on water, just move a tile width over, don't use coordinates:
             if (this.floating) {
                 this.waterMove('right');
-                // Need to return here or .move() will run at the bottom of this 
+                // Need to return here or .move() will run at the bottom of this
                 // if-tree:
                 return;
             } // Rightmost position:
@@ -2342,7 +2350,7 @@ Player.prototype.handleInput = function(input) {
                 this.yCoord++;
                 if (this.floating && this.yCoord !== 5) {
                     this.waterMove('down');
-                    // Need to return here or .move() will run at the bottom of 
+                    // Need to return here or .move() will run at the bottom of
                     // this if-tree:
                     return;
                 }
@@ -2350,12 +2358,12 @@ Player.prototype.handleInput = function(input) {
                 return;
             }
         }
-        // Pause will work whenever the game is playing normally, (i.e. not 
+        // Pause will work whenever the game is playing normally, (i.e. not
         // already paused due to victory, being hit, etc.):
         else if (input === 'pause') {
             this.togglePause();
-            // Need to return here or .move() will run at the bottom of this 
-            // if-tree, which would be probelmatic if the player is currently 
+            // Need to return here or .move() will run at the bottom of this
+            // if-tree, which would be probelmatic if the player is currently
             // on the corn, floating;
             return;
         }
@@ -2383,7 +2391,7 @@ Player.prototype.handleInput = function(input) {
                 // Delete ducks:
                 allDucks.length = 0;
                 map.setEnemies(8);
-                // Pause everything to make sure that new enemies don't get 
+                // Pause everything to make sure that new enemies don't get
                 // unpaused in the togglePause below:
                 this.blurPause();
                 this.points = 0;
@@ -2456,13 +2464,23 @@ Player.prototype.handleInput = function(input) {
             this.resetStart();
         }
     }
-    // Assume the game is paused by the player/due to a 'blur' event and allow 
+    // Assume the game is paused by the player/due to a 'blur' event and allow
     // the player to unpause it:
     else {
         if (input === 'pause') {
             this.togglePause();
         }
     }
+};
+
+var game = {
+    allPlayers: [],
+    allEnemies: [],
+    allKeys: [],
+    allPowerUps: [],
+    allClouds: [],
+    allCorn: [],
+    allDucks: []
 };
 
 // Instantiation of all objects:
@@ -2481,12 +2499,6 @@ var allKeys = [];
 var allPowerUps = [];
 var allClouds = [];
 var allDucks = [];
-
-// Shorthand for Class inheritance:
-function inherit(subClass, superClass) {
-    subClass.prototype = Object.create(superClass.prototype); // delegate to prototype
-    subClass.prototype.constructor = subClass; // set constructor on prototype
-}
 
 allPlayers.push(player);
 
@@ -2531,3 +2543,5 @@ document.addEventListener('keyup', function(e) {
 // TODO: Add mouse selection
 // TODO: Mute music only feature
 // TODO: Sliding in and out for the information on either side of the game!
+// TODO: Fix clouds not keepMoving
+// TODO: transparency on falling in water??
