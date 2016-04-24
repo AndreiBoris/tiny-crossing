@@ -3,14 +3,14 @@ Tiny Crossing
 
 ## Table of Contents
 
-1. [Play](https://github.com/AndreiCommunication/tiny-crossing#play)
-2. [Compatibility](https://github.com/AndreiCommunication/tiny-crossing#compatibility)
-3. [Game Objective and Tips](https://github.com/AndreiCommunication/tiny-crossing#game-objective-and-tips)
-4. [Controls](https://github.com/AndreiCommunication/tiny-crossing#controls)
-5. [Planned features](https://github.com/AndreiCommunication/tiny-crossing#planned-features)
-6. [Issues](https://github.com/AndreiCommunication/tiny-crossing#issues)
-7. [Credits and Acknowledgments](https://github.com/AndreiCommunication/tiny-crossing#credits-and-acknowledgments)
-8. [License](https://github.com/AndreiCommunication/tiny-crossing#license)
+1. [Play](https://github.com/AndreiBoris/tiny-crossing#play)
+2. [Compatibility](https://github.com/AndreiBoris/tiny-crossing#compatibility)
+3. [Game Objective and Tips](https://github.com/AndreiBoris/tiny-crossing#game-objective-and-tips)
+4. [Controls](https://github.com/AndreiBoris/tiny-crossing#controls)
+5. [Planned features](https://github.com/AndreiBoris/tiny-crossing#planned-features)
+6. [Issues](https://github.com/AndreiBoris/tiny-crossing#issues)
+7. [Credits and Acknowledgments](https://github.com/AndreiBoris/tiny-crossing#credits-and-acknowledgments)
+8. [License](https://github.com/AndreiBoris/tiny-crossing#license)
 
 ## Play
 
@@ -85,9 +85,9 @@ the game loads for the first time, this gets corrected by reloading the page.
 
 ## Credits and Acknowledgments
 
-See [this file](https://github.com/AndreiCommunication/tiny-crossing/blob/master/credits.md)
+See [this file](https://github.com/AndreiBoris/tiny-crossing/blob/master/credits.md)
 for full credits. Thank you to all those who contributed!
 
 ## License
 
-The contents of this repository are covered under the [MIT License](https://github.com/AndreiCommunication/tiny-crossing/blob/master/LICENSE).
+The contents of this repository are covered under the [MIT License](https://github.com/AndreiBoris/tiny-crossing/blob/master/LICENSE).
