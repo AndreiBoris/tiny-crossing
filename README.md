@@ -15,7 +15,7 @@ Tiny Crossing
 ## Play
 
 This is based on the classic arcade game Frogger. To play, all you have to do is
-[click here.](http://andreicommunication.github.io/tiny-crossing) This was
+[click here.](http://andreiboris.github.io/tiny-crossing) This was
 developed as part of Udacity's Front End Web Developer Nanodegree and is a
 project designed to assist me as I learn JavaScript and using [pseudoclassical classes.](https://docs.google.com/document/d/1F9DY2TtWbI29KSEIot1WXRqqao7OCd7OOC2W3oubSmc/pub?embedded=true#h.lf0pgel7i8pr)
 
